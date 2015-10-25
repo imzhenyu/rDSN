@@ -23,30 +23,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+#pragma once
 
-# include <dsn/tool/providers.hpc.h>
-# include "hpc_task_queue.h"
-# include "hpc_tail_logger.h"
-# include "hpc_logger.h"
-# include "hpc_aio_provider.h"
-# include "hpc_network_provider.h"
-# include "hpc_env_provider.h"
-# include "mix_all_io_looper.h"
-
+# include <dsn/tool_api.h>
+# include <unordered_set>
 namespace dsn {
     namespace tools {
-        void register_hpc_providers()
+
+        class hpc_logger : public logging_provider
         {
-            register_component_provider<hpc_tail_logger>("dsn::tools::hpc_tail_logger");
-			register_component_provider<hpc_logger>("dsn::tools::hpc_logger");
-            register_component_provider<hpc_task_queue>("dsn::tools::hpc_task_queue");
-            register_component_provider<hpc_env_provider>("dsn::tools::hpc_env_provider");
+        public:
+            hpc_logger();
+            virtual ~hpc_logger(void);
+
+            virtual void dsn_logv(const char *file,
+                const char *function,
+                const int line,
+                dsn_log_level_t log_level,
+                const char* title,
+                const char *fmt,
+                va_list args
+                );
+
+            virtual void flush();
+
+			static int throughput_count();
+			bool stop_thread;
+
+        private:
+            std::string search(const char* keyword, int back_seconds, int back_start_seconds, std::unordered_set<int>& target_threads);
             
-            register_component_provider<hpc_aio_provider>("dsn::tools::hpc_aio_provider");
-            register_component_provider<hpc_network_provider>("dsn::tools::hpc_network_provider");
-            register_component_provider<io_looper_task_queue>("dsn::tools::io_looper_task_queue");
-            register_component_provider<io_looper_task_worker>("dsn::tools::io_looper_task_worker");
-            register_component_provider<io_looper_timer_service>("dsn::tools::io_looper_timer_service");
-        }
+        private:
+            int _per_thread_buffer_bytes;
+
+			std::thread t_log;
+			::dsn::utils::ex_lock_nr_spin m_lock;
+
+
+			//::dsn::utils::notify_event re;
+			//std::mutex m_lock;
+			void log_thread();
+
+
+
+        };
     }
 }
