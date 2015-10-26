@@ -1,28 +1,28 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2015 Microsoft Corporation
- *
- * -=- Robust Distributed System Nucleus (rDSN) -=-
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+* The MIT License (MIT)
+*
+* Copyright (c) 2015 Microsoft Corporation
+*
+* -=- Robust Distributed System Nucleus (rDSN) -=-
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*/
 
 
 /************************************************************
@@ -44,7 +44,7 @@
 *                                          | --------------------- |
 *                                          |                       |
 *                                          | --------------------- |
-*                                                    ...         
+*                                                    ...
 *                                          | --------------------- |
 *                                          |                       |
 *                                          -------------------------
@@ -62,16 +62,16 @@
 *                                                                   |   when the buffer list is full (the item number reaches MAX_BUFFER_IN_LIST)
 *                                                                   |       notify daemon thread using std::condition_variable
 *	                                                                V
-*                                                 
-*                                                            Daemon thread (hpc-logger)            
-*                                                                   
+*
+*                                                            Daemon thread (hpc-logger)
+*
 *                                                                   ||
-*                                                                   ===========>     hpc_log.x.txt 
+*                                                                   ===========>     hpc_log.x.txt
 *
 *	Some other facts:
 *	1. The log file size is restricted, when line number exceeds 200000, a new log file will be established.
 *	2. When exiting, the logger flushes, in other words, print out the retained log info in buffers of each thread and buffers in the buffer list.
-	
+
 ************************************************************/
 
 # include "hpc_logger.h"
@@ -116,7 +116,7 @@ namespace dsn
 
 		typedef ::dsn::utils::safe_singleton_store<int, struct __tail_log_info__*> tail_log_manager;
 
-		static __thread struct __tail_log_info__* s_tail_log_info_ptr=nullptr;
+		static __thread struct __tail_log_info__* s_tail_log_info_ptr = nullptr;
 
 		static void hpc_tail_logs_dumpper();
 
@@ -182,48 +182,6 @@ namespace dsn
 				"buffer size for per-thread logging"
 				);
 
-			// register command for tail logging
-			::dsn::register_command("tail-log",
-				"tail-log keyword back-seconds [back-start-seconds = 0] [tid1,tid2,...]",
-				"tail-log find logs with given keyword and within [now - back-seconds, now - back-start-seconds]",
-				[this](const std::vector<std::string>& args)
-			{
-				if (args.size() < 2)
-					return std::string("invalid arguments for tail-log command");
-				else
-				{
-					std::unordered_set<int> target_threads;
-					if (args.size() >= 4)
-					{
-						std::list<std::string> tids;
-						::dsn::utils::split_args(args[3].c_str(), tids, ',');
-						for (auto& t : tids)
-						{
-							target_threads.insert(atoi(t.c_str()));
-						}
-					}
-
-					return this->search(
-						args[0].c_str(),
-						atoi(args[1].c_str()),
-						args.size() >= 3 ? atoi(args[2].c_str()) : 0,
-						target_threads
-						);
-				}
-			}
-			);
-
-
-
-			::dsn::register_command("tail-log-dump",
-				"tail-log-dump",
-				"tail-log-dump dump all tail logs to log files",
-				[this](const std::vector<std::string>& args)
-			{
-				hpc_tail_logs_dumpper();
-				return std::string("logs are dumped to coredurmp dir started with hpc_tail_logs.xxx.log");
-			}
-			);
 
 
 			t_log = std::thread(&hpc_logger::log_thread, this);
@@ -318,7 +276,7 @@ namespace dsn
 			olog.close();
 		}
 
-		
+
 		void hpc_logger::dsn_logv(const char *file,
 			const char *function,
 			const int line,
@@ -333,15 +291,15 @@ namespace dsn
 			throughput_manager::instance().put(::dsn::utils::get_current_tid(), s_throughput);
 
 			// init log buffer if necessary
-	/*		if (s_tail_log_info_ptr->magic != 0xdeadbeef)
+			/*		if (s_tail_log_info_ptr->magic != 0xdeadbeef)
 			{
-				s_tail_log_info_ptr->buffer = (char*)malloc(_per_thread_buffer_bytes);
-				s_tail_log_info_ptr->next_write_ptr = s_tail_log_info_ptr->buffer;
-				s_tail_log_info_ptr->last_hdr = nullptr;
-				memset(s_tail_log_info_ptr->buffer, '\0', _per_thread_buffer_bytes);
+			s_tail_log_info_ptr->buffer = (char*)malloc(_per_thread_buffer_bytes);
+			s_tail_log_info_ptr->next_write_ptr = s_tail_log_info_ptr->buffer;
+			s_tail_log_info_ptr->last_hdr = nullptr;
+			memset(s_tail_log_info_ptr->buffer, '\0', _per_thread_buffer_bytes);
 
-				tail_log_manager::instance().put(::dsn::utils::get_current_tid(), s_tail_log_info_ptr);
-				s_tail_log_info_ptr->magic = 0xdeadbeef;
+			tail_log_manager::instance().put(::dsn::utils::get_current_tid(), s_tail_log_info_ptr);
+			s_tail_log_info_ptr->magic = 0xdeadbeef;
 			}*/
 			if (s_tail_log_info_ptr == nullptr)
 			{
@@ -354,7 +312,7 @@ namespace dsn
 
 				tail_log_manager::instance().remove(::dsn::utils::get_current_tid());
 				tail_log_manager::instance().put(::dsn::utils::get_current_tid(), s_tail_log_info_ptr);
-				
+
 			}
 
 
@@ -382,7 +340,7 @@ namespace dsn
 
 				tail_log_manager::instance().remove(::dsn::utils::get_current_tid());
 				tail_log_manager::instance().put(::dsn::utils::get_current_tid(), s_tail_log_info_ptr);
-				
+
 			}
 			char* ptr = s_tail_log_info_ptr->next_write_ptr;
 			char* ptr0 = ptr; // remember it

@@ -51,7 +51,7 @@ namespace dsn {
 			bool stop_thread;
 
         private:
-            std::string search(const char* keyword, int back_seconds, int back_start_seconds, std::unordered_set<int>& target_threads);
+            //std::string search(const char* keyword, int back_seconds, int back_start_seconds, std::unordered_set<int>& target_threads);
             
         private:
             int _per_thread_buffer_bytes;
