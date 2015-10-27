@@ -87,7 +87,7 @@
 # include <mutex>
 # include <condition_variable>
 
-#define MAX_BUFFER_IN_LIST 30
+#define MAX_BUFFER_IN_LIST 1
 namespace dsn
 {
 	namespace tools
@@ -125,6 +125,8 @@ namespace dsn
 		static int _start_index;
 		static int _index;
 		static int _line;
+
+		static int _per_thread_buffer_bytes;
 
 		struct tail_log
 		{
@@ -168,7 +170,7 @@ namespace dsn
 			_per_thread_buffer_bytes = config()->get_value<int>(
 				"tools.hpc_logger",
 				"per_thread_buffer_bytes",
-				10 *1024* 1024, // 10 MB by default
+				10 *1024 * 1024, // 10 MB by default
 				"buffer size for per-thread logging"
 				);
 
@@ -446,7 +448,7 @@ namespace dsn
 
 			}
 			olog.close();
-			if (++_line >= 200)
+			if ((++_line) * MAX_BUFFER_IN_LIST * _per_thread_buffer_bytes >= 10*1024*1024)
 			{
 				_line = 0;
 				_index++;

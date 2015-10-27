@@ -47,24 +47,18 @@ namespace dsn {
 
             virtual void flush();
 
-			//static int throughput_count();
 			bool stop_thread;
 
         private:
-            //std::string search(const char* keyword, int back_seconds, int back_start_seconds, std::unordered_set<int>& target_threads);
             
-        private:
-            int _per_thread_buffer_bytes;
 
 			std::thread t_log;
 			::dsn::utils::ex_lock_nr_spin m_lock;
 
 
-			//::dsn::utils::notify_event re;
-			//std::mutex m_lock;
 			void log_thread();
 
-
+			
 
         };
     }
