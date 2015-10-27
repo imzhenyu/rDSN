@@ -47,7 +47,7 @@ namespace dsn {
 
             virtual void flush();
 
-			static int throughput_count();
+			//static int throughput_count();
 			bool stop_thread;
 
         private:
