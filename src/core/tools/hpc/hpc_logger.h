@@ -27,8 +27,36 @@
 
 # include <dsn/tool_api.h>
 # include <unordered_set>
+# include <thread>
+# include <mutex>
+# include <condition_variable>
+
 namespace dsn {
     namespace tools {
+		struct hpc_log_hdr
+		{
+			uint32_t log_break; // '\0'
+			uint32_t magic;
+			int32_t  length;
+			uint64_t ts;
+			hpc_log_hdr* prev;
+
+			bool is_valid() { return magic == 0xdeadbeef; }
+		};
+
+		typedef struct __hpc_log_info__
+		{
+			uint32_t magic;
+			char*    buffer;
+			char*    next_write_ptr;
+			hpc_log_hdr *last_hdr;
+		} hpc_log_tls_info;
+
+		typedef struct __hpc_log__
+		{
+			char*    buffer;
+			hpc_log_hdr* last_hdr;
+		} hpc_log;
 
         class hpc_logger : public logging_provider
         {
@@ -47,19 +75,33 @@ namespace dsn {
 
             virtual void flush();
 
-			bool stop_thread;
-
-        private:
-            
-
-			std::thread t_log;
-			::dsn::utils::ex_lock_nr_spin m_lock;
-
-
+		private:
 			void log_thread();
+			
+			void hpc_log_flush_all_buffers_at_exit();
+			void buffer_push(char* buffer, hpc_log_hdr* hdr);
+			//print logs in log list
+			void write_buffer_list(std::list<hpc_log*>& llist);
+        private:            
+			bool        _stop_thread;
+			std::thread _log_thread;
+
+			// global buffer list
+			std::condition_variable_any   _write_list_cond;
+			::dsn::utils::ex_lock_nr_spin _write_list_lock;			
+			std::list<hpc_log*>              _write_list;
+			bool _flush_finish_flag;
+
+			// log file and line count
+			int _start_index;
+			int _index;
+			int _per_thread_buffer_bytes;
+			int _current_log_file_bytes;
+
+			// current write file
+			std::ofstream *_current_log;
 
 			
-
         };
     }
 }
