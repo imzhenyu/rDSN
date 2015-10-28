@@ -94,6 +94,7 @@ void logger_test(int thread_count, int record_count)
 
 	nts = dsn_now_ns();
 	
+	//one sample log
 	size_t size_per_log = strlen(
 		"13:11:02.678 (1446037862678885017 1d50) unknown.io-thrd.07504: this is a logging test for log 0000000000 @ thread 000000000"
 		)+1;

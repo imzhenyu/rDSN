@@ -61,15 +61,15 @@
 *                                                                   |
 *                                                                   |   when the buffer list is full (the item number reaches MAX_BUFFER_IN_LIST)
 *                                                                   |       notify daemon thread using std::condition_variable
-*	                                                                V          there are 2 buffer lists to use in turn
+*	                                                                V          
 *
 *                                                            Daemon thread (hpc-logger)
 *
 *                                                                   ||
-*                                                                   ===========>     hpc_log_tls_info.x.txt
+*                                                                   ===========>     hpc_log.x.txt
 *
 *	Some other facts:
-*	1. The log file size is restricted, when print time exceeds 2000, a new log file will be established.
+*	1. The log file size is restricted, when max size is achieved, a new log file will be established.
 *	2. When exiting, the logger flushes, in other words, print out the retained log info in buffers of each thread and buffers in the buffer list.
 
 ************************************************************/
@@ -89,10 +89,6 @@ namespace dsn
 {
 	namespace tools
 	{
-
-
-
-
 		//store log ptr for each thread
 		typedef ::dsn::utils::safe_singleton_store<int, hpc_log_tls_info*> hpc_log_manager;
 
