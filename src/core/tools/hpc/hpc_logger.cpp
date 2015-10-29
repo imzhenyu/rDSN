@@ -28,19 +28,18 @@
 /************************************************************
 *   hpc_logger (High-Performance Computing logger)
 *
-*	Editor: Chang Lou (v-chlou@microsoft.com)
+*   Editor: Chang Lou (v-chlou@microsoft.com)
 *
 *
-*	The structure of the logger is like the following graph.
+*   The structure of the logger is like the following graph.
 *
-*	For each thread:
-*	-------------------------              -------------------------
-*	|    new single log     |     ->       |                       |
-*	-------------------------              | --------------------- |
+*   For each thread:
+*   -------------------------              -------------------------
+*   |    new single log     |     ->       |                       |
+*   -------------------------              | --------------------- |
 *                                          |                       |
 *                                          | --------------------- |
-*                                          |        buffer         |
-*                                          |     (per thread)      |
+*                                          |                       |
 *                                          | --------------------- |
 *                                          |                       |
 *                                          | --------------------- |
@@ -48,22 +47,26 @@
 *                                          | --------------------- |
 *                                          |                       |
 *                                          -------------------------
+*                                             buffer (per thread)
 *                                                      |
-*                                                      |
-*                                                      |   when the buffer is full, push it into global buffer list, malloc a new one for the thread to use
-*                                                      ----------------------------------------------------------
-*                                                                                                               |
-*                                            -------------------------------------------------------------      |
-*                                             buf1  |  buf2  |  buf3  | ...                             <--------
+*                                                      |   when the buffer is full, 
+*                                                      |   push the buffer into _write_list,
+*                                                      |   malloc a new buffer for the thread to use
+*                                                      V
+*                  ========================================================================================================== _write_list_lock
+*
+*                                            -------------------------------------------------------------      
+*                                                buf1,  | buf2 | buf3 | ...     
 *                                            -------------------------------------------------------------
-*                                                           global buffer list
+*                                                              _write_list
+*
+*                  ========================================================================================================== _write_list_lock
 *                                                                   |
-*                                                                   |
-*                                                                   |   when the buffer list is full (the item number reaches MAX_BUFFER_IN_LIST)
-*                                                                   |       notify daemon thread using std::condition_variable
+*                                                                   |   when the _write_list is not empty,
+*                                                                   |   daemon thread is notified by _write_list_cond
 *	                                                                V          
 *
-*                                                            Daemon thread (hpc-logger)
+*                                                             Daemon thread 
 *
 *                                                                   ||
 *                                                                   ===========>     hpc_log.x.txt
@@ -138,7 +141,7 @@ namespace dsn
 			_current_log = new std::ofstream (log.str().c_str(), std::ofstream::out | std::ofstream::app);
 
 
-			std::list<hpc_log*> saved_list;
+			std::list<char*> saved_list;
 
 			while (!_stop_thread || _flush_finish_flag==1)
 			{
@@ -207,7 +210,7 @@ namespace dsn
 				if (!hpc_log_manager::instance().get(tid, log))
 					continue;
 
-				buffer_push(log->buffer, log->last_hdr);
+				buffer_push(log->buffer);
 
 				hpc_log_manager::instance().remove(tid);
 
@@ -229,8 +232,6 @@ namespace dsn
 			{
 				s_hpc_log_tls_info.buffer = (char*)malloc(_per_thread_buffer_bytes);
 				s_hpc_log_tls_info.next_write_ptr = s_hpc_log_tls_info.buffer;
-				s_hpc_log_tls_info.last_hdr = nullptr;
-				memset(s_hpc_log_tls_info.buffer, '\0', _per_thread_buffer_bytes);
 
 				hpc_log_manager::instance().put(::dsn::utils::get_current_tid(), &s_hpc_log_tls_info);
 				s_hpc_log_tls_info.magic = 0xdeadbeef;
@@ -242,7 +243,7 @@ namespace dsn
 				//critical section begin
 				_write_list_lock.lock();
 
-				buffer_push(s_hpc_log_tls_info.buffer, s_hpc_log_tls_info.last_hdr);
+				buffer_push(s_hpc_log_tls_info.buffer);
 
 				if (_write_list.size() > 0) _write_list_cond.notify_one();
 				_write_list_lock.unlock();
@@ -250,8 +251,6 @@ namespace dsn
 
 				s_hpc_log_tls_info.buffer = (char*)malloc(_per_thread_buffer_bytes);
 				s_hpc_log_tls_info.next_write_ptr = s_hpc_log_tls_info.buffer;
-				s_hpc_log_tls_info.last_hdr = nullptr;
-				memset(s_hpc_log_tls_info.buffer, '\0', _per_thread_buffer_bytes);
 				
 
 			}
@@ -309,20 +308,12 @@ namespace dsn
 			ptr += wn;
 			capacity -= wn;
 
-			// set binary entry header on tail
-			hpc_log_hdr* hdr = (hpc_log_hdr*)ptr;
-			hdr->log_break = 0;
-			hdr->length = 0;
-			hdr->magic = 0xdeadbeef;
-			hdr->ts = ts;
-			hdr->length = static_cast<int>(ptr - ptr0);
-			hdr->prev = s_hpc_log_tls_info.last_hdr;
-			s_hpc_log_tls_info.last_hdr = hdr;
+			// print body
+			wn = std::sprintf(ptr, "%s", "\n");
+			ptr += wn;
+			capacity -= wn;
 
-			_current_log_file_bytes += hdr->length;
-
-			ptr += sizeof(hpc_log_hdr);
-			capacity -= sizeof(hpc_log_hdr);
+			_current_log_file_bytes += static_cast<int>(ptr - ptr0);
 
 			// set next write ptr
 			s_hpc_log_tls_info.next_write_ptr = ptr;
@@ -331,56 +322,30 @@ namespace dsn
 			if (log_level >= LOG_LEVEL_WARNING)
 			{
 				std::cout << ptr0 << std::endl;
-			}
-
-			
+			}	
 		}
-
-
 		//log operation
 
-		void hpc_logger::buffer_push(char* buffer, hpc_log_hdr* hdr)
+		void hpc_logger::buffer_push(char* buffer)
 		{
 
-			hpc_log* new_hpc_log = (hpc_log*)malloc(sizeof(hpc_log));
-			new_hpc_log->buffer = buffer;
-			new_hpc_log->last_hdr = hdr;
+			char* new_hpc_log = (char*)malloc(sizeof(buffer));
+			new_hpc_log = buffer;
 			_write_list.push_back(new_hpc_log);
 		}
 
-		void hpc_logger::write_buffer_list(std::list<hpc_log*>& llist)
+		void hpc_logger::write_buffer_list(std::list<char*>& llist)
 		{
-			
-			
 			while (!llist.empty())
 			{
-				hpc_log* new_hpc_log = llist.back();
+				char* new_hpc_log = llist.front();
 
-				
-				hpc_log_hdr *hdr = new_hpc_log->last_hdr, *tmp = new_hpc_log->last_hdr;
-				do
-				{
-					if (!tmp->is_valid())
-						break;
+				*_current_log << new_hpc_log;
 
-					char* llog = (char*)(tmp)-tmp->length;
-					*_current_log << llog << std::endl;
-
-					// try previous log
-					tmp = tmp->prev;
-
-				} while (tmp != nullptr && tmp != hdr);
-
-				free(new_hpc_log->buffer);
-				new_hpc_log->buffer = nullptr;
 				free(new_hpc_log);
 				new_hpc_log = nullptr;
-				llist.pop_back();
-				
-
+				llist.pop_front();
 			}
-			
-
 
 			if (_current_log_file_bytes >= 10 * 1024 * 1024)
 			{

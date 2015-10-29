@@ -33,30 +33,13 @@
 
 namespace dsn {
     namespace tools {
-		struct hpc_log_hdr
-		{
-			uint32_t log_break; // '\0'
-			uint32_t magic;
-			int32_t  length;
-			uint64_t ts;
-			hpc_log_hdr* prev;
-
-			bool is_valid() { return magic == 0xdeadbeef; }
-		};
 
 		typedef struct __hpc_log_info__
 		{
 			uint32_t magic;
 			char*    buffer;
 			char*    next_write_ptr;
-			hpc_log_hdr *last_hdr;
 		} hpc_log_tls_info;
-
-		typedef struct __hpc_log__
-		{
-			char*    buffer;
-			hpc_log_hdr* last_hdr;
-		} hpc_log;
 
         class hpc_logger : public logging_provider
         {
@@ -79,9 +62,9 @@ namespace dsn {
 			void log_thread();
 			
 			void hpc_log_flush_all_buffers_at_exit();
-			void buffer_push(char* buffer, hpc_log_hdr* hdr);
+			void buffer_push(char* buffer);
 			//print logs in log list
-			void write_buffer_list(std::list<hpc_log*>& llist);
+			void write_buffer_list(std::list<char*>& llist);
         private:            
 			bool        _stop_thread;
 			std::thread _log_thread;
@@ -89,7 +72,7 @@ namespace dsn {
 			// global buffer list
 			std::condition_variable_any   _write_list_cond;
 			::dsn::utils::ex_lock_nr_spin _write_list_lock;			
-			std::list<hpc_log*>              _write_list;
+			std::list<char*>              _write_list;
 			bool _flush_finish_flag;
 
 			// log file and line count

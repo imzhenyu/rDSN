@@ -116,12 +116,8 @@ TEST(core, hpc_logger_test)
 	std::cout << "thread_count\t\t record_count\t\t speed" << std::endl;
 
 	auto threads_count = {1,2,4,10,20};
-	auto record_count = { 10000,100000,200000,500000,1000000};
 	for (int i : threads_count)
-		for (int j : record_count)
-		{
-			logger_test<dsn::tools::hpc_logger>(i, j);
-		}
+		logger_test<dsn::tools::hpc_logger>(i, 10000000);
 }
 
 
