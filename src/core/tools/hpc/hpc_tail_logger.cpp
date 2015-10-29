@@ -297,7 +297,8 @@ namespace dsn
             capacity -= wn;
 
             // print body
-            wn = std::vsnprintf(ptr, capacity, fmt, args);
+			wn = std::vsnprintf(ptr, capacity, fmt, args);
+            
             ptr += wn;
             capacity -= wn;
             
