@@ -93,13 +93,14 @@ public:
             //sync:
             int32_t resp;
             auto err = _simple_kv_client->write(req, resp);
-            std::cout << "call RPC_SIMPLE_KV_SIMPLE_KV_WRITE end, write " << req.key << ", err = " << err.to_string() << std::endl;
+            dinfo("call RPC_SIMPLE_KV_SIMPLE_KV_WRITE end, write %s, err = %s", req.key.c_str(), err.to_string());
             //async: 
             //_simple_kv_client->begin_write(req);
 
             std::string v;
             auto err2 = _simple_kv_client->read(req.key, v);
-            std::cout << "call RPC_SIMPLE_KV_SIMPLE_KV_READ end, read " << req.key << ", err = " << err2.to_string() << std::endl;
+
+            dinfo("call RPC_SIMPLE_KV_SIMPLE_KV_READ end, write %s, err = %s", req.key.c_str(), err2.to_string());
 
             if (err == ERR_OK && err2 == ERR_OK)
             {
