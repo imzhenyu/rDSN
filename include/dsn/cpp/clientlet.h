@@ -69,72 +69,79 @@ namespace dsn
     };
 
     // common APIs
+    struct empty_callback {};
 
     namespace tasking
     {
+        template<typename TCallback>
+        task_ptr create_task(
+            dsn_task_code_t evt,
+            clientlet* svc,
+            TCallback&& callback,
+            int hash = 0)
+        {
+            using callback_storage_t = typename std::remove_reference<TCallback>::type;
+            auto tsk = new safe_task<callback_storage_t>(std::forward<TCallback>(callback));
+            tsk->add_ref(); // released in exec callback
+            auto native_tsk = dsn_task_create_ex(
+                evt,
+                safe_task<callback_storage_t>::exec,
+                safe_task<callback_storage_t>::on_cancel,
+                tsk,
+                hash,
+                svc ? svc->tracker() : nullptr);
+            tsk->set_task_info(native_tsk);
+            return tsk;
+        }
+
+        template<typename TCallback>
+        task_ptr create_timer_task(
+            dsn_task_code_t evt,
+            clientlet* svc,
+            TCallback&& callback,
+            std::chrono::milliseconds timer_interval,
+            int hash = 0)
+        {
+            using callback_storage_t = typename std::remove_reference<TCallback>::type;
+            auto tsk = new safe_task<callback_storage_t>(std::forward<TCallback>(callback));
+            tsk->add_ref(); // released in exec callback
+            auto native_tsk = dsn_task_create_timer_ex(
+                evt,
+                safe_task<callback_storage_t>::exec_timer,
+                safe_task<callback_storage_t>::on_cancel,
+                tsk,
+                hash,
+                static_cast<int>(timer_interval.count()),
+                svc ? svc->tracker() : nullptr);
+            tsk->set_task_info(native_tsk);
+            return tsk;
+        }
+
+        template<typename TCallback>
         task_ptr enqueue(
             dsn_task_code_t evt,
             clientlet* svc,
-            task_handler callback,
+            TCallback&& callback,
             int hash = 0,
-            int delay_milliseconds = 0,
-            int timer_interval_milliseconds = 0
-            );
-
-        void enqueue(
-            /*our*/ task_ptr* ptask, // null for not returning task handle
-            dsn_task_code_t evt,
-            clientlet* svc,
-            task_handler callback,
-            int hash = 0,
-            int delay_milliseconds = 0,
-            int timer_interval_milliseconds = 0
-            );
-
-        template<typename T> // where T : public virtual clientlet
-        inline task_ptr enqueue(
-            dsn_task_code_t evt,
-            T* owner,
-            void (T::*callback)(),
-            //TParam param,
-            int hash = 0,
-            int delay_milliseconds = 0,
-            int timer_interval_milliseconds = 0
-            )
+            std::chrono::milliseconds delay = std::chrono::milliseconds(0))
         {
-            task_handler h = std::bind(callback, owner);
-            return enqueue(
-                evt,
-                owner,
-                h,
-                hash,
-                delay_milliseconds,
-                timer_interval_milliseconds
-                );
+            auto tsk = create_task(evt, svc, std::forward<TCallback>(callback), hash);
+            tsk->enqueue(delay);
+            return tsk;
         }
 
-        template<typename T> // where T : public virtual clientlet
-        inline void enqueue(
-            /*out*/ task_ptr* ptask,
+        template<typename TCallback>
+        task_ptr enqueue_timer(
             dsn_task_code_t evt,
-            T* owner,
-            void (T::*callback)(),
-            //TParam param,
+            clientlet* svc,
+            TCallback&& callback,
+            std::chrono::milliseconds timer_interval,
             int hash = 0,
-            int delay_milliseconds = 0,
-            int timer_interval_milliseconds = 0
-            )
+            std::chrono::milliseconds delay = std::chrono::milliseconds(0))
         {
-            task_handler h = std::bind(callback, owner);
-            return enqueue(
-                ptask,
-                evt,
-                owner,
-                h,
-                hash,
-                delay_milliseconds,
-                timer_interval_milliseconds
-                );
+            auto tsk = create_timer_task(evt, svc, std::forward<TCallback>(callback), timer_interval, hash);
+            tsk->enqueue(delay);
+            return tsk;
         }
 
         template<typename THandler>
@@ -145,11 +152,9 @@ namespace dsn
             clientlet* svc = nullptr
             )
         {
-            dsn_task_t t;
             auto tsk = new safe_late_task<THandler>(callback);
-
             tsk->add_ref(); // released in exec callback
-            t = dsn_task_create_ex(evt,
+            auto t = dsn_task_create_ex(evt,
                 safe_late_task<THandler>::exec,
                 safe_late_task<THandler>::on_cancel,
                 tsk, hash, svc ? svc->tracker() : nullptr);
@@ -169,21 +174,27 @@ namespace dsn
             TCallback&& callback,
             int reply_hash = 0)
         {
-            task_ptr tsk = new safe_task<TCallback>(std::forward<TCallback>(callback));
-
+            using callback_storage_t = typename std::remove_reference<TCallback>::type;
+            auto tsk = new safe_task<callback_storage_t>(std::forward<TCallback>(callback));
             tsk->add_ref(); // released in exec_rpc_response
 
             auto t = dsn_rpc_create_response_task_ex(
                 request,
-                safe_task<TCallback >::exec_rpc_response,
-                safe_task<TCallback >::on_cancel,
-                tsk.get(),
+                safe_task<callback_storage_t >::exec_rpc_response,
+                safe_task<callback_storage_t >::on_cancel,
+                tsk,
                 reply_hash,
                 svc ? svc->tracker() : nullptr
                 );
             tsk->set_task_info(t);
             return tsk;
         }
+
+        task_ptr create_rpc_response_task(
+            dsn_message_t request,
+            clientlet* svc,
+            empty_callback,
+            int reply_hash = 0);
 
         template<typename TCallback>
         //where TCallback = void(error_code, TResponse&&)
@@ -232,6 +243,23 @@ namespace dsn
             return t;
         }
 
+        template<typename TRequest>
+        task_ptr call(
+            ::dsn::rpc_address server,
+            dsn_task_code_t code,
+            TRequest&& req,
+            clientlet* owner,
+            empty_callback,
+            int request_hash = 0,
+            std::chrono::milliseconds timeout = std::chrono::milliseconds(0),
+            int reply_hash = 0)
+        {
+            dsn_message_t msg = dsn_msg_create_request(code, static_cast<int>(timeout.count()), request_hash);
+            ::marshall(msg, std::forward<TRequest>(req));
+            auto task = create_rpc_response_task(msg, owner, empty_callback{}, reply_hash);
+            dsn_rpc_call(server.c_addr(), task->native_handle());
+            return task;
+        }
 
         template<typename TRequest, typename TCallback>
         //where TCallback = void(error_code, TResponse&&)
@@ -242,7 +270,7 @@ namespace dsn
             clientlet* owner,
             TCallback&& callback,
             int request_hash = 0,
-            int timeout_milliseconds = 0,
+            std::chrono::milliseconds timeout = std::chrono::milliseconds(0),
             int reply_hash = 0)
         {
             using callback_inspect_t = dsn::function_traits<TCallback>;
@@ -253,7 +281,7 @@ namespace dsn
             static_assert(std::is_same<error_code, errcode_t>::value, "the first argument of callback should be error_code");
             static_assert(std::is_default_constructible<response_t>::value, "cannot wrap a non-trival-constructible type");
 
-            dsn_message_t msg = dsn_msg_create_request(code, timeout_milliseconds, request_hash);
+            dsn_message_t msg = dsn_msg_create_request(code, static_cast<int>(timeout.count()), request_hash);
             ::marshall(msg, std::forward<TRequest>(req));
             auto task = create_rpc_response_task_typed(msg, owner, std::forward<TCallback>(callback), reply_hash);
             dsn_rpc_call(server.c_addr(), task->native_handle());
@@ -278,127 +306,6 @@ namespace dsn
             dsn_task_code_t code,
             const TRequest& req,
             int hash = 0
-            );
-
-        template<typename TRequest>
-        ::dsn::error_code call_typed_wait(
-            /*out*/ ::dsn::rpc_read_stream* response,
-            ::dsn::rpc_address server,
-            dsn_task_code_t code,
-            const TRequest& req,
-            int hash = 0,
-            int timeout_milliseconds = 0
-            );
-    }
-
-    namespace file
-    {
-        task_ptr read(
-            dsn_handle_t fh,
-            char* buffer,
-            int count,
-            uint64_t offset,
-            dsn_task_code_t callback_code,
-            clientlet* svc,
-            aio_handler callback,
-            int hash = 0
-            );
-
-        task_ptr write(
-            dsn_handle_t fh,
-            const char* buffer,
-            int count,
-            uint64_t offset,
-            dsn_task_code_t callback_code,
-            clientlet* svc,
-            aio_handler callback,
-            int hash = 0
-            );
-
-        task_ptr write_vector(
-            dsn_handle_t fh,
-            const dsn_file_buffer_t* buffers,
-            int buffer_count,
-            uint64_t offset,
-            dsn_task_code_t callback_code,
-            clientlet* svc,
-            aio_handler callback,
-            int hash = 0
-            );
-
-        template<typename T> // where T : public virtual clientlet
-        inline task_ptr read(
-            dsn_handle_t fh,
-            char* buffer,
-            int count,
-            uint64_t offset,
-            dsn_task_code_t callback_code,
-            T* owner,
-            void(T::*callback)(error_code, uint32_t),
-            int hash = 0
-            )
-        {
-            aio_handler h = std::bind(callback, owner, std::placeholders::_1, std::placeholders::_2);
-            return file::read(fh, buffer, count, offset, callback_code, owner, h, hash);
-        }
-
-        template<typename T> // where T : public virtual clientlet
-        inline task_ptr write(
-            dsn_handle_t fh,
-            const char* buffer,
-            int count,
-            uint64_t offset,
-            dsn_task_code_t callback_code,
-            T* owner,
-            void(T::*callback)(error_code, uint32_t),
-            int hash = 0
-            )
-        {
-            aio_handler h = std::bind(callback, owner, std::placeholders::_1, std::placeholders::_2);
-            return file::write(fh, buffer, count, offset, callback_code, owner, h, hash);
-        }
-
-        task_ptr copy_remote_files(
-            ::dsn::rpc_address remote,
-            const std::string& source_dir,
-            std::vector<std::string>& files,  // empty for all
-            const std::string& dest_dir,
-            bool overwrite,
-            dsn_task_code_t callback_code,
-            clientlet* svc,
-            aio_handler callback,
-            int hash = 0
-            );
-
-        inline task_ptr copy_remote_directory(
-            ::dsn::rpc_address remote,
-            const std::string& source_dir,
-            const std::string& dest_dir,
-            bool overwrite,
-            dsn_task_code_t callback_code,
-            clientlet* svc,
-            aio_handler callback,
-            int hash = 0
-            )
-        {
-            std::vector<std::string> files;
-            return copy_remote_files(
-                remote, source_dir, files, dest_dir, overwrite,
-                callback_code, svc, callback, hash
-                );
-        }
-    }
-
-    // ------------- inline implementation ----------------
-
-    namespace rpc
-    {
-        template<typename TRequest>
-        inline void call_one_way_typed(
-            ::dsn::rpc_address server,
-            dsn_task_code_t code,
-            const TRequest& req,
-            int hash
             )
         {
             dsn_message_t msg = dsn_msg_create_request(code, 0, hash);
@@ -407,16 +314,16 @@ namespace dsn
         }
 
         template<typename TRequest>
-        inline ::dsn::error_code call_typed_wait(
+        ::dsn::error_code call_typed_wait(
             /*out*/ ::dsn::rpc_read_stream* response,
             ::dsn::rpc_address server,
             dsn_task_code_t code,
             const TRequest& req,
-            int hash,
-            int timeout_milliseconds /*= 0*/
+            int hash = 0,
+            std::chrono::milliseconds timeout = std::chrono::milliseconds(0)
             )
         {
-            dsn_message_t msg = dsn_msg_create_request(code, timeout_milliseconds, hash);
+            dsn_message_t msg = dsn_msg_create_request(code, static_cast<int>(timeout.count()), hash);
             ::marshall(msg, req);
 
             auto resp = dsn_rpc_call_wait(server.c_addr(), msg);
@@ -434,5 +341,134 @@ namespace dsn
                 return ::dsn::ERR_TIMEOUT;
         }
     }
+
+    namespace file
+    {
+        template<typename TCallback>
+        task_ptr create_aio_task(
+            dsn_task_code_t callback_code,
+            clientlet* svc,
+            TCallback&& callback,
+            int hash)
+        {
+            using callback_storage_t = typename std::remove_reference<TCallback>::type;
+            auto tsk = new safe_task<callback_storage_t>(std::forward<TCallback>(callback));
+            tsk->add_ref(); // released in exec_aio
+
+            dsn_task_t t = dsn_file_create_aio_task_ex(callback_code,
+                safe_task<callback_storage_t>::exec_aio,
+                safe_task<callback_storage_t>::on_cancel,
+                tsk, hash, svc ? svc->tracker() : nullptr
+                );
+
+            tsk->set_task_info(t);
+            return tsk;
+        }
+
+        task_ptr create_aio_task(
+            dsn_task_code_t callback_code,
+            clientlet* svc,
+            empty_callback,
+            int hash);
+
+        template<typename TCallback>
+        task_ptr read(
+            dsn_handle_t fh,
+            char* buffer,
+            int count,
+            uint64_t offset,
+            dsn_task_code_t callback_code,
+            clientlet* svc,
+            TCallback&& callback,
+            int hash = 0
+            )
+        {
+            auto tsk = create_aio_task(callback_code, svc, std::forward<TCallback>(callback), hash);
+            dsn_file_read(fh, buffer, count, offset, tsk->native_handle());
+            return tsk;
+        }
+
+        template<typename TCallback>
+        task_ptr write(
+            dsn_handle_t fh,
+            const char* buffer,
+            int count,
+            uint64_t offset,
+            dsn_task_code_t callback_code,
+            clientlet* svc,
+            TCallback&& callback,
+            int hash = 0
+            )
+        {
+            auto tsk = create_aio_task(callback_code, svc, std::forward<TCallback>(callback), hash);
+            dsn_file_write(fh, buffer, count, offset, tsk->native_handle());
+            return tsk;
+        }
+
+        template<typename TCallback>
+        task_ptr write_vector(
+            dsn_handle_t fh,
+            const dsn_file_buffer_t* buffers,
+            int buffer_count,
+            uint64_t offset,
+            dsn_task_code_t callback_code,
+            clientlet* svc,
+            TCallback&& callback,
+            int hash = 0
+            )
+        {
+            auto tsk = create_aio_task(callback_code, svc, std::forward<TCallback>(callback), hash);
+            dsn_file_write_vector(fh, buffers, buffer_count, offset, tsk->native_handle());
+            return tsk;
+        }
+
+        void copy_remote_files_impl(
+            ::dsn::rpc_address remote,
+            const std::string& source_dir,
+            std::vector<std::string>& files,  // empty for all
+            const std::string& dest_dir,
+            bool overwrite,
+            dsn_task_t native_task
+            );
+
+        template<typename TCallback>
+        task_ptr copy_remote_files(
+            ::dsn::rpc_address remote,
+            const std::string& source_dir,
+            std::vector<std::string>& files,  // empty for all
+            const std::string& dest_dir,
+            bool overwrite,
+            dsn_task_code_t callback_code,
+            clientlet* svc,
+            TCallback&& callback,
+            int hash = 0
+            )
+        {
+            auto tsk = create_aio_task(callback_code, svc, std::forward<TCallback>(callback), hash);
+            copy_remote_files_impl(remote, source_dir, files, dest_dir, overwrite, tsk->native_handle());
+            return tsk;
+        }
+
+        template<typename TCallback>
+        task_ptr copy_remote_directory(
+            ::dsn::rpc_address remote,
+            const std::string& source_dir,
+            const std::string& dest_dir,
+            bool overwrite,
+            dsn_task_code_t callback_code,
+            clientlet* svc,
+            TCallback&& callback,
+            int hash = 0
+            )
+        {
+            std::vector<std::string> files;
+            return copy_remote_files(
+                remote, source_dir, files, dest_dir, overwrite,
+                callback_code, svc, std::forward<TCallback>(callback), hash
+                );
+        }
+    }
+
+    // ------------- inline implementation ----------------
 
 } // end namespace
