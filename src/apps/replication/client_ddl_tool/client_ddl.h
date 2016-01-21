@@ -55,14 +55,10 @@ private:
 
     void end_meta_request(task_ptr callback, int retry_times, error_code err, dsn_message_t request, dsn_message_t resp);
 
-    template<typename TRequest, typename TResponse>
+    template<typename TRequest>
     dsn::task_ptr request_meta(
             dsn_task_code_t code,
             std::shared_ptr<TRequest>& req,
-
-            // callback
-            clientlet* owner,
-            std::function<void(error_code, const std::shared_ptr<TRequest>&, const std::shared_ptr<TResponse>&)> callback,
 
             // other specific parameters
             int timeout_milliseconds= 0,
@@ -71,13 +67,10 @@ private:
     {
         dsn_message_t msg = dsn_msg_create_request(code, timeout_milliseconds, 0);
         ::marshall(msg, *req);
-        task_ptr task = dsn::rpc::create_rpc_response_task_typed(
+        task_ptr task = dsn::rpc::create_rpc_response_task(
             msg,
-            owner,
-            [=](error_code ec, TResponse&& resp)
-            {
-                callback(ec, req, std::make_shared<TResponse>(std::move(resp)));
-            },
+            this,
+            [](error_code, dsn_message_t, dsn_message_t) {},
             reply_hash
                 );
         rpc::call(
