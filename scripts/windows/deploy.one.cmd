@@ -34,8 +34,6 @@ REM
     set rdst=\\%machine%\%rdst_dir%
     @mkdir %rdst%    
     xcopy /F /Y /S %src_dir% %rdst%
-    COPY /Y %bin_dir%\7z.exe %rdst%
-    COPY /Y %bin_dir%\7z.dll %rdst%
     SCHTASKS /CREATE /S %machine% /RU SYSTEM /SC ONLOGON /TN %deploy_name% /TR "%ldst_dir%\start.cmd" /V1 /F
     GOTO:EOF
 
@@ -71,8 +69,4 @@ REM
     
 :exit
 
-IF ERRORLEVEL 0 exit
-
-CALL %bin_dir%\echoc.exe 4 error happens...
-
-
+IF NOT ERRORLEVEL 0  CALL %bin_dir%\echoc.exe 4 error happens...

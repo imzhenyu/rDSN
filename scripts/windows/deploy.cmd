@@ -48,7 +48,7 @@ IF "%3" EQU "" (
 ::SET deploy_name=%4
 ::SET rdst_dir=%ldst_dir::=$%
 ::SET machine=%5
-FOR /F %%i IN (%machine_list%) DO ECHO %cmd% %%i ... && start %bin_dir%\deploy.one.cmd %cmd% %src_dir% %ldst_dir% %deploy_name% %%i
+FOR /F %%i IN (%machine_list%) DO ECHO %cmd% %%i ... && CALL %bin_dir%\deploy.one.cmd %cmd% %src_dir% %ldst_dir% %deploy_name% %%i
 
 IF ERRORLEVEL 1 (
     CALL %bin_dir%\echoc.exe 4 unknow command '%cmd%'
