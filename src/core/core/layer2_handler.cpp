@@ -32,39 +32,29 @@
  *     xxxx-xx-xx, author, first version
  *     xxxx-xx-xx, author, fix bug about xxx
  */
+ 
+# include <dsn/service_api_c.h>
+# include <dsn/internal/task.h>
+# include "service_engine.h"
+# include "rpc_engine.h"
 
-#pragma once
 
-#include "replication_common.h"
-# include <dsn/dist/failure_detector.h>
-
-namespace dsn { namespace replication {
-
-class replica_stub;
-class replication_failure_detector  : public dsn::fd::failure_detector
+DSN_API dsn_error_t dsn_create_layer1_app(dsn_gpid gpid, /*our*/ void** app_context)
 {
-public:
-    replication_failure_detector(replica_stub* stub, std::vector< ::dsn::rpc_address>& meta_servers);
-    ~replication_failure_detector(void);
+    return ::dsn::task::get_current_node2()->get_l2_handler().create_layer1_app(gpid, app_context);
+}
 
-    virtual void end_ping(::dsn::error_code err, const fd::beacon_ack& ack, void* context);
+DSN_API dsn_error_t dsn_start_layer1_app(void* app_context, int argc, char** argv)
+{
+    return ::dsn::task::get_current_node2()->get_l2_handler().start_layer1_app(app_context, argc, argv);
+}
 
-     // client side
-    virtual void on_master_disconnected( const std::vector< ::dsn::rpc_address>& nodes );
-    virtual void on_master_connected( ::dsn::rpc_address node);
+DSN_API void dsn_destroy_layer1_app(void* app_context, bool cleanup)
+{
+    return ::dsn::task::get_current_node2()->get_l2_handler().destroy_layer1_app(app_context, cleanup);
+}
 
-    // server side
-    virtual void on_worker_disconnected( const std::vector< ::dsn::rpc_address>& nodes ) { dassert (false, ""); }
-    virtual void on_worker_connected( ::dsn::rpc_address node )  { dassert (false, ""); }
-
-    ::dsn::rpc_address current_server_contact() const { zauto_lock l(failure_detector::_lock); return dsn_group_get_leader(_meta_servers.group_handle()); }
-    ::dsn::rpc_address get_servers() const  { return _meta_servers; }
-
-    void set_leader_for_test(dsn::rpc_address meta);
-private:
-    dsn::rpc_address         _meta_servers;
-    replica_stub             *_stub;
-};
-
-}} // end namespace
-
+DSN_API void dsn_handle_layer1_rpc_request(void* app_context, dsn_message_t msg)
+{
+    return ::dsn::task::get_current_node2()->get_l2_handler().commit_layer1(app_context, msg);
+}

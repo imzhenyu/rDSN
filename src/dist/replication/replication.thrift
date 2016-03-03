@@ -43,13 +43,14 @@ enum partition_status
 struct partition_configuration
 {
     1:string                 app_type;
-    2:global_partition_id    gpid;
-    3:i64                    ballot;
-    4:i32                    max_replica_count;
-    5:dsn.rpc_address        primary;
-    6:list<dsn.rpc_address>  secondaries;
-    7:list<dsn.rpc_address>  last_drops;
-    8:i64                    last_committed_decree;
+    2:string                 package_id;
+    3:global_partition_id    gpid;
+    4:i64                    ballot;
+    5:i32                    max_replica_count;
+    6:dsn.rpc_address        primary;
+    7:list<dsn.rpc_address>  secondaries;
+    8:list<dsn.rpc_address>  last_drops;
+    9:i64                    last_committed_decree;
 }
 
 struct replica_configuration
@@ -203,6 +204,8 @@ struct app_info
     3:string        app_name;
     4:i32           app_id;
     5:i32           partition_count;
+    6:string        package_id;
+    7:bool          is_stateful;
 }
 
 enum node_status
@@ -225,11 +228,14 @@ struct meta_response_header
 }
 
 // primary | secondary(upgrading) (w/ new config) => meta server
+// also served as proposals from meta server to replica servers
 struct configuration_update_request
 {
     1:partition_configuration  config;
     2:config_type              type = config_type.CT_INVALID;
     3:dsn.rpc_address          node;
+    4:dsn.rpc_address          host_node; // only used by stateless apps
+    5:bool                     is_stateful;
 }
 
 // meta server (config mgr) => primary | secondary (downgrade) (w/ new config)
@@ -237,16 +243,6 @@ struct configuration_update_response
 {
     1:dsn.error_code           err;
     2:partition_configuration  config;
-}
-
-// proposal:  meta server(LBM) => primary  (w/ current config)
-struct configuration_proposal_request
-{
-    1:partition_configuration  config;
-    2:config_type              type = config_type.CT_INVALID;
-    3:dsn.rpc_address          node;
-    4:bool                     is_clean_data = false;
-    5:bool                     is_upgrade = false;
 }
 
 // client => meta server
@@ -261,6 +257,8 @@ struct create_app_options
     2:i32              replica_count;
     3:bool             success_if_exist;
     4:string           app_type;
+    5:bool             is_stateful;
+    6:string           package_id;
 }
 
 struct configuration_create_app_request
@@ -363,7 +361,8 @@ struct configuration_query_by_index_response
     1:dsn.error_code                err;
     2:i32                           app_id;
     3:i32                           partition_count;
-    4:list<partition_configuration> partitions;
+    4:bool                          is_stateful;
+    5:list<partition_configuration> partitions;    
 }
 
 struct query_replica_decree_request
@@ -416,6 +415,8 @@ service replica_s
 
 service meta_s
 {
+    configuration_create_app_response create_app(1:configuration_create_app_request req);
+    configuration_drop_app_response drop_app(1:configuration_drop_app_request req);
     configuration_query_by_node_response query_configuration_by_node(1:configuration_query_by_node_request query);
     configuration_query_by_index_response query_configuration_by_index(1:configuration_query_by_index_request query);
     configuration_update_response update_configuration(1:configuration_update_request update);

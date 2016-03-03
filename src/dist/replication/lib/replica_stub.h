@@ -43,11 +43,11 @@
 
 # include "replication_common.h"
 # include <dsn/cpp/perf_counter_.h>
+# include <dsn/dist/failure_detector_multimaster.h>
 
 namespace dsn { namespace replication {
 
 class mutation_log;
-class replication_failure_detector;
 class replication_checker;
 namespace test {
     class test_checker;
@@ -79,8 +79,11 @@ public:
     //
     //    requests from clients
     //
-    void on_client_write(dsn_message_t request);
-    void on_client_read(dsn_message_t request);
+    void on_client_write(global_partition_id gpid, dsn_message_t request);
+    void on_client_read(global_partition_id gpid, dsn_message_t request);
+
+    void on_client_write2(dsn_message_t request);
+    void on_client_read2(dsn_message_t request);
 
     //
     //    messages from meta server
@@ -173,7 +176,7 @@ private:
     mutation_log_ptr            _log;
     ::dsn::rpc_address          _primary_address;
 
-    replication_failure_detector *_failure_detector;
+    ::dsn::dist::slave_failure_detector_with_multimaster *_failure_detector;
     volatile replica_node_state   _state;
 
     // constants

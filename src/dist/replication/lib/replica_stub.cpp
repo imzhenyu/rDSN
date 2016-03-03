@@ -38,7 +38,6 @@
 #include "replica_stub.h"
 #include "mutation_log.h"
 #include "mutation.h"
-#include "replication_failure_detector.h"
 #include <dsn/cpp/json_helper.h>
 
 # ifdef __TITLE__
@@ -320,7 +319,11 @@ void replica_stub::initialize(const replication_options& opts, bool clear/* = fa
     dassert (NS_Disconnected == _state, "");
     if (_options.fd_disabled == false)
     {
-        _failure_detector = new replication_failure_detector(this, _options.meta_servers);
+        _failure_detector = new ::dsn::dist::slave_failure_detector_with_multimaster(
+            _options.meta_servers,
+            [=]() {this->on_meta_server_disconnected(); },
+            [=]() {this->on_meta_server_connected(); }
+            );
         err = _failure_detector->start(
             _options.fd_check_interval_seconds,
             _options.fd_beacon_interval_seconds,
@@ -378,7 +381,33 @@ replica_ptr replica_stub::get_replica(int32_t app_id, int32_t partition_index)
     return get_replica(gpid);
 }
 
-void replica_stub::on_client_write(dsn_message_t request)
+void replica_stub::on_client_write(global_partition_id gpid, dsn_message_t request)
+{
+    replica_ptr rep = get_replica(gpid);
+    if (rep != nullptr)
+    {
+        rep->on_client_write(task_code(dsn_msg_task_code(request)), request);
+    }
+    else
+    {
+        response_client_error(request, ERR_OBJECT_NOT_FOUND);
+    }
+}
+
+void replica_stub::on_client_read(global_partition_id gpid, dsn_message_t request)
+{
+    replica_ptr rep = get_replica(gpid);
+    if (rep != nullptr)
+    {
+        rep->on_client_read(task_code(dsn_msg_task_code(request)), request);
+    }
+    else
+    {
+        response_client_error(request, ERR_OBJECT_NOT_FOUND);
+    }
+}
+
+void replica_stub::on_client_write2(dsn_message_t request)
 {
     write_request_header hdr;
     ::unmarshall(request, hdr);
@@ -400,7 +429,7 @@ void replica_stub::on_client_write(dsn_message_t request)
     }
 }
 
-void replica_stub::on_client_read(dsn_message_t request)
+void replica_stub::on_client_read2(dsn_message_t request)
 {
     read_request_header hdr;
     ::unmarshall(request, hdr);
@@ -414,7 +443,7 @@ void replica_stub::on_client_read(dsn_message_t request)
     replica_ptr rep = get_replica(hdr.gpid);
     if (rep != nullptr)
     {
-        rep->on_client_read(hdr, request);
+        rep->on_client_read(hdr.code, request);
     }
     else
     {
@@ -1189,8 +1218,8 @@ void replica_stub::handle_log_failure(error_code err)
 
 void replica_stub::open_service()
 {
-    register_rpc_handler(RPC_REPLICATION_CLIENT_WRITE, "write", &replica_stub::on_client_write);
-    register_rpc_handler(RPC_REPLICATION_CLIENT_READ, "read", &replica_stub::on_client_read);
+    register_rpc_handler(RPC_REPLICATION_CLIENT_WRITE, "write", &replica_stub::on_client_write2);
+    register_rpc_handler(RPC_REPLICATION_CLIENT_READ, "read", &replica_stub::on_client_read2);
 
     register_rpc_handler(RPC_CONFIG_PROPOSAL, "ProposeConfig", &replica_stub::on_config_proposal);
 
