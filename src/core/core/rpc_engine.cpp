@@ -856,7 +856,7 @@ namespace dsn {
             hdr.rpc_name
             );
 
-        bool need_seal = false;
+        bool need_seal = true;
         if (reset_request_id)
         {
             hdr.id = message_ex::new_id();
