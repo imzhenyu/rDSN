@@ -101,14 +101,21 @@ namespace dsn {
                 {
                     int read_next;
                     message_ex* msg = _parser->get_message_on_receive((int)length, read_next);
-
-                    while (msg != nullptr)
+                    while (read_next!= -1 && msg != nullptr)
                     {
+                        if (msg->header->from_address.is_invalid())
+                            msg->header->from_address = _remote_addr;
                         this->on_message_read(msg);
                         msg = _parser->get_message_on_receive(0, read_next);
                     }
-                     
-                    start_read_next(read_next);
+
+                    if (read_next == -1)
+                    {
+                        derror("asio read from %s failed: %s", _remote_addr.to_string(), "checksum not correct");
+                        on_failure();
+                    }
+                    else
+                        start_read_next(read_next);
                 }
 
                 release_ref();

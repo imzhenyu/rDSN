@@ -9,20 +9,21 @@
 //
 // !!! WARNING: not feasible for replicated service yet!!! 
 //
-// # define DSN_NOT_USE_DEFAULT_SERIALIZATION
+// # define DSN_USE_THRIFT_SERIALIZATION
 
-# ifdef DSN_NOT_USE_DEFAULT_SERIALIZATION
+# ifdef DSN_USE_THRIFT_SERIALIZATION
 
 
-# include <dsn/thrift_helper.h>
+# include <dsn/idl/thrift_helper.h>
 # include "deploy_svc_types.h" 
 
 
 # else // use rDSN's data encoding/decoding
 
-#include <dsn/dist/cluster_scheduler.h>
+# include <dsn/dist/cluster_scheduler.h>
 
-namespace dsn { namespace dist { 
+namespace dsn { namespace dist {
+
     // ---------- deploy_request -------------
     struct deploy_request
     {

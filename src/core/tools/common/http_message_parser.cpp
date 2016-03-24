@@ -98,6 +98,7 @@ message_ex* http_message_parser::get_message_on_receive(int read_length, /*out*/
     if (nparsed != read_length)
     {
         derror("malformed http packet, we cannot handle it now");
+        read_next = -1;
         return nullptr;
     }
     mark_read(read_length);
@@ -118,7 +119,7 @@ int http_message_parser::prepare_buffers_on_send(message_ex* msg, int offset, se
     //skip message header for browser
     if (offset == 0)
     {
-        sprintf(http_header_send_buffer, "%s%s%09lld%s", header_prefix, header_contentlen_prefix, msg->body_size(), header_contentlen_suffix);
+        sprintf(http_header_send_buffer, "%s%s%09lu%s", header_prefix, header_contentlen_prefix, msg->body_size(), header_contentlen_suffix);
     }
     int buffer_iter = 0;
     if (offset < header_size)
