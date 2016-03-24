@@ -36,6 +36,11 @@
 # include <dsn/internal/ports.h>
 # include <dsn/internal/rpc_message.h>
 # include <dsn/internal/network.h>
+
+# ifdef DSN_ENABLE_THRIFT_RPC
+# include <dsn/idl/thrift_rpc.h>
+# endif
+
 # include "task_engine.h"
 # include "transient_memory.h"
 
@@ -164,6 +169,13 @@ DSN_API void dsn_msg_get_options(
     opts->vnid = hdr->vnid;
 }
 
+DSN_API dsn_msg_header_type dsn_msg_get_header_type(
+    dsn_message_t msg
+    )
+{
+    return ((::dsn::message_ex*)msg)->header->hdr_type==hdr_dsn_default?ht_default:ht_thrift;
+}
+
 namespace dsn {
 
 std::atomic<uint64_t> message_ex::_id(0);
@@ -264,13 +276,14 @@ bool message_ex::is_right_header() const
 
 /*static*/ bool message_ex::is_right_header(char* hdr)
 {
-    int32_t crc32 = *(int32_t*)hdr;
+    int32_t* pcrc = (reinterpret_cast<int32_t*>(hdr))+1;
+    int32_t crc32 = *pcrc;
     if (crc32 != CRC_INVALID)
     {
         //dassert  (*(int32_t*)data == hdr_crc32, "HeaderCrc must be put at the beginning of the buffer");
-        *(int32_t*)hdr = CRC_INVALID;
+        *pcrc = CRC_INVALID;
         bool r = ((uint32_t)crc32 == dsn_crc32_compute(hdr, sizeof(message_header), 0));
-        *(int32_t*)hdr = crc32;
+        *pcrc = crc32;
         return r;
     }
 
@@ -414,6 +427,7 @@ message_ex* message_ex::create_request(dsn_task_code_t rpc_code, int timeout_mil
     // init header
     auto& hdr = *msg->header;
     memset(&hdr, 0, sizeof(hdr));
+    hdr.hdr_type = hdr_dsn_default;
     hdr.hdr_crc32 = hdr.body_crc32 = CRC_INVALID;
 
     hdr.client.hash = request_hash;
@@ -471,7 +485,17 @@ message_ex* message_ex::create_response()
     msg->to_address = header->from_address;
     msg->io_session = io_session;
 
-    // join point 
+    if (hdr.hdr_type == hdr_dsn_thrift)
+    {
+#ifdef DSN_ENABLE_THRIFT_RPC
+        thrift_header_parser::add_prefix_for_thrift_response(msg);
+        msg->is_response_adjusted_for_custom_rpc = false;
+#else
+        dassert(false, "get request with thrift header type but thrift rpc is disabled");
+#endif
+    }
+
+    // join point
     task_spec::get(local_rpc_code)->on_rpc_create_response.execute(this, msg);
 
     return msg;

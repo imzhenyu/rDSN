@@ -63,8 +63,12 @@ namespace dsn
                              // we leverage for optimization (fast rpc handler lookup)
     };
 
+#define hdr_dsn_default 0xdeaffaed
+#define hdr_dsn_thrift  0x1234abcd
+
     typedef struct message_header
     {
+        int32_t        hdr_type;
         int32_t        hdr_crc32;
         int32_t        body_crc32;
         int32_t        body_length;
@@ -112,6 +116,7 @@ namespace dsn
         // by message queuing
         dlink                  dl;
 
+        bool                   is_response_adjusted_for_custom_rpc;
     public:        
         //message_ex(blob bb, bool parse_hdr = true); // read 
         ~message_ex();
@@ -154,7 +159,6 @@ namespace dsn
         size_t body_size() { return (size_t)header->body_length; }
         void* rw_ptr(size_t offset_begin);
         void seal(bool crc_required);
-
     private:
         message_ex();
         void prepare_buffer_header();

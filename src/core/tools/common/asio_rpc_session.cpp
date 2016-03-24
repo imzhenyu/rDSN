@@ -103,6 +103,8 @@ namespace dsn {
                     message_ex* msg = _parser->get_message_on_receive((int)length, read_next);
                     while (read_next!= -1 && msg != nullptr)
                     {
+                        if (msg->header->from_address.is_invalid())
+                            msg->header->from_address = _remote_addr;
                         this->on_message_read(msg);
                         msg = _parser->get_message_on_receive(0, read_next);
                     }
