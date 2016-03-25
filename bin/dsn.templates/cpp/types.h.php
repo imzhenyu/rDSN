@@ -15,19 +15,18 @@ $idl_type = $argv[4];
 //
 // !!! WARNING: not feasible for replicated service yet!!! 
 //
-// # define DSN_NOT_USE_DEFAULT_SERIALIZATION
+// # define DSN_USE_THRIFT_SERIALIZATION
 
-# ifdef DSN_NOT_USE_DEFAULT_SERIALIZATION
+# ifdef DSN_USE_THRIFT_SERIALIZATION
 
 <?php if ($idl_type == "thrift") { ?>
 
-# include <dsn/idl/thrift_helper.h>
 # include "<?=$_PROG->name?>_types.h" 
 
 <?php } else if ($idl_type == "proto") {?>
 
 # include "<?=$_PROG->name?>.pb.h"
-# include <dsn/idl/gproto_helper.h>
+# include <dsn/cpp/serialization_helper/gproto_helper.h>
 
 <?php } else { ?>
 # error not supported idl type <?=$idl_type?> 
