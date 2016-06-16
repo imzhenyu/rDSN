@@ -607,14 +607,7 @@ void replica::on_learn_reply(
         // in-memory state is complete
         // still need on-disk state completion next with flush(true)
         dassert(_app->last_committed_decree() + 1 >= _potential_secondary_states.learning_start_prepare_decree,
-            "state is incomplete");       
-
-        // invalidate existing mutations in current logs
-        err = _app->update_init_info(
-            this,
-            _stub->_log->on_partition_reset(get_gpid(), resp.prepare_start_decree - 1),
-            _private_log ? _private_log->on_partition_reset(get_gpid(), resp.prepare_start_decree - 1) : 0
-            );
+            "state is incomplete");
 
         // go to next stage
         _potential_secondary_states.learning_status = LearningWithPrepare;        
@@ -796,18 +789,41 @@ void replica::on_copy_remote_state_completed(
         && _app->last_committed_decree() > _app->last_durable_decree())
     {        
         err = _app->checkpoint();
-        ddebug(
-            "%s: on_copy_remote_state_completed[%016llx]: learnee = %s, learn_duration = %" PRIu64 " ms, flush done, err = %s, "
-            "app_committed_decree = %" PRId64 ", app_durable_decree = %" PRId64 "",
-            name(), req.signature, resp.config.primary.to_string(),
-            _potential_secondary_states.duration_ms(),
-            err.to_string(),
-            _app->last_committed_decree(),
-            _app->last_durable_decree()
-            );
         if (err == ERR_OK)
         {
             dassert(_app->last_committed_decree() == _app->last_durable_decree(), "");
+            ddebug(
+                "%s: on_copy_remote_state_completed[%016llx]: learnee = %s, learn_duration = %" PRIu64 " ms, checkpoint done, err = %s, "
+                "app_committed_decree = %" PRId64 ", app_durable_decree = %" PRId64 "",
+                name(), req.signature, resp.config.primary.to_string(),
+                _potential_secondary_states.duration_ms(),
+                err.to_string(),
+                _app->last_committed_decree(),
+                _app->last_durable_decree()
+                );
+
+            // ATTENTION(qinzuoyan):
+            // should make sure data in private log is flushed out, otherwise may cause data lost, refer to "rocksdb/replay_bug_1.sh"
+            if (_private_log)
+            {
+                _private_log->flush();
+            }
+
+            // invalidate existing mutations in current logs
+            err = _app->update_init_info(
+                this,
+                _stub->_log->on_partition_reset(get_gpid(), _app->last_committed_decree()),
+                _private_log ? _private_log->on_partition_reset(get_gpid(), _app->last_committed_decree()) : 0
+                );
+        }
+        else
+        {
+            derror(
+                "%s: on_copy_remote_state_completed[%016llx]: learnee = %s, learn_duration = %" PRIu64 " ms, checkpoint failed, err = %s",
+                name(), req.signature, resp.config.primary.to_string(),
+                _potential_secondary_states.duration_ms(),
+                err.to_string()
+                );
         }
     }
 

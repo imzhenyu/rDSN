@@ -140,7 +140,7 @@ error_code mutation_log::open(replay_callback callback, const std::map<global_pa
         log_file_ptr log = log_file::open_read(fpath.c_str(), err);
         if (log == nullptr)
         {
-            if (err == ERR_HANDLE_EOF || err == ERR_INCOMPLETE_DATA || err == ERR_INVALID_PARAMETERS)
+            if (err == ERR_INVALID_PARAMETERS || err == ERR_HANDLE_EOF)
             {
                 dwarn("skip file %s during log init, err = %s", fpath.c_str(), err.to_string());
                 continue;
@@ -687,7 +687,7 @@ void mutation_log::internal_write_callback(
         log_file_ptr log = log_file::open_read(fpath.c_str(), err);
         if (log == nullptr)
         {
-            if (err == ERR_HANDLE_EOF || err == ERR_INCOMPLETE_DATA || err == ERR_INVALID_PARAMETERS)
+            if (err == ERR_INVALID_PARAMETERS || err == ERR_HANDLE_EOF)
             {
                 dinfo("skip file %s during log replay", fpath.c_str());
                 continue;
@@ -1660,28 +1660,69 @@ log_file::~log_file()
     err = lf->read_next_log_block(hdr_blob);
     if (err == ERR_INVALID_DATA || err == ERR_INCOMPLETE_DATA || err == ERR_HANDLE_EOF || err == ERR_FILE_OPERATION_FAILED)
     {
-        std::string removed = std::string(path) + ".removed";
-        derror("read first log entry of file %s failed, err = %s. Rename the file to %s", path, err.to_string(), removed.c_str());
+        auto file_size = lf->end_offset() - lf->start_offset();
         delete lf;
         lf = nullptr;
 
-        // rename file on failure
-        dsn::utils::filesystem::rename_path(path, removed);
+        derror("read first log entry of file %s failed, file_size = %" PRId64 ", err = %s",
+               path, file_size, err.to_string());
+
+        if (file_size == 0)
+        {
+            if (dsn::utils::filesystem::remove_path(path))
+            {
+                derror("removed empty file %s", path);
+            }
+            else
+            {
+                derror("remove empty file %s failed", path);
+            }
+        }
+
+        /*
+        else if (err == ERR_INVALID_DATA || err == ERR_INCOMPLETE_DATA || err == ERR_HANDLE_EOF)
+        {
+            char renamed[1024];
+            sprintf(renamed, "%s.removed.%" PRIu64 "", path, dsn_now_us());
+            if (dsn::utils::filesystem::rename_path(path, renamed))
+            {
+                derror("renamed file from %s to %s", path, renamed);
+            }
+            else
+            {
+                derror("rename file from %s to %s failed", path, renamed);
+            }
+        }
+        */
 
         return nullptr;
+    }
+    else
+    {
+        dassert(err == ERR_OK, "");
     }
 
     binary_reader reader(hdr_blob);
     lf->read_file_header(reader);
     if (!lf->is_right_header())
     {
-        std::string removed = std::string(path) + ".removed";
-        derror("invalid log file header of file %s. Rename the file to %s", path, removed.c_str());
         delete lf;
         lf = nullptr;
 
-        // rename file on failure
-        dsn::utils::filesystem::rename_path(path, removed);
+        derror("invalid log file header of file %s", path);
+
+        /*
+        char renamed[1024];
+        sprintf(renamed, "%s.removed.%" PRIu64 "", path, dsn_now_us());
+        if (dsn::utils::filesystem::rename_path(path, renamed))
+        {
+            derror("renamed file from %s to %s", path, renamed);
+        }
+        else
+        {
+            derror("rename file from %s to %s failed", path, renamed);
+        }
+        */
 
         err = ERR_INVALID_DATA;
         return nullptr;
