@@ -846,13 +846,8 @@ void replica::replay_prepare_list()
     decree start = last_committed_decree() + 1;
     decree end = _prepare_list->max_decree();
 
-    ddebug(
-            "%s: replay prepare list from %" PRId64 " to %" PRId64 ", ballot = %" PRId64,
-            name(),
-            start,
-            end,
-            get_ballot()
-            );
+    ddebug("%s: replay prepare list from %" PRId64 " to %" PRId64 ", ballot = %" PRId64,
+           name(), start, end, get_ballot());
 
     for (decree decree = start; decree <= end; decree++)
     {
@@ -861,20 +856,15 @@ void replica::replay_prepare_list()
 
         if (old != nullptr)
         {
-            dinfo("copy mutation from mutation_tid=%" PRIu64 " to mutation_tid=%" PRIu64,
-                  old->tid(), mu->tid());
+            dinfo("copy mutation %s from mutation_tid=%" PRIu64 " to mutation_tid=%" PRIu64,
+                  old->tid(), mu->name(), mu->tid());
             mu->copy_from(old);
         }
         else
         {
             mu->add_client_request(RPC_REPLICATION_WRITE_EMPTY, nullptr);
-
-            ddebug(
-                "%s: emit empty mutation %s with mutation_tid=%" PRIu64 " when replay prepare list",
-                name(),
-                mu->name(),
-                mu->tid()
-                );
+            ddebug("%s: emit empty mutation %s with mutation_tid=%" PRIu64 " when replay prepare list",
+                   name(), mu->name(), mu->tid());
         }
 
         init_prepare(mu);

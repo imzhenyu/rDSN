@@ -305,27 +305,15 @@ bool replica::replay_mutation(mutation_ptr& mu, bool is_private)
     auto offset = mu->data.header.log_offset;
     if (is_private && offset < _app->init_info().init_offset_in_private_log)
     {
-        dinfo(
-            "%s: replay mutation skipped1 as offset is invalid in private log, ballot = %" PRId64 ", decree = %" PRId64 ", last_committed_decree = %" PRId64 ", offset = %" PRId64,
-            name(),
-            mu->data.header.ballot,
-            d,
-            mu->data.header.last_committed_decree,
-            offset
-            );
+        dinfo("%s: replay mutation %s skipped1 as offset is invalid in private log, log_offset = %" PRId64,
+              name(), mu->name(), offset);
         return false;
     }
     
     if (!is_private && offset < _app->init_info().init_offset_in_shared_log)
     {
-        dinfo(
-            "%s: replay mutation skipped2 as offset is invalid in shared log, ballot = %" PRId64 ", decree = %" PRId64 ", last_committed_decree = %" PRId64 ", offset = %" PRId64,
-            name(),
-            mu->data.header.ballot,
-            d,
-            mu->data.header.last_committed_decree,
-            offset
-            );
+        dinfo("%s: replay mutation %s skipped2 as offset is invalid in shared log, log_offset = %" PRId64,
+              name(), mu->name(), offset);
         return false;
     }
 
@@ -348,48 +336,28 @@ bool replica::replay_mutation(mutation_ptr& mu, bool is_private)
 
     if (d <= last_committed_decree())
     {
-        dinfo(
-            "%s: replay mutation skipped3 as decree is outdated, ballot = %" PRId64 ", decree = %" PRId64 "(vs app %" PRId64 "), last_committed_decree = %" PRId64 ", offset = %" PRId64,
-            name(),
-            mu->data.header.ballot,
-            d,
-            last_committed_decree(),
-            mu->data.header.last_committed_decree,
-            offset
-            );
+        dinfo("%s: replay mutation %s skipped3 as decree is outdated, last_committed_decree = %" PRId64,
+              name(), mu->name(), last_committed_decree());
         return true;
     }   
 
     auto old = _prepare_list->get_mutation_by_decree(d);
     if (old != nullptr && old->data.header.ballot >= mu->data.header.ballot)
     {
-        dinfo(
-            "%s: replay mutation skipped4 as ballot is outdated, ballot = %" PRId64 " (vs local-ballot=%" PRId64 "), decree = %" PRId64 ", last_committed_decree = %" PRId64 ", offset = %" PRId64,
-            name(),
-            mu->data.header.ballot,
-            old->data.header.ballot,
-            d,
-            mu->data.header.last_committed_decree,
-            offset
-            );
-
+        dinfo("%s: replay mutation %s skipped4 as ballot is outdated, old_ballot = %" PRId64,
+              name(), mu->name(), old->data.header.ballot);
         return true;
     }
     
     if (mu->data.header.ballot > get_ballot())
     {
         _config.ballot = mu->data.header.ballot;
+        // TODO(qinzuoyan): the following update_local_configuration() will do nothing, remove it?
         bool ret = update_local_configuration(_config, true);
         dassert(ret, "");
     }
 
-    dinfo(
-        "%s: replay mutation ballot = %" PRId64 ", decree = %" PRId64 ", last_committed_decree = %" PRId64,
-        name(),
-        mu->data.header.ballot,
-        d,
-        mu->data.header.last_committed_decree
-        );
+    dinfo("%s: replay mutation %s", name(), mu->name());
 
     // prepare
     error_code err = _prepare_list->prepare(mu, PS_INACTIVE);

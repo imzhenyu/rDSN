@@ -336,9 +336,8 @@ mutation_ptr replica::new_mutation(decree decree)
 {
     mutation_ptr mu(new mutation());
     mu->data.header.gpid = get_gpid();
-    mu->data.header.ballot = get_ballot();
-    mu->data.header.decree = decree;
     mu->data.header.log_offset = invalid_offset;
+    mu->set_id(get_ballot(), decree);
     return mu;
 }
 

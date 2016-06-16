@@ -92,7 +92,10 @@ bool greedy_load_balancer::balancer_proposal_check(const balancer_proposal_reque
     auto is_node_alive = [&, this](const dsn::rpc_address& addr) {
         auto iter = _state->_nodes.find(addr);
         if (iter == _state->_nodes.end())
+        {
+            derror("node %s is not found", addr.to_string());
             return false;
+        }
         return iter->second.is_alive;
     };
 
@@ -113,26 +116,87 @@ bool greedy_load_balancer::balancer_proposal_check(const balancer_proposal_reque
         gpid.pidx < 0 ||
         gpid.app_id > _state->_apps.size() ||
         gpid.pidx >= _state->_apps[gpid.app_id - 1].partitions.size() )
+    {
+        derror("invalid gpid %d.%d", gpid.app_id, gpid.pidx);
         return false;
+    }
 
-    if ( !is_node_alive(balancer_proposal.from_addr) || !is_node_alive(balancer_proposal.to_addr) )
+    if (!is_node_alive(balancer_proposal.from_addr))
+    {
+        derror("from node %s is not alive", balancer_proposal.from_addr.to_string());
         return false;
+    }
+    if (!is_node_alive(balancer_proposal.to_addr))
+    {
+        derror("to node %s is not alive", balancer_proposal.to_addr.to_string());
+        return false;
+    }
 
     if (balancer_proposal.from_addr== balancer_proposal.to_addr)
+    {
+        derror("from node and to node is the same");
         return false;
+    }
 
     switch (balancer_proposal.type)
     {
     case BT_MOVE_PRIMARY:
-        return is_primary(balancer_proposal.from_addr, gpid) && is_secondary(balancer_proposal.to_addr, gpid);
+    {
+        if (!is_primary(balancer_proposal.from_addr, gpid))
+        {
+            derror("from node %s is not primary", balancer_proposal.from_addr.to_string());
+            return false;
+        }
+        if (!is_secondary(balancer_proposal.to_addr, gpid))
+        {
+            derror("to node %s is not secondary", balancer_proposal.to_addr.to_string());
+            return false;
+        }
+        return true;
+    }
     case BT_COPY_PRIMARY:
-        return is_primary(balancer_proposal.from_addr, gpid) && !is_secondary(balancer_proposal.to_addr, gpid);
+    {
+        if (!is_primary(balancer_proposal.from_addr, gpid))
+        {
+            derror("from node %s is not primary", balancer_proposal.from_addr.to_string());
+            return false;
+        }
+        if (is_primary(balancer_proposal.to_addr, gpid))
+        {
+            derror("to node %s is primary", balancer_proposal.to_addr.to_string());
+            return false;
+        }
+        if (is_secondary(balancer_proposal.to_addr, gpid))
+        {
+            derror("to node %s is secondary", balancer_proposal.to_addr.to_string());
+            return false;
+        }
+        return true;
+    }
     case BT_COPY_SECONDARY:
-        return is_secondary(balancer_proposal.from_addr, gpid) &&
-               !is_primary(balancer_proposal.to_addr, gpid) &&
-               !is_secondary(balancer_proposal.to_addr, gpid);
+    {
+        if (!is_secondary(balancer_proposal.from_addr, gpid))
+        {
+            derror("from node %s is not secondary", balancer_proposal.from_addr.to_string());
+            return false;
+        }
+        if (is_primary(balancer_proposal.to_addr, gpid))
+        {
+            derror("to node %s is primary", balancer_proposal.to_addr.to_string());
+            return false;
+        }
+        if (is_secondary(balancer_proposal.to_addr, gpid))
+        {
+            derror("to node %s is secondary", balancer_proposal.to_addr.to_string());
+            return false;
+        }
+        return true;
+    }
     default:
+    {
+        derror("invalid type %s", enum_to_string(balancer_proposal.type));
         return false;
+    }
     }
 }
 void greedy_load_balancer::execute_balancer_proposal()
