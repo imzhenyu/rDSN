@@ -126,8 +126,7 @@ namespace dsn
         dassert(!msg->buffers.empty(), "buffers can not be empty");
 
         // response format:
-        //     <total_len(int32)> <thrift_string> <writeMessageBegin> <body_data(bytes)>
-        //    |-------------------response header--------------------|
+        //     <total_len(writeI32)> <error_msg(writeString)> <writeMessageBegin> <body_data> <writeMessageEnd>
         binary_writer header_writer;
         binary_writer_transport trans(header_writer);
         boost::shared_ptr<binary_writer_transport> trans_ptr(&trans, [](binary_writer_transport*) {});

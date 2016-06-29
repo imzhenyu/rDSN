@@ -58,8 +58,7 @@ namespace dsn
     };
 
     // response format:
-    //     <total_len(int32)> <thrift_string> <body_data(bytes)>
-    //    |-----------response header--------|
+    //     <total_len(writeI32)> <error_msg(writeString)> <writeMessageBegin> <body_data> <writeMessageEnd>
 
     class thrift_message_parser : public message_parser
     {
