@@ -126,8 +126,7 @@ namespace dsn
         dassert(!msg->buffers.empty(), "buffers can not be empty");
 
         // response format:
-        //     <total_len(int32)> <thrift_string> <body_data(bytes)>
-        //    |-----------response header--------|
+        //     <total_len(writeI32)> <error_msg(writeString)> <writeMessageBegin> <body_data> <writeMessageEnd>
         binary_writer header_writer;
         binary_writer_transport trans(header_writer);
         boost::shared_ptr<binary_writer_transport> trans_ptr(&trans, [](binary_writer_transport*) {});
@@ -148,7 +147,7 @@ namespace dsn
 
         //now let's get the total length
         int32_t* total_length = reinterpret_cast<int32_t*>(buffers[0].buf);
-        *total_length = header_writer.total_size() + msg->header->body_length;
+        *total_length = htobe32(header_writer.total_size() + msg->header->body_length);
 
         int i=1;
         // then copy the message body, we must skip the standard message_header
