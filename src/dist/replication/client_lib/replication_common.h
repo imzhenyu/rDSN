@@ -67,6 +67,7 @@ public:
     
     bool    group_check_disabled;
     int32_t group_check_interval_ms;
+    bool    group_check_write_empty_disabled;
 
     bool    checkpoint_disabled;
     int32_t checkpoint_interval_seconds;
@@ -96,7 +97,6 @@ public:
     int32_t config_sync_interval_ms;
 
     int32_t lb_interval_ms;
-    bool    write_empty_enabled;
 
 public:
     replication_options();
