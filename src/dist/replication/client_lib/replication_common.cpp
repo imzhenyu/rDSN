@@ -55,6 +55,7 @@ replication_options::replication_options()
 
     group_check_disabled = false;
     group_check_interval_ms = 10000;
+    group_check_write_empty_disabled = false;
 
     checkpoint_disabled = false;
     checkpoint_interval_seconds = 100;
@@ -84,7 +85,6 @@ replication_options::replication_options()
     config_sync_interval_ms = 30000;
 
     lb_interval_ms = 10000;
-    write_empty_enabled = true;
 }
 
 replication_options::~replication_options()
@@ -184,6 +184,12 @@ void replication_options::initialize()
         "group_check_interval_ms", 
         group_check_interval_ms,
         "every what period (ms) we check the replica healthness"
+        );
+    group_check_write_empty_disabled =
+        dsn_config_get_value_bool("replication",
+        "group_check_write_empty_disabled",
+        group_check_write_empty_disabled,
+        "whether to disable empty write when no write requests are processed for more than group_check_interval_ms, default is false"
         );
 
     checkpoint_disabled =
@@ -324,13 +330,6 @@ void replication_options::initialize()
         lb_interval_ms,
         "every this period(ms) the meta server will do load balance"
         );
-
-    write_empty_enabled =
-        dsn_config_get_value_bool("replication",
-            "write_empty_enabled",
-            write_empty_enabled,
-            "whether to enable empty write when no write requests are processed for more than group_check_period, default is true"
-            );
     
     replica_helper::load_meta_servers(meta_servers);
 
