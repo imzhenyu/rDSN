@@ -52,17 +52,17 @@ namespace dsn
                 rpc_address meta_server, 
                 const char* app_path);
 
-            void resolve(
+            virtual ~partition_resolver_simple();
+
+            virtual void resolve(
                 uint64_t partition_hash,
                 std::function<void(resolve_result&&)>&& callback,
                 int timeout_ms
                 ) override;
 
-            void on_access_failure(int partition_index, error_code err) override;
+            virtual void on_access_failure(int partition_index, error_code err) override;
 
-            int get_partition_index(int partition_count, uint64_t partition_hash) override;
-
-            ~partition_resolver_simple();
+            virtual int get_partition_index(int partition_count, uint64_t partition_hash) override;
 
             int get_partition_count() const { return _app_partition_count; }
 
@@ -117,7 +117,7 @@ namespace dsn
             // with replica
             void call(request_context_ptr&& request, bool from_meta_ack = false);
             //void replica_rw_reply(error_code err, dsn_message_t request, dsn_message_t response, request_context_ptr rc);
-            void end_request(request_context_ptr&& request, error_code err, rpc_address addr) const;
+            void end_request(request_context_ptr&& request, error_code err, rpc_address addr, bool called_by_timer = false) const;
             void on_timeout(request_context_ptr&& rc) const;
 
             // with meta server
