@@ -424,12 +424,15 @@ namespace dsn
                     handle_pending_requests(reqs2, client_err);
                 }
 
-                for (auto& r : reqs)
+                if (!reqs.empty())
                 {
-                    if (r.second)
+                    for (auto& r : reqs)
                     {
-                        handle_pending_requests(r.second->requests, client_err);
-                        delete r.second;
+                        if (r.second)
+                        {
+                            handle_pending_requests(r.second->requests, client_err);
+                            delete r.second;
+                        }
                     }
                 }
             }
