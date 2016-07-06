@@ -169,12 +169,9 @@ namespace dsn
         //
         // utility routines
         //
-        bool is_right_header() const;
-        bool is_right_body(bool is_write_msg) const;
         error_code error();
         task_code rpc_code();
         static uint64_t new_id() { return ++_id; }
-        static bool is_right_header(char* hdr);
         static unsigned int get_body_length(char* hdr) { return ((message_header*)hdr)->body_length; }
 
         //
@@ -201,7 +198,6 @@ namespace dsn
         void read_commit(size_t size);        
         size_t body_size() { return (size_t)header->body_length; }
         void* rw_ptr(size_t offset_begin);
-        void seal(bool crc_required);
     private:
         message_ex();
         void prepare_buffer_header();
