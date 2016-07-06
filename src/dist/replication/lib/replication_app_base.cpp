@@ -134,7 +134,7 @@ error_code replica_app_info::load(const char* file)
         return ERR_FILE_OPERATION_FAILED;
     }
 
-    std::shared_ptr<char> buffer(new char[sz]);
+    std::shared_ptr<char> buffer(new char[sz], std::default_delete<char[]>());
     is.read((char*)buffer.get(), sz);
     is.close();
     
