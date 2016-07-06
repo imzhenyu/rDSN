@@ -56,6 +56,11 @@ namespace dsn
         virtual int get_buffers_on_send(message_ex* msg, /*out*/ send_buf* buffers) override;
 
     private:
+        static bool is_right_header(char* hdr);
+
+        static bool is_right_body(message_ex* msg);
+
+    private:
         bool _header_checked;
     };
 }
