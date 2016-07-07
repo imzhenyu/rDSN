@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -74,6 +79,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
     </ul>
   </div>
+  <div id="navrow4" class="tabs3">
+    <ul class="tablist">
+      <li><a href="#index_a"><span>a</span></a></li>
+      <li><a href="#index_c"><span>c</span></a></li>
+      <li><a href="#index_d"><span>d</span></a></li>
+      <li><a href="#index_f"><span>f</span></a></li>
+      <li><a href="#index_g"><span>g</span></a></li>
+      <li><a href="#index_h"><span>h</span></a></li>
+      <li><a href="#index_i"><span>i</span></a></li>
+      <li><a href="#index_m"><span>m</span></a></li>
+      <li><a href="#index_n"><span>n</span></a></li>
+      <li><a href="#index_p"><span>p</span></a></li>
+      <li><a href="#index_r"><span>r</span></a></li>
+      <li><a href="#index_s"><span>s</span></a></li>
+      <li><a href="#index_t"><span>t</span></a></li>
+      <li><a href="#index_u"><span>u</span></a></li>
+      <li class="current"><a href="#index_v"><span>v</span></a></li>
+    </ul>
+  </div>
 </div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -90,13 +114,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 
 <div class="contents">
-<div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div><ul>
+<div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
+
+<h3><a class="anchor" id="index_a"></a>- a -</h3><ul>
 <li>app_context_ptr
 : <a class="el" href="structdsn__app__info.html#acd9e94414450096810cd3018162ed1c6">dsn_app_info</a>
 </li>
 <li>app_id
 : <a class="el" href="structdsn__app__info.html#a58a94125a92222a86d0fcb7cfda3078b">dsn_app_info</a>
+, <a class="el" href="uniondsn__global__partition__id.html#accb72004e7b3bccad47e076bfa66875c">dsn_global_partition_id</a>
 </li>
+<li>apps
+: <a class="el" href="structdsn__app.html#aafdb9c48abac541139ebe1cdee2707b1">dsn_app</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_c"></a>- c -</h3><ul>
 <li>context
 : <a class="el" href="structdsn__cli__reply.html#abb15a82d9d65d9bc60fff6bd05c14890">dsn_cli_reply</a>
 , <a class="el" href="uniondsn__msg__context__t.html#a15cc1a1e9173d1fc0871407ee2182388">dsn_msg_context_t</a>
@@ -105,17 +139,55 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>create
 : <a class="el" href="structdsn__app_1_1layer1__callbacks.html#a5f87216dfc2fc624c072a6bdf2d2c2e0">dsn_app::layer1_callbacks</a>
 </li>
+</ul>
+
+
+<h3><a class="anchor" id="index_d"></a>- d -</h3><ul>
 <li>data_dir
 : <a class="el" href="structdsn__app__info.html#ae7abcd16f46fcc75e1d63f973a55eeec">dsn_app_info</a>
 </li>
 <li>destroy
 : <a class="el" href="structdsn__app_1_1layer1__callbacks.html#a93011dcfc041b76f5984980c92d6326e">dsn_app::layer1_callbacks</a>
 </li>
-<li>group
-: <a class="el" href="uniondsn__address__t_1_1u__t.html#a24c9d423c33c32a18a4391aaee282080">dsn_address_t::u_t</a>
+</ul>
+
+
+<h3><a class="anchor" id="index_f"></a>- f -</h3><ul>
+<li>file_state_count
+: <a class="el" href="structdsn__app__learn__state.html#af7d65f2947caa0ae57e8cf07ad5a4450">dsn_app_learn_state</a>
 </li>
+<li>files
+: <a class="el" href="structdsn__app__learn__state.html#aee0df65dd8693b5b7d0fd57365f80318">dsn_app_learn_state</a>
+</li>
+<li>from_decree_excluded
+: <a class="el" href="structdsn__app__learn__state.html#a13f354c679311c523731b75cd955120a">dsn_app_learn_state</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_g"></a>- g -</h3><ul>
+<li>gpid
+: <a class="el" href="structdsn__msg__options__t.html#a3cb293fa39b36c2db47a1828810adbf5">dsn_msg_options_t</a>
+</li>
+<li>group
+: <a class="el" href="uniondsn__address__t_1_1u__t.html#a89b09f740dcec961a6f5688d2a76dfd9">dsn_address_t::u_t</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_h"></a>- h -</h3><ul>
+<li>hash
+: <a class="el" href="structdsn__msg__options__t.html#adcbe648df5a6a19505371baff2bfd32d">dsn_msg_options_t</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_i"></a>- i -</h3><ul>
 <li>index
 : <a class="el" href="structdsn__app__info.html#a14b6ee77425d43f2e35c8162dd91d780">dsn_app_info</a>
+</li>
+<li>is_forward_supported
+: <a class="el" href="uniondsn__msg__context__t.html#ab684d45b32ac905273e3e98ce542bf58">dsn_msg_context_t</a>
 </li>
 <li>is_forwarded
 : <a class="el" href="uniondsn__msg__context__t.html#af7e9e34fccf0cc5d89b98cd4e295debf">dsn_msg_context_t</a>
@@ -123,26 +195,58 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>is_request
 : <a class="el" href="uniondsn__msg__context__t.html#a22803b6c1892f8ce116f1767a0317f87">dsn_msg_context_t</a>
 </li>
+</ul>
+
+
+<h3><a class="anchor" id="index_m"></a>- m -</h3><ul>
 <li>mask
 : <a class="el" href="structdsn__app.html#a1ee91f5fadccbdf739e8173863e8b7ce">dsn_app</a>
 </li>
 <li>message
 : <a class="el" href="structdsn__cli__reply.html#a8a2e913a8fe79471ef80ec68286f3fb1">dsn_cli_reply</a>
 </li>
+<li>meta_state_ptr
+: <a class="el" href="structdsn__app__learn__state.html#ad7ce156776fd26cbe850d87bf111cb7d">dsn_app_learn_state</a>
+</li>
+<li>meta_state_size
+: <a class="el" href="structdsn__app__learn__state.html#af672a5c1587475ed2493f7da45dbe6cb">dsn_app_learn_state</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_n"></a>- n -</h3><ul>
 <li>name
 : <a class="el" href="structdsn__app__info.html#a338c3263432cb6f282cc705a2a1d8d41">dsn_app_info</a>
 </li>
+</ul>
+
+
+<h3><a class="anchor" id="index_p"></a>- p -</h3><ul>
 <li>parameter
 : <a class="el" href="uniondsn__msg__context__t.html#a0d906b61679f2abfbac62e03e0c88d52">dsn_msg_context_t</a>
 </li>
-<li>read_replication
-: <a class="el" href="uniondsn__msg__context__t.html#a1d54a0b82d909badcbf8dc95314dfac9">dsn_msg_context_t</a>
+<li>parameter_type
+: <a class="el" href="uniondsn__msg__context__t.html#a2cd1fb6173adf5c99bbe25f34cca23e2">dsn_msg_context_t</a>
 </li>
-<li>read_semantic
-: <a class="el" href="uniondsn__msg__context__t.html#a19867327c35be01a922e00522145534e">dsn_msg_context_t</a>
+<li>partition_index
+: <a class="el" href="uniondsn__global__partition__id.html#a5966a5c162621a6b70fa8fe3924df86b">dsn_global_partition_id</a>
 </li>
+<li>primary_address
+: <a class="el" href="structdsn__app__info.html#ad50d50c0c93250fdb5680ecf9d2de460">dsn_app_info</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_r"></a>- r -</h3><ul>
 <li>role
 : <a class="el" href="structdsn__app__info.html#a908b05a46cdb504ad6c67328a1fd1732">dsn_app_info</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_s"></a>- s -</h3><ul>
+<li>serialize_format
+: <a class="el" href="uniondsn__msg__context__t.html#a6955dc64aa198b300ca7c14ff03d1be3">dsn_msg_context_t</a>
 </li>
 <li>size
 : <a class="el" href="structdsn__cli__reply.html#a63a0aae952f802cffcc9f8fd6354cccc">dsn_cli_reply</a>
@@ -150,11 +254,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>start
 : <a class="el" href="structdsn__app_1_1layer1__callbacks.html#a05f1696c192012809953984b7cfb3262">dsn_app::layer1_callbacks</a>
 </li>
-<li>thread_hash
-: <a class="el" href="structdsn__msg__options__t.html#acaefe93cf1f140fca702cd521f2f8ee8">dsn_msg_options_t</a>
-</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_t"></a>- t -</h3><ul>
 <li>timeout_ms
 : <a class="el" href="structdsn__msg__options__t.html#ae7cbc924b27b421fe7dfe46ed4d0d234">dsn_msg_options_t</a>
+</li>
+<li>to_decree_included
+: <a class="el" href="structdsn__app__learn__state.html#a406ee4764ee07b42d5f5f2364613a35a">dsn_app_learn_state</a>
+</li>
+<li>total_learn_state_size
+: <a class="el" href="structdsn__app__learn__state.html#aff012af985f796f9349bb1a864faa2ee">dsn_app_learn_state</a>
 </li>
 <li>type
 : <a class="el" href="structdsn__app__info.html#a554c6fa41a00a3df817c535c152bd08c">dsn_app_info</a>
@@ -162,25 +273,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>type_name
 : <a class="el" href="structdsn__app.html#a7dccaa5ebcdc8c8e69275135b6c3261d">dsn_app</a>
 </li>
+</ul>
+
+
+<h3><a class="anchor" id="index_u"></a>- u -</h3><ul>
+<li>unused
+: <a class="el" href="uniondsn__msg__context__t.html#a920786ad574463bb40fba023b3850fd8">dsn_msg_context_t</a>
+</li>
 <li>uri
-: <a class="el" href="uniondsn__address__t_1_1u__t.html#ab3ad201c29bfed258a62a1aca6975ca5">dsn_address_t::u_t</a>
+: <a class="el" href="uniondsn__address__t_1_1u__t.html#af161f35dd906eb2283264873b8f9084a">dsn_address_t::u_t</a>
 </li>
+</ul>
+
+
+<h3><a class="anchor" id="index_v"></a>- v -</h3><ul>
 <li>v4
-: <a class="el" href="uniondsn__address__t_1_1u__t.html#a562048015a3564b6e6a49972e6c1b1a2">dsn_address_t::u_t</a>
-</li>
-<li>vnid
-: <a class="el" href="structdsn__msg__options__t.html#ab45521e1df3677e68e0325e7a6b7a42a">dsn_msg_options_t</a>
-</li>
-<li>write_replication
-: <a class="el" href="uniondsn__msg__context__t.html#ac4b89460ed87b9822a86f7024d1a9d91">dsn_msg_context_t</a>
+: <a class="el" href="uniondsn__address__t_1_1u__t.html#a0a4e3badedf03ff1385958df5a5ea8ec">dsn_address_t::u_t</a>
 </li>
 </ul>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

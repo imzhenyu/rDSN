@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -81,54 +86,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Command-Line Interface (cli)<div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-utilities.html">Utility API</a></div></div>  </div>
+<div class="title">Command-Line Interface (cli)<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-utilities.html">Utility Service API</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Built-in command line interface that can be accessed via local/tcp/http consoles.  
-<a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__cli__reply.html">dsn_cli_reply</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">cli response definition  <a href="structdsn__cli__reply.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:gaa9ea0f5b604732d31536d709650afd6d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa9ea0f5b604732d31536d709650afd6d"></a>
 typedef struct <a class="el" href="structdsn__cli__reply.html">dsn_cli_reply</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app-cli.html#gaa9ea0f5b604732d31536d709650afd6d">dsn_cli_reply</a></td></tr>
-<tr class="memdesc:gaa9ea0f5b604732d31536d709650afd6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">cli response definition <br /></td></tr>
 <tr class="separator:gaa9ea0f5b604732d31536d709650afd6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2f0e4261ae2fce200e9d4383b0546e42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2f0e4261ae2fce200e9d4383b0546e42"></a>
 typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app-cli.html#ga2f0e4261ae2fce200e9d4383b0546e42">dsn_cli_handler</a>) (void *context, int argc, const char **argv, <a class="el" href="structdsn__cli__reply.html">dsn_cli_reply</a> *reply)</td></tr>
-<tr class="memdesc:ga2f0e4261ae2fce200e9d4383b0546e42"><td class="mdescLeft">&#160;</td><td class="mdescRight">cli request handler definition <br /></td></tr>
 <tr class="separator:ga2f0e4261ae2fce200e9d4383b0546e42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae71cf1f0331e727b4bbddd230bd6ea4e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae71cf1f0331e727b4bbddd230bd6ea4e"></a>
 typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app-cli.html#gae71cf1f0331e727b4bbddd230bd6ea4e">dsn_cli_free_handler</a>) (<a class="el" href="structdsn__cli__reply.html">dsn_cli_reply</a> reply)</td></tr>
-<tr class="memdesc:gae71cf1f0331e727b4bbddd230bd6ea4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">cli response resource gc handler definition <br /></td></tr>
 <tr class="separator:gae71cf1f0331e727b4bbddd230bd6ea4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga04fbe5fb1b7ec8cb73584f81c2f149b0"><td class="memItemLeft" align="right" valign="top">DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app-cli.html#ga04fbe5fb1b7ec8cb73584f81c2f149b0">dsn_cli_run</a> (const char *command_line)</td></tr>
-<tr class="memdesc:ga04fbe5fb1b7ec8cb73584f81c2f149b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">run a given cli command  <a href="#ga04fbe5fb1b7ec8cb73584f81c2f149b0">More...</a><br /></td></tr>
 <tr class="separator:ga04fbe5fb1b7ec8cb73584f81c2f149b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac1b6828e113119f8e2f582ae4bc6438d"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app-cli.html#gac1b6828e113119f8e2f582ae4bc6438d">dsn_cli_free</a> (const char *command_output)</td></tr>
-<tr class="memdesc:gac1b6828e113119f8e2f582ae4bc6438d"><td class="mdescLeft">&#160;</td><td class="mdescRight">free memory occupied by cli response  <a href="#gac1b6828e113119f8e2f582ae4bc6438d">More...</a><br /></td></tr>
 <tr class="separator:gac1b6828e113119f8e2f582ae4bc6438d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5ae273ee196ed8fb9d0b7ed8140f0009"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_handle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app-cli.html#ga5ae273ee196ed8fb9d0b7ed8140f0009">dsn_cli_register</a> (const char *command, const char *help_one_line, const char *help_long, void *context, <a class="el" href="group__app-cli.html#ga2f0e4261ae2fce200e9d4383b0546e42">dsn_cli_handler</a> cmd_handler, <a class="el" href="group__app-cli.html#gae71cf1f0331e727b4bbddd230bd6ea4e">dsn_cli_free_handler</a> output_freer)</td></tr>
-<tr class="memdesc:ga5ae273ee196ed8fb9d0b7ed8140f0009"><td class="mdescLeft">&#160;</td><td class="mdescRight">register a customized cli command handler  <a href="#ga5ae273ee196ed8fb9d0b7ed8140f0009">More...</a><br /></td></tr>
 <tr class="separator:ga5ae273ee196ed8fb9d0b7ed8140f0009"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2c0c14f3b6030c6fec5150aa151c56fb"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_handle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app-cli.html#ga2c0c14f3b6030c6fec5150aa151c56fb">dsn_cli_app_register</a> (const char *command, const char *help_one_line, const char *help_long, void *context, <a class="el" href="group__app-cli.html#ga2f0e4261ae2fce200e9d4383b0546e42">dsn_cli_handler</a> cmd_handler, <a class="el" href="group__app-cli.html#gae71cf1f0331e727b4bbddd230bd6ea4e">dsn_cli_free_handler</a> output_freer)</td></tr>
-<tr class="memdesc:ga2c0c14f3b6030c6fec5150aa151c56fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">same as <a class="el" href="group__app-cli.html#ga5ae273ee196ed8fb9d0b7ed8140f0009">dsn_cli_register</a>, except that the command name is auto-augmented by rDSN as $app_full_name.  <a href="#ga2c0c14f3b6030c6fec5150aa151c56fb">More...</a><br /></td></tr>
 <tr class="separator:ga2c0c14f3b6030c6fec5150aa151c56fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabf2787600eefafcf8b296c24472a4ed1"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app-cli.html#gabf2787600eefafcf8b296c24472a4ed1">dsn_cli_deregister</a> (dsn_handle_t cli_handle)</td></tr>
-<tr class="memdesc:gabf2787600eefafcf8b296c24472a4ed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">remove a cli handler  <a href="#gabf2787600eefafcf8b296c24472a4ed1">More...</a><br /></td></tr>
 <tr class="separator:gabf2787600eefafcf8b296c24472a4ed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Built-in command line interface that can be accessed via local/tcp/http consoles. </p>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ga04fbe5fb1b7ec8cb73584f81c2f149b0"></a>
 <div class="memitem">
@@ -321,11 +313,7 @@ Functions</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

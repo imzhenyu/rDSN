@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['index',['index',['../structdsn__app__info.html#a14b6ee77425d43f2e35c8162dd91d780',1,'dsn_app_info']]],
-  ['is_5fforwarded',['is_forwarded',['../uniondsn__msg__context__t.html#af7e9e34fccf0cc5d89b98cd4e295debf',1,'dsn_msg_context_t']]],
-  ['is_5frequest',['is_request',['../uniondsn__msg__context__t.html#a22803b6c1892f8ce116f1767a0317f87',1,'dsn_msg_context_t']]]
+  ['gpid',['gpid',['../structdsn__msg__options__t.html#a3cb293fa39b36c2db47a1828810adbf5',1,'dsn_msg_options_t']]],
+  ['group',['group',['../uniondsn__address__t_1_1u__t.html#a24c9d423c33c32a18a4391aaee282080',1,'dsn_address_t::u_t::group()'],['../uniondsn__address__t_1_1u__t.html#a89b09f740dcec961a6f5688d2a76dfd9',1,'dsn_address_t::u_t::group()']]]
 ];

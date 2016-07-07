@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -80,22 +85,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">Installation</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>How to install rDSN?  
-<a href="#details">More...</a></p>
-<p>How to install rDSN? </p>
-<p>rDSN 1.0 has been built on the following platforms, and here are the quick summaries.</p>
-<p>###### Ubuntu 14.04 LTS x86_64 with gcc 4.8.2 </p><div class="fragment"><div class="line">~$ sudo apt-<span class="keyword">get</span> install build-essential</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install git</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install cmake</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install php5-cli</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install libboost-all-dev</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install libaio-dev</div><div class="line">~/projects$ git clone https:<span class="comment">//github.com/Microsoft/rdsn.git</span></div><div class="line">~/projects/rdsn$ ./run.sh build</div><div class="line">~/projects/rdsn$ ./run.sh test</div></div><!-- fragment --><h6>Windows 8.1/Server 2012 R2/10 with Visual Studio 2015.</h6>
+<h3>Ubuntu 14.04 LTS x86_64 with gcc 4.8.2</h3>
+<div class="fragment"><div class="line">~$ sudo apt-<span class="keyword">get</span> install build-essential</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install git</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install cmake</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install php5-cli</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install libboost-all-dev</div><div class="line">~$ sudo apt-<span class="keyword">get</span> install libaio-dev</div><div class="line">~/projects$ git clone https:<span class="comment">//github.com/Microsoft/rDSN.git</span></div><div class="line">~/projects/rdsn$ ./run.sh build</div><div class="line">~/projects/rdsn$ ./run.sh test</div><div class="line">~/projects/rdsn$ ./run.sh install</div></div><!-- fragment --><h3>Windows 8.1/Server 2012 R2/10 with Visual Studio 2015.</h3>
 <p>install <a href="https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx">Visual Studio 2015</a></p>
 <p>install <a href="https://windows.github.com/">GitHub Windows</a></p>
-<p>install <a href="http://windows.php.net/download#php-5.6">php</a></p>
-<div class="fragment"><div class="line">c:\projects&gt; git clone https:<span class="comment">//github.com/Microsoft/rDSN.git</span></div><div class="line">c:\Projects\rDSN&gt; run.cmd build Debug .\builddbg</div><div class="line">c:\Projects\rDSN&gt; run.cmd test</div></div><!-- fragment --><p>If everything is as expected, congratulations, and you are ready to try our <a href="https://github.com/Microsoft/rDSN/wiki/Tutorial:-Build-A-Single-Node-Counter-Service">tutorial</a> to develop your first service with rDSN. </p>
+<div class="fragment"><div class="line">c:\projects&gt; git clone https:<span class="comment">//github.com/Microsoft/rDSN.git</span></div><div class="line">c:\Projects\rDSN&gt; run.cmd build Debug .\builddbg</div><div class="line">c:\Projects\rDSN&gt; run.cmd test</div><div class="line">c:\Projects\rDSN&gt; run.cmd build Debug .\builddbg install</div></div><!-- fragment --><p>If everything is as expected, congratulations, and you are ready to try our <a class="el" href="group__tutorials.html">tutorials</a>. </p>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

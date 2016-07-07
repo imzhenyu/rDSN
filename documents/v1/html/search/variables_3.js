@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['group',['group',['../uniondsn__address__t_1_1u__t.html#a24c9d423c33c32a18a4391aaee282080',1,'dsn_address_t::u_t::group()'],['../uniondsn__address__t_1_1u__t.html#a0cd16f6d4a31a394af15b6703a6b8057',1,'dsn_address_t::u_t::group()']]]
+  ['file_5fstate_5fcount',['file_state_count',['../structdsn__app__learn__state.html#af7d65f2947caa0ae57e8cf07ad5a4450',1,'dsn_app_learn_state']]],
+  ['files',['files',['../structdsn__app__learn__state.html#aee0df65dd8693b5b7d0fd57365f80318',1,'dsn_app_learn_state']]],
+  ['from_5fdecree_5fexcluded',['from_decree_excluded',['../structdsn__app__learn__state.html#a13f354c679311c523731b75cd955120a',1,'dsn_app_learn_state']]]
 ];

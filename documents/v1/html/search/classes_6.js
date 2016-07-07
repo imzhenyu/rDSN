@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['layer1_5fcallbacks',['layer1_callbacks',['../structdsn__app_1_1layer1__callbacks.html',1,'dsn_app']]],
-  ['layer2_5fcallbacks',['layer2_callbacks',['../structdsn__app_1_1layer2__callbacks.html',1,'dsn_app']]],
-  ['layer3_5fcallbacks',['layer3_callbacks',['../structdsn__app_1_1layer3__callbacks.html',1,'dsn_app']]]
+  ['hash_3c_20_3a_3adsn_3a_3arpc_5faddress_20_3e',['hash&lt; ::dsn::rpc_address &gt;',['../structstd_1_1hash_3_01_1_1dsn_1_1rpc__address_01_4.html',1,'std']]]
 ];

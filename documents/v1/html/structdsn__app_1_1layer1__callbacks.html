@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -95,36 +100,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">dsn_app::layer1_callbacks Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>layer 1 app definition, mask = DSN_APP_MASK_DEFAULT  
- <a href="structdsn__app_1_1layer1__callbacks.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a5f87216dfc2fc624c072a6bdf2d2c2e0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f87216dfc2fc624c072a6bdf2d2c2e0"></a>
-<a class="el" href="group__app-model.html#gac90325d6e5f84495a0a4ca340718fbe2">dsn_app_create</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer1__callbacks.html#a5f87216dfc2fc624c072a6bdf2d2c2e0">create</a></td></tr>
-<tr class="memdesc:a5f87216dfc2fc624c072a6bdf2d2c2e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">callback to create the context for the app <br /></td></tr>
+<a class="el" href="group__service-api-model.html#ga5d2cfa2ad1cf56ff782b2923d98d7248">dsn_app_create</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer1__callbacks.html#a5f87216dfc2fc624c072a6bdf2d2c2e0">create</a></td></tr>
 <tr class="separator:a5f87216dfc2fc624c072a6bdf2d2c2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05f1696c192012809953984b7cfb3262"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a05f1696c192012809953984b7cfb3262"></a>
-<a class="el" href="group__app-model.html#gac957d71ae15b8373a4afc40ddf90e9aa">dsn_app_start</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer1__callbacks.html#a05f1696c192012809953984b7cfb3262">start</a></td></tr>
-<tr class="memdesc:a05f1696c192012809953984b7cfb3262"><td class="mdescLeft">&#160;</td><td class="mdescRight">callback to start the app, similar to <code>main</code> <br /></td></tr>
+<a class="el" href="group__service-api-model.html#gac957d71ae15b8373a4afc40ddf90e9aa">dsn_app_start</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer1__callbacks.html#a05f1696c192012809953984b7cfb3262">start</a></td></tr>
 <tr class="separator:a05f1696c192012809953984b7cfb3262"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93011dcfc041b76f5984980c92d6326e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93011dcfc041b76f5984980c92d6326e"></a>
-<a class="el" href="group__app-model.html#gac7137c9d5d75a08fbf5cfd41a9673e82">dsn_app_destroy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer1__callbacks.html#a93011dcfc041b76f5984980c92d6326e">destroy</a></td></tr>
-<tr class="memdesc:a93011dcfc041b76f5984980c92d6326e"><td class="mdescLeft">&#160;</td><td class="mdescRight">callback to stop and destroy the app <br /></td></tr>
+<a class="el" href="group__service-api-model.html#ga4728fae8598a47941db94d7992497e11">dsn_app_destroy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer1__callbacks.html#a93011dcfc041b76f5984980c92d6326e">destroy</a></td></tr>
 <tr class="separator:a93011dcfc041b76f5984980c92d6326e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>layer 1 app definition, mask = DSN_APP_MASK_DEFAULT </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>include/dsn/c/<a class="el" href="app__model_8h_source.html">app_model.h</a></li>
 </ul>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -79,62 +84,235 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Common Task Operations<div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-c.html">Core API</a></div></div>  </div>
+<div class="title">Common Task Operations<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-c.html">Core Service API</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Common Task/Event Operations.  
-<a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
+<p>rDSN adopts the event-driven programming model, where all computations (event handlers) are represented as individual tasks; each is the execution of a sequential piece of code in one thread. Specifically, rDSN categorizes the tasks into four types, as defined in <a class="el" href="group__task-common.html#ga84ef868e609f93be7044c749df9fe0d0">dsn_task_type_t</a>.</p>
+<p>Unlike the traditional event-driven programming, rDSN enhances the model in the following ways, with which they control the application in many aspects in a declarative approach.</p>
+<ul>
+<li><p class="startli">each task is labeled with a task code, with which developers can configure many aspects in config files. Developers can define new task code using <a class="el" href="group__exec-model.html#gad300b5cb7c1394072c54507b6e362611">DEFINE_TASK_CODE</a>, or <a class="el" href="group__task-common.html#ga352ecfed1f48af9076ce346f03e0df77">dsn_task_code_register</a>.</p>
+<pre>
+  [task..default]
+  ; allow task executed in other thread pools or tasks 
+  ; for TASK_TYPE_COMPUTE - allow-inline allows a task being executed in its caller site 
+  ; for other tasks - allow-inline allows a task being execution in io-thread
+  allow_inline = false</pre><pre>  ; group rpc mode with group address: GRPC_TO_LEADER, GRPC_TO_ALL, GRPC_TO_ANY
+  grpc_mode = GRPC_TO_LEADER</pre><pre>  ; when toollet profiler is enabled
+  is_profile = true</pre><pre>  ; when toollet tracer is enabled
+  is_trace = true</pre><pre>  ; thread pool to execute the task
+  pool_code = THREAD_POOL_DEFAULT</pre><pre>  ; task priority
+  priority = TASK_PRIORITY_COMMON</pre><pre>  ; whether to randomize the timer delay to random(0, timer_interval), 
+  ; if the initial delay is zero, to avoid multiple timers executing at the same time (e.g., checkpointing)
+  randomize_timer_delay_if_zero = false</pre><pre>  ; what kind of network channel for this kind of rpc calls
+  rpc_call_channel = RPC_CHANNEL_TCP</pre><pre>  ; what kind of header format for this kind of rpc calls
+  rpc_call_header_format = NET_HDR_DSN</pre><pre>  ; how many milliseconds to delay recving rpc session for 
+  ; when queue length ~= [1.0, 1.2, 1.4, 1.6, 1.8, &gt;=2.0] x pool.queue_length_throttling_threshold,
+  ; e.g., 0, 0, 1, 2, 5, 10
+  rpc_request_delays_milliseconds = 0, 0, 1, 2, 5, 10</pre><pre>  ; whether to drop a request right before execution when its queueing time 
+  ; is already greater than its timeout value
+  rpc_request_dropped_before_execution_when_timeout = false</pre><pre>  ; for how long (ms) the request will be resent if no response 
+  ; is received yet, 0 for disable this feature
+  rpc_request_resend_timeout_milliseconds = 0</pre><pre>  ; throttling mode for rpc requets: TM_NONE, TM_REJECT, TM_DELAY when 
+  ; queue length &gt; pool.queue_length_throttling_threshold
+  rpc_request_throttling_mode = TM_NONE</pre><pre>  ; what is the default timeout (ms) for this kind of rpc calls
+  rpc_timeout_milliseconds = 5000</pre><pre>  [task.LPC_AIO_IMMEDIATE_CALLBACK]
+  ; override the option in [task..default]
+  allow_inline = true
+  </pre></li>
+<li><p class="startli">each task code is bound to a thread pool, which can be customized as follows. Developers can define new thread pools using <a class="el" href="group__exec-model.html#ga6c2e4fb2d6f13a718fc4c71ba3f1c0a3">DEFINE_THREAD_POOL_CODE</a>, or <a class="el" href="group__task-common.html#ga2d4b0591b55e107d932446873619bdc1">dsn_threadpool_code_register</a>.</p>
+<pre>
+  [threadpool..default]</pre><pre>  ; how many tasks (if available) should be returned for
+  ; one dequeue call for best batching performance
+  dequeue_batch_size = 5</pre><pre>  ; throttling: whether to enable throttling with virtual queues
+  enable_virtual_queue_throttling = false</pre><pre>  ; thread pool name
+  name = THREAD_POOL_INVALID</pre><pre>  ; whethe the threads share a single queue(partitioned=false) or not;
+  ; the latter is usually for workload hash partitioning for avoiding locking
+  partitioned = false</pre><pre>  ; task queue aspects names, usually for tooling purpose
+  queue_aspects =</pre><pre>  ; task queue provider name
+  queue_factory_name = dsn::tools::hpc_concurrent_task_queue</pre><pre>  ; throttling: throttling threshold above which rpc requests will be dropped
+  queue_length_throttling_threshold = 1000000</pre><pre>  ; what CPU cores are assigned to this pool, 0 for all
+  worker_affinity_mask = 0</pre><pre>  ; task aspects names, usually for tooling purpose
+  worker_aspects =</pre><pre>  ; thread/worker count
+  worker_count = 2</pre><pre>  ; task worker provider name
+  worker_factory_name =</pre><pre>  ; thread priority
+  worker_priority = THREAD_xPRIORITY_NORMAL</pre><pre>  ; whether the threads share all assigned cores
+  worker_share_core = true</pre><pre>  [threadpool.THREAD_POOL_DEFAULT]
+  ; override default options in [threadpool..default]
+  dequeue_batch_size = 5</pre><pre>  </pre></li>
+<li></li>
+</ul>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga7800b4bff24ae27ed47d37ea2b4ee8f1"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga7800b4bff24ae27ed47d37ea2b4ee8f1">dsn_task_add_ref</a> (dsn_task_t task)</td></tr>
-<tr class="memdesc:ga7800b4bff24ae27ed47d37ea2b4ee8f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add reference count for a task created from <a class="el" href="group__tasking.html#gab03e72dd522d4971eb3e14922b57f3de">dsn_task_create</a> etc.  <a href="#ga7800b4bff24ae27ed47d37ea2b4ee8f1">More...</a><br /></td></tr>
 <tr class="separator:ga7800b4bff24ae27ed47d37ea2b4ee8f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4e8303834afa73820d452b51ad7e40c3"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga4e8303834afa73820d452b51ad7e40c3">dsn_task_release_ref</a> (dsn_task_t task)</td></tr>
-<tr class="memdesc:ga4e8303834afa73820d452b51ad7e40c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">release reference for a given task handle  <a href="#ga4e8303834afa73820d452b51ad7e40c3">More...</a><br /></td></tr>
 <tr class="separator:ga4e8303834afa73820d452b51ad7e40c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1ce5abab055cbf2b556772bcadb23722"><td class="memItemLeft" align="right" valign="top">DSN_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1ce5abab055cbf2b556772bcadb23722">dsn_task_get_ref</a> (dsn_task_t task)</td></tr>
-<tr class="memdesc:ga1ce5abab055cbf2b556772bcadb23722"><td class="mdescLeft">&#160;</td><td class="mdescRight">get reference for a given task handle  <a href="#ga1ce5abab055cbf2b556772bcadb23722">More...</a><br /></td></tr>
 <tr class="separator:ga1ce5abab055cbf2b556772bcadb23722"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad213948bd98a91645a71f86ffb704726"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gad213948bd98a91645a71f86ffb704726">dsn_task_cancel</a> (dsn_task_t task, bool wait_until_finished)</td></tr>
-<tr class="memdesc:gad213948bd98a91645a71f86ffb704726"><td class="mdescLeft">&#160;</td><td class="mdescRight">cancel a task  <a href="#gad213948bd98a91645a71f86ffb704726">More...</a><br /></td></tr>
 <tr class="separator:gad213948bd98a91645a71f86ffb704726"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga46321f8db316b7c5ec69711a1b505d33"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga46321f8db316b7c5ec69711a1b505d33">dsn_task_set_delay</a> (dsn_task_t task, int delay_ms)</td></tr>
+<tr class="separator:ga46321f8db316b7c5ec69711a1b505d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad2132ff959dd085ef3dab403010e849f"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gad2132ff959dd085ef3dab403010e849f">dsn_task_cancel2</a> (dsn_task_t task, bool wait_until_finished, bool *finished)</td></tr>
-<tr class="memdesc:gad2132ff959dd085ef3dab403010e849f"><td class="mdescLeft">&#160;</td><td class="mdescRight">cancel a task  <a href="#gad2132ff959dd085ef3dab403010e849f">More...</a><br /></td></tr>
 <tr class="separator:gad2132ff959dd085ef3dab403010e849f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8e46d56a7bba870f541314641220733e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8e46d56a7bba870f541314641220733e"></a>
 DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga8e46d56a7bba870f541314641220733e">dsn_task_cancel_current_timer</a> ()</td></tr>
-<tr class="memdesc:ga8e46d56a7bba870f541314641220733e"><td class="mdescLeft">&#160;</td><td class="mdescRight">cancel the later execution of the timer task inside the timer <br /></td></tr>
 <tr class="separator:ga8e46d56a7bba870f541314641220733e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga49d3124fb20a3045483116a68bb99842"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga49d3124fb20a3045483116a68bb99842">dsn_task_wait</a> (dsn_task_t task)</td></tr>
-<tr class="memdesc:ga49d3124fb20a3045483116a68bb99842"><td class="mdescLeft">&#160;</td><td class="mdescRight">wait until a task is completed  <a href="#ga49d3124fb20a3045483116a68bb99842">More...</a><br /></td></tr>
 <tr class="separator:ga49d3124fb20a3045483116a68bb99842"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga91d4f179ce7623b105ab05af37965cc0"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga91d4f179ce7623b105ab05af37965cc0">dsn_task_wait_timeout</a> (dsn_task_t task, int timeout_milliseconds)</td></tr>
-<tr class="memdesc:ga91d4f179ce7623b105ab05af37965cc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">wait until a task is completed  <a href="#ga91d4f179ce7623b105ab05af37965cc0">More...</a><br /></td></tr>
 <tr class="separator:ga91d4f179ce7623b105ab05af37965cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga55e6abfca72b95fe20c8b9ab371f7ed8"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_error_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga55e6abfca72b95fe20c8b9ab371f7ed8">dsn_task_error</a> (dsn_task_t task)</td></tr>
-<tr class="memdesc:ga55e6abfca72b95fe20c8b9ab371f7ed8"><td class="mdescLeft">&#160;</td><td class="mdescRight">get result error code of a task  <a href="#ga55e6abfca72b95fe20c8b9ab371f7ed8">More...</a><br /></td></tr>
 <tr class="separator:ga55e6abfca72b95fe20c8b9ab371f7ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadec1ab58a32efb0ee0d1dd9e3dd8d304"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gadec1ab58a32efb0ee0d1dd9e3dd8d304">dsn_task_is_running_inside</a> (dsn_task_t t)</td></tr>
-<tr class="memdesc:gadec1ab58a32efb0ee0d1dd9e3dd8d304"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether the task is currently running inside the given task  <a href="#gadec1ab58a32efb0ee0d1dd9e3dd8d304">More...</a><br /></td></tr>
 <tr class="separator:gadec1ab58a32efb0ee0d1dd9e3dd8d304"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6fe69602ca4679d36d2ebc50f00e38cb"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_task_tracker_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga6fe69602ca4679d36d2ebc50f00e38cb">dsn_task_tracker_create</a> (int task_bucket_count)</td></tr>
-<tr class="memdesc:ga6fe69602ca4679d36d2ebc50f00e38cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">task trackers are used to track task context  <a href="#ga6fe69602ca4679d36d2ebc50f00e38cb">More...</a><br /></td></tr>
 <tr class="separator:ga6fe69602ca4679d36d2ebc50f00e38cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6d37c53d694e913521e8a96dc429c33e"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga6d37c53d694e913521e8a96dc429c33e">dsn_task_tracker_destroy</a> (dsn_task_tracker_t tracker)</td></tr>
-<tr class="memdesc:ga6d37c53d694e913521e8a96dc429c33e"><td class="mdescLeft">&#160;</td><td class="mdescRight">destroy a task tracker, which cancels all pending tasks as well  <a href="#ga6d37c53d694e913521e8a96dc429c33e">More...</a><br /></td></tr>
 <tr class="separator:ga6d37c53d694e913521e8a96dc429c33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1a44cdb0aed43452bdef334d9f691eb4"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1a44cdb0aed43452bdef334d9f691eb4">dsn_task_tracker_cancel_all</a> (dsn_task_tracker_t tracker)</td></tr>
-<tr class="memdesc:ga1a44cdb0aed43452bdef334d9f691eb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">cancels all pending tasks bound to this tracker  <a href="#ga1a44cdb0aed43452bdef334d9f691eb4">More...</a><br /></td></tr>
 <tr class="separator:ga1a44cdb0aed43452bdef334d9f691eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaa8752122c2ca74cdcdd77c1bcd392cc"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gaaa8752122c2ca74cdcdd77c1bcd392cc">dsn_task_tracker_wait_all</a> (dsn_task_tracker_t tracker)</td></tr>
-<tr class="memdesc:gaaa8752122c2ca74cdcdd77c1bcd392cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">wait all pending tasks to be completed bound to this tracker  <a href="#gaaa8752122c2ca74cdcdd77c1bcd392cc">More...</a><br /></td></tr>
 <tr class="separator:gaaa8752122c2ca74cdcdd77c1bcd392cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaef99f60d299e960b5910c1a19f36312"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a> { <br />
+&#160;&#160;<a class="el" href="group__task-common.html#ggaaef99f60d299e960b5910c1a19f36312ab93cdaa737723ad06381d93f9d04e1b8">TASK_TYPE_RPC_REQUEST</a>, 
+<a class="el" href="group__task-common.html#ggaaef99f60d299e960b5910c1a19f36312a0a71c16dfd7ae6d8763a56f7512c8b8d">TASK_TYPE_RPC_RESPONSE</a>, 
+<a class="el" href="group__task-common.html#ggaaef99f60d299e960b5910c1a19f36312a310b24b0d82cc0ecdc8de6784c3ad21e">TASK_TYPE_COMPUTE</a>, 
+<a class="el" href="group__task-common.html#ggaaef99f60d299e960b5910c1a19f36312a169c3edaf32719600233fef3f987fa02">TASK_TYPE_AIO</a>, 
+<br />
+&#160;&#160;<a class="el" href="group__task-common.html#ggaaef99f60d299e960b5910c1a19f36312ae61f42bc61de34ce7dc05a414027b101">TASK_TYPE_CONTINUATION</a>, 
+<b>TASK_TYPE_COUNT</b>, 
+<b>TASK_TYPE_INVALID</b>
+<br />
+ }</td></tr>
+<tr class="separator:gaaef99f60d299e960b5910c1a19f36312"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga750b2e748468dd17a36c4b5ecbb23155"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga750b2e748468dd17a36c4b5ecbb23155"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga750b2e748468dd17a36c4b5ecbb23155">dsn_task_priority_t</a> { <br />
+&#160;&#160;<b>TASK_PRIORITY_LOW</b>, 
+<b>TASK_PRIORITY_COMMON</b>, 
+<b>TASK_PRIORITY_HIGH</b>, 
+<b>TASK_PRIORITY_COUNT</b>, 
+<br />
+&#160;&#160;<b>TASK_PRIORITY_INVALID</b>
+<br />
+ }</td></tr>
+<tr class="separator:ga750b2e748468dd17a36c4b5ecbb23155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga84ef868e609f93be7044c749df9fe0d0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga84ef868e609f93be7044c749df9fe0d0"></a>
+typedef enum <a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga84ef868e609f93be7044c749df9fe0d0">dsn_task_type_t</a></td></tr>
+<tr class="separator:ga84ef868e609f93be7044c749df9fe0d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga14718b967ec3ea97cd3dba20ada415c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga14718b967ec3ea97cd3dba20ada415c8"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a>) (void *)</td></tr>
+<tr class="separator:ga14718b967ec3ea97cd3dba20ada415c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7fd5300dcd75225d3420c0f2b71ea7f1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7fd5300dcd75225d3420c0f2b71ea7f1"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga7fd5300dcd75225d3420c0f2b71ea7f1">dsn_rpc_request_handler_t</a>) (dsn_message_t, void *)</td></tr>
+<tr class="separator:ga7fd5300dcd75225d3420c0f2b71ea7f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga16b06dc4b92bbf395490fa63edaba2ab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga16b06dc4b92bbf395490fa63edaba2ab"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga16b06dc4b92bbf395490fa63edaba2ab">dsn_rpc_response_handler_t</a>) (dsn_error_t, dsn_message_t, dsn_message_t, void *)</td></tr>
+<tr class="separator:ga16b06dc4b92bbf395490fa63edaba2ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1649c0fb4cf4fa3357f42434a74e78a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1649c0fb4cf4fa3357f42434a74e78a8"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1649c0fb4cf4fa3357f42434a74e78a8">dsn_aio_handler_t</a>) (dsn_error_t, size_t, void *)</td></tr>
+<tr class="separator:ga1649c0fb4cf4fa3357f42434a74e78a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa651801ce5668d46cfad11f5c3ef939a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa651801ce5668d46cfad11f5c3ef939a"></a>
+typedef enum <a class="el" href="group__task-common.html#ga750b2e748468dd17a36c4b5ecbb23155">dsn_task_priority_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gaa651801ce5668d46cfad11f5c3ef939a">dsn_task_priority_t</a></td></tr>
+<tr class="separator:gaa651801ce5668d46cfad11f5c3ef939a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1118e5a89dcd664ca5315b30b68bbee5"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a>) (void *)</td></tr>
+<tr class="separator:ga1118e5a89dcd664ca5315b30b68bbee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2d4b0591b55e107d932446873619bdc1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2d4b0591b55e107d932446873619bdc1"></a>
+DSN_API dsn_threadpool_code_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga2d4b0591b55e107d932446873619bdc1">dsn_threadpool_code_register</a> (const char *name)</td></tr>
+<tr class="separator:ga2d4b0591b55e107d932446873619bdc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad53ac225dc96e2683d94a515443f2eee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad53ac225dc96e2683d94a515443f2eee"></a>
+DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_threadpool_code_to_string</b> (dsn_threadpool_code_t pool_code)</td></tr>
+<tr class="separator:gad53ac225dc96e2683d94a515443f2eee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf1bf80383d5eace79bb658b8b0e6c8fa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf1bf80383d5eace79bb658b8b0e6c8fa"></a>
+DSN_API dsn_threadpool_code_t&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_threadpool_code_from_string</b> (const char *s, dsn_threadpool_code_t default_code)</td></tr>
+<tr class="separator:gaf1bf80383d5eace79bb658b8b0e6c8fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafabc47ce826c90fe7271d3a7702bd68b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafabc47ce826c90fe7271d3a7702bd68b"></a>
+DSN_API int&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_threadpool_code_max</b> ()</td></tr>
+<tr class="separator:gafabc47ce826c90fe7271d3a7702bd68b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga676b292869c97b78f583eb1591ffa6a0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga676b292869c97b78f583eb1591ffa6a0"></a>
+DSN_API int&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_threadpool_get_current_tid</b> ()</td></tr>
+<tr class="separator:ga676b292869c97b78f583eb1591ffa6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga352ecfed1f48af9076ce346f03e0df77"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga352ecfed1f48af9076ce346f03e0df77"></a>
+DSN_API dsn_task_code_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga352ecfed1f48af9076ce346f03e0df77">dsn_task_code_register</a> (const char *name, <a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a> type, <a class="el" href="group__task-common.html#ga750b2e748468dd17a36c4b5ecbb23155">dsn_task_priority_t</a>, dsn_threadpool_code_t pool)</td></tr>
+<tr class="separator:ga352ecfed1f48af9076ce346f03e0df77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2902f132dab828511664a97764a7651a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2902f132dab828511664a97764a7651a"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_task_code_query</b> (dsn_task_code_t code, <a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a> *ptype, <a class="el" href="group__task-common.html#ga750b2e748468dd17a36c4b5ecbb23155">dsn_task_priority_t</a> *ppri, dsn_threadpool_code_t *ppool)</td></tr>
+<tr class="separator:ga2902f132dab828511664a97764a7651a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa3b943192114b297889fb7da4ccaa054"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa3b943192114b297889fb7da4ccaa054"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_task_code_set_threadpool</b> (dsn_task_code_t code, dsn_threadpool_code_t pool)</td></tr>
+<tr class="separator:gaa3b943192114b297889fb7da4ccaa054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga10f7aa815e608aa86bafd37c42591194"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga10f7aa815e608aa86bafd37c42591194"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_task_code_set_priority</b> (dsn_task_code_t code, <a class="el" href="group__task-common.html#ga750b2e748468dd17a36c4b5ecbb23155">dsn_task_priority_t</a> pri)</td></tr>
+<tr class="separator:ga10f7aa815e608aa86bafd37c42591194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga448259a49699b542e6acf4b712925872"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga448259a49699b542e6acf4b712925872"></a>
+DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_task_code_to_string</b> (dsn_task_code_t code)</td></tr>
+<tr class="separator:ga448259a49699b542e6acf4b712925872"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa8d031fa1c536d3728274ef509768e4e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa8d031fa1c536d3728274ef509768e4e"></a>
+DSN_API dsn_task_code_t&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_task_code_from_string</b> (const char *s, dsn_task_code_t default_code)</td></tr>
+<tr class="separator:gaa8d031fa1c536d3728274ef509768e4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6e95e9ac2f3cf8b3fb854f4e1e7b9124"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6e95e9ac2f3cf8b3fb854f4e1e7b9124"></a>
+DSN_API int&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_task_code_max</b> ()</td></tr>
+<tr class="separator:ga6e95e9ac2f3cf8b3fb854f4e1e7b9124"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2ea2018168fde87829cf6086ebb07306"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2ea2018168fde87829cf6086ebb07306"></a>
+DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_task_type_to_string</b> (<a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a> tt)</td></tr>
+<tr class="separator:ga2ea2018168fde87829cf6086ebb07306"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga873429c01e7b53dbd660610f3dcce399"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga873429c01e7b53dbd660610f3dcce399"></a>
+DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_task_priority_to_string</b> (<a class="el" href="group__task-common.html#ga750b2e748468dd17a36c4b5ecbb23155">dsn_task_priority_t</a> tt)</td></tr>
+<tr class="separator:ga873429c01e7b53dbd660610f3dcce399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga93612e4cc989f28f027bbcd37b5ae19e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga93612e4cc989f28f027bbcd37b5ae19e"></a>
+DSN_API volatile int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga93612e4cc989f28f027bbcd37b5ae19e">dsn_task_queue_virtual_length_ptr</a> (dsn_task_code_t code, int hash DEFAULT(0))</td></tr>
+<tr class="separator:ga93612e4cc989f28f027bbcd37b5ae19e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Common Task/Event Operations. </p>
-<p>Task-type specific operations, such as create a rpc response task, are introduced in separated categories (e.g., RPC). </p>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="ga1118e5a89dcd664ca5315b30b68bbee5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(* dsn_task_cancelled_handler_t) (void * )</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>callback prototype for task cancellation (called on task-being-cancelled) </p>
+<p>in rDSN, tasks can be cancelled. For languages such as C++, when there are explicit resource release operations (e.g., ::free, release_ref()) in the task handlers, cancellation will cause resource leak due to not-executed task handleers. in order to support such scenario, rDSN provides dsn_task_cancelled_handler_t which is executed when a task is cancelled. Note this callback does not have thread affinity similar to task handlers above (which are configured to be executed in certain thread pools or even a fixed thread). Therefore, it is developers' resposibility to ensure this cancallation callback only does thread-insensitive operations (e.g., release_ref()). </p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a class="anchor" id="gaaef99f60d299e960b5910c1a19f36312"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>task/event type definition </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="ggaaef99f60d299e960b5910c1a19f36312ab93cdaa737723ad06381d93f9d04e1b8"></a>TASK_TYPE_RPC_REQUEST&#160;</td><td class="fielddoc">
+<p>task handling rpc request </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="ggaaef99f60d299e960b5910c1a19f36312a0a71c16dfd7ae6d8763a56f7512c8b8d"></a>TASK_TYPE_RPC_RESPONSE&#160;</td><td class="fielddoc">
+<p>task handling rpc response or timeout </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="ggaaef99f60d299e960b5910c1a19f36312a310b24b0d82cc0ecdc8de6784c3ad21e"></a>TASK_TYPE_COMPUTE&#160;</td><td class="fielddoc">
+<p>async calls or timers </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="ggaaef99f60d299e960b5910c1a19f36312a169c3edaf32719600233fef3f987fa02"></a>TASK_TYPE_AIO&#160;</td><td class="fielddoc">
+<p>callback for file read and write </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="ggaaef99f60d299e960b5910c1a19f36312ae61f42bc61de34ce7dc05a414027b101"></a>TASK_TYPE_CONTINUATION&#160;</td><td class="fielddoc">
+<p>above tasks are seperated into several continuation tasks by thread-synchronization operations. </p>
+<p>so that each "task" is non-blocking </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ga7800b4bff24ae27ed47d37ea2b4ee8f1"></a>
 <div class="memitem">
@@ -244,7 +422,42 @@ DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if THIS cancellation succeeds, false if the task is already running (when wait_until_finished = false), or completed successfully, or cancelled. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if THIS cancellation succeeds, false if the task is already running (when wait_until_finished = false), or completed successfully, or already cancelled. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga46321f8db316b7c5ec69711a1b505d33"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DSN_API void dsn_task_set_delay </td>
+          <td>(</td>
+          <td class="paramtype">dsn_task_t&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>delay_ms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>set delay for a task </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">task</td><td>the task handle </td></tr>
+    <tr><td class="paramname">delay_ms</td><td>the delay milliseconds for a task </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -417,7 +630,7 @@ DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div><div class="memdoc">
 
 <p>task trackers are used to track task context </p>
-<p>when a task executes, it usually accesses certain context when the context is gone, all tasks accessing this context needs to be cancelled automatically to avoid invalid context access. To release this burden from developers, rDSN provides task tracker which can be embedded into a context, and destroyed when the context is gone.</p>
+<p>When a task executes, it usually accesses certain context. When the context is gone, all tasks accessing this context needs to be cancelled automatically to avoid invalid context access. To release this burden from developers, rDSN provides task tracker which can be embedded into a context, and destroyed when the context is gone.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">task_bucket_count</td><td>number of task buckets to reduce thread conflicts</td></tr>
@@ -501,11 +714,7 @@ DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </div>
 </div>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

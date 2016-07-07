@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -79,35 +84,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Asynchronous Tasks and Timers<div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-c.html">Core API</a></div></div>  </div>
+<div class="title">Asynchronous Tasks and Timers<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-c.html">Core Service API</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Asynchronous Tasks and Timers.  
-<a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gab03e72dd522d4971eb3e14922b57f3de"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#gab03e72dd522d4971eb3e14922b57f3de">dsn_task_create</a> (dsn_task_code_t code, <a class="el" href="group__exec-model.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a> cb, void *context, int hash DEFAULT(0), dsn_task_tracker_t tracker DEFAULT(nullptr))</td></tr>
-<tr class="memdesc:gab03e72dd522d4971eb3e14922b57f3de"><td class="mdescLeft">&#160;</td><td class="mdescRight">create an asynchronous task.  <a href="#gab03e72dd522d4971eb3e14922b57f3de">More...</a><br /></td></tr>
+<tr class="memitem:gab03e72dd522d4971eb3e14922b57f3de"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#gab03e72dd522d4971eb3e14922b57f3de">dsn_task_create</a> (dsn_task_code_t code, <a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a> cb, void *context, int hash DEFAULT(0), dsn_task_tracker_t tracker DEFAULT(nullptr))</td></tr>
 <tr class="separator:gab03e72dd522d4971eb3e14922b57f3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9d39f4b821d8ace6d492c635157deb24"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#ga9d39f4b821d8ace6d492c635157deb24">dsn_task_create_timer</a> (dsn_task_code_t code, <a class="el" href="group__exec-model.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a> cb, void *context, int hash, int interval_milliseconds, dsn_task_tracker_t tracker DEFAULT(nullptr))</td></tr>
-<tr class="memdesc:ga9d39f4b821d8ace6d492c635157deb24"><td class="mdescLeft">&#160;</td><td class="mdescRight">create a timer task  <a href="#ga9d39f4b821d8ace6d492c635157deb24">More...</a><br /></td></tr>
+<tr class="memitem:ga9d39f4b821d8ace6d492c635157deb24"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#ga9d39f4b821d8ace6d492c635157deb24">dsn_task_create_timer</a> (dsn_task_code_t code, <a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a> cb, void *context, int hash, int interval_milliseconds, dsn_task_tracker_t tracker DEFAULT(nullptr))</td></tr>
 <tr class="separator:ga9d39f4b821d8ace6d492c635157deb24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga48ea4a2414f44b0935c2cbcac5b9b319"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga48ea4a2414f44b0935c2cbcac5b9b319"></a>
-DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#ga48ea4a2414f44b0935c2cbcac5b9b319">dsn_task_create_ex</a> (dsn_task_code_t code, <a class="el" href="group__exec-model.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a> cb, <a class="el" href="group__exec-model.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a> on_cancel, void *context, int hash DEFAULT(0), dsn_task_tracker_t tracker DEFAULT(nullptr))</td></tr>
-<tr class="memdesc:ga48ea4a2414f44b0935c2cbcac5b9b319"><td class="mdescLeft">&#160;</td><td class="mdescRight">similar to <a class="el" href="group__tasking.html#ga48ea4a2414f44b0935c2cbcac5b9b319">dsn_task_create_ex</a>, except an on_cancel callback is provided to be executed when the task is cancelled, see <a class="el" href="group__exec-model.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a> for more details. <br /></td></tr>
+DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#ga48ea4a2414f44b0935c2cbcac5b9b319">dsn_task_create_ex</a> (dsn_task_code_t code, <a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a> cb, <a class="el" href="group__task-common.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a> on_cancel, void *context, int hash DEFAULT(0), dsn_task_tracker_t tracker DEFAULT(nullptr))</td></tr>
 <tr class="separator:ga48ea4a2414f44b0935c2cbcac5b9b319"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadc0d109c1fd6c01b8b25ac03d3080ba4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadc0d109c1fd6c01b8b25ac03d3080ba4"></a>
-DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#gadc0d109c1fd6c01b8b25ac03d3080ba4">dsn_task_create_timer_ex</a> (dsn_task_code_t code, <a class="el" href="group__exec-model.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a> cb, <a class="el" href="group__exec-model.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a> on_cancel, void *context, int hash, int interval_milliseconds, dsn_task_tracker_t tracker DEFAULT(nullptr))</td></tr>
-<tr class="memdesc:gadc0d109c1fd6c01b8b25ac03d3080ba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">similar to <a class="el" href="group__tasking.html#ga9d39f4b821d8ace6d492c635157deb24">dsn_task_create_timer</a>, except an on_cancel callback is provided to be executed when the task is cancelled, see <a class="el" href="group__exec-model.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a> for more details. <br /></td></tr>
+DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#gadc0d109c1fd6c01b8b25ac03d3080ba4">dsn_task_create_timer_ex</a> (dsn_task_code_t code, <a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a> cb, <a class="el" href="group__task-common.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a> on_cancel, void *context, int hash, int interval_milliseconds, dsn_task_tracker_t tracker DEFAULT(nullptr))</td></tr>
 <tr class="separator:gadc0d109c1fd6c01b8b25ac03d3080ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8fc4a94b0b030f034c5d106a8f89a1bf"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tasking.html#ga8fc4a94b0b030f034c5d106a8f89a1bf">dsn_task_call</a> (dsn_task_t task, int delay_milliseconds DEFAULT(0))</td></tr>
-<tr class="memdesc:ga8fc4a94b0b030f034c5d106a8f89a1bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">start the task  <a href="#ga8fc4a94b0b030f034c5d106a8f89a1bf">More...</a><br /></td></tr>
 <tr class="separator:ga8fc4a94b0b030f034c5d106a8f89a1bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Asynchronous Tasks and Timers. </p>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="gab03e72dd522d4971eb3e14922b57f3de"></a>
 <div class="memitem">
@@ -122,7 +118,7 @@ DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__exec-model.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a>&#160;</td>
           <td class="paramname"><em>cb</em>, </td>
         </tr>
         <tr>
@@ -154,7 +150,7 @@ DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <p>create an asynchronous task. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">code</td><td>the task code, which defines which thread pool executes the task, see <a class="el" href="group__exec-model.html#ga352ecfed1f48af9076ce346f03e0df77">dsn_task_code_register</a> for more details. </td></tr>
+    <tr><td class="paramname">code</td><td>the task code, which defines which thread pool executes the task, see <a class="el" href="group__task-common.html#ga352ecfed1f48af9076ce346f03e0df77">dsn_task_code_register</a> for more details. </td></tr>
     <tr><td class="paramname">cb</td><td>the callback for executing the task. </td></tr>
     <tr><td class="paramname">context</td><td>the context used by the callback. </td></tr>
     <tr><td class="paramname">DEFAULT(0)</td><td>the hash value, which defines which thread in the target thread pool executes the task, when the pool is partitioned, see remarks for more. </td></tr>
@@ -180,7 +176,7 @@ DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__exec-model.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a>&#160;</td>
           <td class="paramname"><em>cb</em>, </td>
         </tr>
         <tr>
@@ -218,7 +214,7 @@ DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <p>create a timer task </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">code</td><td>the task code, which defines which thread pool executes the task, see <a class="el" href="group__exec-model.html#ga352ecfed1f48af9076ce346f03e0df77">dsn_task_code_register</a> for more details. </td></tr>
+    <tr><td class="paramname">code</td><td>the task code, which defines which thread pool executes the task, see <a class="el" href="group__task-common.html#ga352ecfed1f48af9076ce346f03e0df77">dsn_task_code_register</a> for more details. </td></tr>
     <tr><td class="paramname">cb</td><td>the callback for executing the task. </td></tr>
     <tr><td class="paramname">context</td><td>the context used by the callback. </td></tr>
     <tr><td class="paramname">DEFAULT(0)</td><td>the hash value, which defines which thread in the target thread pool executes the task, when the pool is partitioned, see remarks for more. </td></tr>
@@ -268,11 +264,7 @@ DSN_API dsn_task_t&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div>
 </div>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

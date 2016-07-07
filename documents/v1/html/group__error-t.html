@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -81,12 +86,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Error Code<div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-utilities.html">Utility API</a></div></div>  </div>
+<div class="title">Error Code<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-utilities.html">Utility Service API</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Error code registration and translation between string and integer.  
-<a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
+<p>See <a class="el" href="classdsn_1_1error__code.html">error_code</a> for more details. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -102,18 +106,12 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga5fb46ce3a463af190aa6b160076223c4"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_error_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__error-t.html#ga5fb46ce3a463af190aa6b160076223c4">dsn_error_register</a> (const char *name)</td></tr>
-<tr class="memdesc:ga5fb46ce3a463af190aa6b160076223c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">register error code  <a href="#ga5fb46ce3a463af190aa6b160076223c4">More...</a><br /></td></tr>
 <tr class="separator:ga5fb46ce3a463af190aa6b160076223c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga97c2a78682cb78cf9e0baec22ab8bc12"><td class="memItemLeft" align="right" valign="top">DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__error-t.html#ga97c2a78682cb78cf9e0baec22ab8bc12">dsn_error_to_string</a> (dsn_error_t err)</td></tr>
-<tr class="memdesc:ga97c2a78682cb78cf9e0baec22ab8bc12"><td class="mdescLeft">&#160;</td><td class="mdescRight">translate interger error code to a string  <a href="#ga97c2a78682cb78cf9e0baec22ab8bc12">More...</a><br /></td></tr>
 <tr class="separator:ga97c2a78682cb78cf9e0baec22ab8bc12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0b46fee8f0fee941f1e649b604c92e6c"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_error_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__error-t.html#ga0b46fee8f0fee941f1e649b604c92e6c">dsn_error_from_string</a> (const char *s, dsn_error_t default_err)</td></tr>
-<tr class="memdesc:ga0b46fee8f0fee941f1e649b604c92e6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">parse string error code into integer code  <a href="#ga0b46fee8f0fee941f1e649b604c92e6c">More...</a><br /></td></tr>
 <tr class="separator:ga0b46fee8f0fee941f1e649b604c92e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Error code registration and translation between string and integer. </p>
-<p>See <a class="el" href="classdsn_1_1error__code.html">error_code</a> for more details. </p>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ga5fb46ce3a463af190aa6b160076223c4"></a>
 <div class="memitem">
@@ -203,11 +201,7 @@ Functions</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

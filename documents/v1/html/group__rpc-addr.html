@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -82,134 +87,105 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">RPC Address Utilities<div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-c.html">Core API</a> &raquo; <a class="el" href="group__rpc.html">Remote Procedure Call (RPC)</a></div></div>  </div>
+<div class="title">RPC Address Utilities<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-c.html">Core Service API</a> &raquo; <a class="el" href="group__rpc.html">Remote Procedure Call (RPC)</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>RPC Address Utilities.  
-<a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__address__t.html">dsn_address_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">rpc address, which is always encoded into a 64-bit integer  <a href="structdsn__address__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdsn_1_1rpc__address.html">dsn::rpc_address</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdsn_1_1url__host__address.html">dsn::url_host_address</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:gae8817c52d6ce1a60fec4c13dd7def4d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae8817c52d6ce1a60fec4c13dd7def4d5"></a>
 typedef enum <a class="el" href="group__rpc-addr.html#ga0f5497bac4044cfaf2b89133736d1795">dsn_host_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gae8817c52d6ce1a60fec4c13dd7def4d5">dsn_host_type_t</a></td></tr>
-<tr class="memdesc:gae8817c52d6ce1a60fec4c13dd7def4d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">rpc address host type <br /></td></tr>
 <tr class="separator:gae8817c52d6ce1a60fec4c13dd7def4d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5e72b7e4103da5c5e03274b1e61a4f84"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga5e72b7e4103da5c5e03274b1e61a4f84"></a>
 typedef struct <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga5e72b7e4103da5c5e03274b1e61a4f84">dsn_address_t</a></td></tr>
-<tr class="memdesc:ga5e72b7e4103da5c5e03274b1e61a4f84"><td class="mdescLeft">&#160;</td><td class="mdescRight">rpc address, which is always encoded into a 64-bit integer <br /></td></tr>
 <tr class="separator:ga5e72b7e4103da5c5e03274b1e61a4f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad995fd71a4382154ec2d08cc328787f6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad995fd71a4382154ec2d08cc328787f6"></a>
-typedef ref_ptr&lt; rpc_group_address &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::address_group_ptr</b></td></tr>
-<tr class="separator:gad995fd71a4382154ec2d08cc328787f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ga0f5497bac4044cfaf2b89133736d1795"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga0f5497bac4044cfaf2b89133736d1795">dsn_host_type_t</a> { <br />
-&#160;&#160;<b>HOST_TYPE_INVALID</b> = 0, 
+<tr class="memitem:ga0f5497bac4044cfaf2b89133736d1795"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga0f5497bac4044cfaf2b89133736d1795">dsn_host_type_t</a> { <b>HOST_TYPE_INVALID</b> = 0, 
 <a class="el" href="group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aebe58bd51c617e7f9024189e369dc8e9">HOST_TYPE_IPV4</a> = 1, 
 <a class="el" href="group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795a34328cf8b3a8c23500835546f708a56c">HOST_TYPE_GROUP</a> = 2, 
-<a class="el" href="group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aa50d4a851ac789ab6dcd75213fbb08da">HOST_TYPE_URI</a> = 3, 
-<br />
-&#160;&#160;<b>HOST_TYPE_COUNT</b> = 4
-<br />
- }<tr class="memdesc:ga0f5497bac4044cfaf2b89133736d1795"><td class="mdescLeft">&#160;</td><td class="mdescRight">rpc address host type  <a href="group__rpc-addr.html#ga0f5497bac4044cfaf2b89133736d1795">More...</a><br /></td></tr>
-</td></tr>
+<a class="el" href="group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aa50d4a851ac789ab6dcd75213fbb08da">HOST_TYPE_URI</a> = 3
+ }</td></tr>
 <tr class="separator:ga0f5497bac4044cfaf2b89133736d1795"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga4c5861a8d935989eace9b06e894a79e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4c5861a8d935989eace9b06e894a79e8"></a>
 DSN_API uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga4c5861a8d935989eace9b06e894a79e8">dsn_ipv4_from_host</a> (const char *name)</td></tr>
-<tr class="memdesc:ga4c5861a8d935989eace9b06e894a79e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">translate from hostname to ipv4 in host machine order <br /></td></tr>
 <tr class="separator:ga4c5861a8d935989eace9b06e894a79e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7af02088472e0c3e0ccb09d23be493f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7af02088472e0c3e0ccb09d23be493f5"></a>
 DSN_API uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga7af02088472e0c3e0ccb09d23be493f5">dsn_ipv4_local</a> (const char *network_interface)</td></tr>
-<tr class="memdesc:ga7af02088472e0c3e0ccb09d23be493f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">get local ipv4 according to the given network interface name <br /></td></tr>
 <tr class="separator:ga7af02088472e0c3e0ccb09d23be493f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga254ddcfa7f122c76e31b6dd49a62d093"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga254ddcfa7f122c76e31b6dd49a62d093"></a>
 DSN_API <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga254ddcfa7f122c76e31b6dd49a62d093">dsn_address_build</a> (const char *host, uint16_t port)</td></tr>
-<tr class="memdesc:ga254ddcfa7f122c76e31b6dd49a62d093"><td class="mdescLeft">&#160;</td><td class="mdescRight">build a RPC address from given host name or IPV4 string, and port <br /></td></tr>
 <tr class="separator:ga254ddcfa7f122c76e31b6dd49a62d093"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga045907a029b776687f024f657e3564f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga045907a029b776687f024f657e3564f5"></a>
 DSN_API <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga045907a029b776687f024f657e3564f5">dsn_address_build_ipv4</a> (uint32_t ipv4, uint16_t port)</td></tr>
-<tr class="memdesc:ga045907a029b776687f024f657e3564f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">build a RPC address from a given ipv4 in host machine order and port <br /></td></tr>
 <tr class="separator:ga045907a029b776687f024f657e3564f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga458d7638c40d9c81cf7e5dd9a4bb3088"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga458d7638c40d9c81cf7e5dd9a4bb3088"></a>
 DSN_API <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga458d7638c40d9c81cf7e5dd9a4bb3088">dsn_address_build_group</a> (dsn_group_t g)</td></tr>
-<tr class="memdesc:ga458d7638c40d9c81cf7e5dd9a4bb3088"><td class="mdescLeft">&#160;</td><td class="mdescRight">build a RPC address from a group address (created using <a class="el" href="group__rpc-addr.html#gae2f5e3c7926d6183b702b540c7d1ac8b">dsn_group_build</a>) <br /></td></tr>
 <tr class="separator:ga458d7638c40d9c81cf7e5dd9a4bb3088"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga669918b01e9ed0f1292ef77167c11118"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga669918b01e9ed0f1292ef77167c11118"></a>
 DSN_API <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga669918b01e9ed0f1292ef77167c11118">dsn_address_build_uri</a> (dsn_uri_t uri)</td></tr>
-<tr class="memdesc:ga669918b01e9ed0f1292ef77167c11118"><td class="mdescLeft">&#160;</td><td class="mdescRight">build a RPC address from a URI address (created using <a class="el" href="group__rpc-addr.html#gac89d502839a163a25890b060407eff6e">dsn_uri_build</a>) <br /></td></tr>
 <tr class="separator:ga669918b01e9ed0f1292ef77167c11118"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6ae70ea264928c46be6e9a39bd70301f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6ae70ea264928c46be6e9a39bd70301f"></a>
 DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga6ae70ea264928c46be6e9a39bd70301f">dsn_address_to_string</a> (<a class="el" href="structdsn__address__t.html">dsn_address_t</a> addr)</td></tr>
-<tr class="memdesc:ga6ae70ea264928c46be6e9a39bd70301f"><td class="mdescLeft">&#160;</td><td class="mdescRight">dump a RPC address to a meaningful string for logging purpose <br /></td></tr>
 <tr class="separator:ga6ae70ea264928c46be6e9a39bd70301f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac89d502839a163a25890b060407eff6e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac89d502839a163a25890b060407eff6e"></a>
 DSN_API dsn_uri_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gac89d502839a163a25890b060407eff6e">dsn_uri_build</a> (const char *url)</td></tr>
-<tr class="memdesc:gac89d502839a163a25890b060407eff6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">build URI address from a string URL, must be destroyed later using <a class="el" href="group__rpc-addr.html#ga19b4bc5711c9c867a64db6af7aa4a2f8">dsn_uri_destroy</a> <br /></td></tr>
 <tr class="separator:gac89d502839a163a25890b060407eff6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga19b4bc5711c9c867a64db6af7aa4a2f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga19b4bc5711c9c867a64db6af7aa4a2f8"></a>
 DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga19b4bc5711c9c867a64db6af7aa4a2f8">dsn_uri_destroy</a> (dsn_uri_t uri)</td></tr>
-<tr class="memdesc:ga19b4bc5711c9c867a64db6af7aa4a2f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">destroy a URI address <br /></td></tr>
 <tr class="separator:ga19b4bc5711c9c867a64db6af7aa4a2f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae2f5e3c7926d6183b702b540c7d1ac8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae2f5e3c7926d6183b702b540c7d1ac8b"></a>
 DSN_API dsn_group_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gae2f5e3c7926d6183b702b540c7d1ac8b">dsn_group_build</a> (const char *name)</td></tr>
-<tr class="memdesc:gae2f5e3c7926d6183b702b540c7d1ac8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">build a group address with a name, must be destroyed later using <a class="el" href="group__rpc-addr.html#ga184fdb2d87eb24f2a74dfe0bf45d8bd4">dsn_group_destroy</a> <br /></td></tr>
 <tr class="separator:gae2f5e3c7926d6183b702b540c7d1ac8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafbda740fec291a38e7cb8e4da26e62ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafbda740fec291a38e7cb8e4da26e62ec"></a>
+DSN_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gafbda740fec291a38e7cb8e4da26e62ec">dsn_group_count</a> (dsn_group_t g)</td></tr>
+<tr class="separator:gafbda740fec291a38e7cb8e4da26e62ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9ad2ecf0452e53bfbb0b130ca4670712"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9ad2ecf0452e53bfbb0b130ca4670712"></a>
 DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga9ad2ecf0452e53bfbb0b130ca4670712">dsn_group_add</a> (dsn_group_t g, <a class="el" href="structdsn__address__t.html">dsn_address_t</a> ep)</td></tr>
-<tr class="memdesc:ga9ad2ecf0452e53bfbb0b130ca4670712"><td class="mdescLeft">&#160;</td><td class="mdescRight">add an RPC address into the group address <br /></td></tr>
 <tr class="separator:ga9ad2ecf0452e53bfbb0b130ca4670712"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaec2155935fae9bf995df341e24abf010"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaec2155935fae9bf995df341e24abf010"></a>
 DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gaec2155935fae9bf995df341e24abf010">dsn_group_remove</a> (dsn_group_t g, <a class="el" href="structdsn__address__t.html">dsn_address_t</a> ep)</td></tr>
-<tr class="memdesc:gaec2155935fae9bf995df341e24abf010"><td class="mdescLeft">&#160;</td><td class="mdescRight">remove an RPC address into the group address <br /></td></tr>
 <tr class="separator:gaec2155935fae9bf995df341e24abf010"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8ff75b259b97c4d4d5d3349272126614"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8ff75b259b97c4d4d5d3349272126614"></a>
 DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga8ff75b259b97c4d4d5d3349272126614">dsn_group_set_leader</a> (dsn_group_t g, <a class="el" href="structdsn__address__t.html">dsn_address_t</a> ep)</td></tr>
-<tr class="memdesc:ga8ff75b259b97c4d4d5d3349272126614"><td class="mdescLeft">&#160;</td><td class="mdescRight">set an RPC address as the leader in the group address <br /></td></tr>
 <tr class="separator:ga8ff75b259b97c4d4d5d3349272126614"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga073b01fdb08a89048f09ccbb329d297a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga073b01fdb08a89048f09ccbb329d297a"></a>
 DSN_API <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga073b01fdb08a89048f09ccbb329d297a">dsn_group_get_leader</a> (dsn_group_t g)</td></tr>
-<tr class="memdesc:ga073b01fdb08a89048f09ccbb329d297a"><td class="mdescLeft">&#160;</td><td class="mdescRight">get leader from the group address <br /></td></tr>
 <tr class="separator:ga073b01fdb08a89048f09ccbb329d297a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6b832f25fe779b969abc29fca6d5a5d8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6b832f25fe779b969abc29fca6d5a5d8"></a>
 DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga6b832f25fe779b969abc29fca6d5a5d8">dsn_group_is_leader</a> (dsn_group_t g, <a class="el" href="structdsn__address__t.html">dsn_address_t</a> ep)</td></tr>
-<tr class="memdesc:ga6b832f25fe779b969abc29fca6d5a5d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether the given endpoint is the leader in the group <br /></td></tr>
 <tr class="separator:ga6b832f25fe779b969abc29fca6d5a5d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabaa7e5a2a56e5e113dd342d75b073d7c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabaa7e5a2a56e5e113dd342d75b073d7c"></a>
-DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gabaa7e5a2a56e5e113dd342d75b073d7c">dsn_group_is_update_leader_on_rpc_forward</a> (dsn_group_t g)</td></tr>
-<tr class="memdesc:gabaa7e5a2a56e5e113dd342d75b073d7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether auto-update of the leader in rDSN runtime is allowed, default is true <br /></td></tr>
-<tr class="separator:gabaa7e5a2a56e5e113dd342d75b073d7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga35b702c92cc838c9ffc7c4dffc85b62e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga35b702c92cc838c9ffc7c4dffc85b62e"></a>
-DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga35b702c92cc838c9ffc7c4dffc85b62e">dsn_group_set_update_leader_on_rpc_forward</a> (dsn_group_t g, bool v)</td></tr>
-<tr class="memdesc:ga35b702c92cc838c9ffc7c4dffc85b62e"><td class="mdescLeft">&#160;</td><td class="mdescRight">set auto-update mode of the leader in rDSN runtime for this group address, true for yes <br /></td></tr>
-<tr class="separator:ga35b702c92cc838c9ffc7c4dffc85b62e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga795c3d1ce9086141a3fe9c55a5b7bb9f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga795c3d1ce9086141a3fe9c55a5b7bb9f"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga795c3d1ce9086141a3fe9c55a5b7bb9f">dsn_group_is_update_leader_automatically</a> (dsn_group_t g)</td></tr>
+<tr class="separator:ga795c3d1ce9086141a3fe9c55a5b7bb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad76f7db706bc35ff19cf02b6bc5e9a61"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad76f7db706bc35ff19cf02b6bc5e9a61"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gad76f7db706bc35ff19cf02b6bc5e9a61">dsn_group_set_update_leader_automatically</a> (dsn_group_t g, bool v)</td></tr>
+<tr class="separator:gad76f7db706bc35ff19cf02b6bc5e9a61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9bda80b86bb88d1325ab0aef51929c67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9bda80b86bb88d1325ab0aef51929c67"></a>
 DSN_API <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga9bda80b86bb88d1325ab0aef51929c67">dsn_group_next</a> (dsn_group_t g, <a class="el" href="structdsn__address__t.html">dsn_address_t</a> ep)</td></tr>
-<tr class="memdesc:ga9bda80b86bb88d1325ab0aef51929c67"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the next address in the group right after (circularly) given ep, if ep is invalid, a random member is returned <br /></td></tr>
 <tr class="separator:ga9bda80b86bb88d1325ab0aef51929c67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac06dcc4735fd6613179b0b3c6f41da92"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac06dcc4735fd6613179b0b3c6f41da92"></a>
 DSN_API <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gac06dcc4735fd6613179b0b3c6f41da92">dsn_group_forward_leader</a> (dsn_group_t g)</td></tr>
-<tr class="memdesc:gac06dcc4735fd6613179b0b3c6f41da92"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the next address after (circularly) the current leader as the group leader <br /></td></tr>
 <tr class="separator:gac06dcc4735fd6613179b0b3c6f41da92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga184fdb2d87eb24f2a74dfe0bf45d8bd4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga184fdb2d87eb24f2a74dfe0bf45d8bd4"></a>
 DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#ga184fdb2d87eb24f2a74dfe0bf45d8bd4">dsn_group_destroy</a> (dsn_group_t g)</td></tr>
-<tr class="memdesc:ga184fdb2d87eb24f2a74dfe0bf45d8bd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">destroy the group address object <br /></td></tr>
 <tr class="separator:ga184fdb2d87eb24f2a74dfe0bf45d8bd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaabf47e100587b2711234805a191ab63c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaabf47e100587b2711234805a191ab63c"></a>
 DSN_API <a class="el" href="structdsn__address__t.html">dsn_address_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-addr.html#gaabf47e100587b2711234805a191ab63c">dsn_primary_address</a> ()</td></tr>
-<tr class="memdesc:gaabf47e100587b2711234805a191ab63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the primary address of the rpc engine attached to the current thread <br /></td></tr>
 <tr class="separator:gaabf47e100587b2711234805a191ab63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab19c3713e2385f07acba571515d1daf0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab19c3713e2385f07acba571515d1daf0"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>dsn::rpc_address::rpc_address</b> (uint32_t ip, uint16_t port)</td></tr>
@@ -259,9 +235,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::rpc_addre
 <tr class="memitem:gaf069b1af342de657b14d6487805781a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf069b1af342de657b14d6487805781a3"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::rpc_address::from_string_ipv4</b> (const char *s)</td></tr>
 <tr class="separator:gaf069b1af342de657b14d6487805781a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0daccb407546f079e6d9072fbb22cae7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0daccb407546f079e6d9072fbb22cae7"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::url_host_address::url_host_address</b> (const char *url_or_host_port)</td></tr>
+<tr class="separator:ga0daccb407546f079e6d9072fbb22cae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>RPC Address Utilities. </p>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a class="anchor" id="ga0f5497bac4044cfaf2b89133736d1795"></a>
 <div class="memitem">
@@ -289,11 +266,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::rpc_address::fro
 </div>
 </div>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

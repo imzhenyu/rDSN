@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['size',['size',['../structdsn__cli__reply.html#a63a0aae952f802cffcc9f8fd6354cccc',1,'dsn_cli_reply']]],
-  ['start',['start',['../structdsn__app_1_1layer1__callbacks.html#a05f1696c192012809953984b7cfb3262',1,'dsn_app::layer1_callbacks']]]
+  ['parameter',['parameter',['../uniondsn__msg__context__t.html#a0d906b61679f2abfbac62e03e0c88d52',1,'dsn_msg_context_t']]],
+  ['parameter_5ftype',['parameter_type',['../uniondsn__msg__context__t.html#a2cd1fb6173adf5c99bbe25f34cca23e2',1,'dsn_msg_context_t']]],
+  ['partition_5findex',['partition_index',['../uniondsn__global__partition__id.html#a5966a5c162621a6b70fa8fe3924df86b',1,'dsn_global_partition_id']]],
+  ['primary_5faddress',['primary_address',['../structdsn__app__info.html#ad50d50c0c93250fdb5680ecf9d2de460',1,'dsn_app_info']]]
 ];

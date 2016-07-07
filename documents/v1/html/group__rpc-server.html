@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -80,12 +85,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Server-Side RPC Primitives<div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-c.html">Core API</a> &raquo; <a class="el" href="group__rpc.html">Remote Procedure Call (RPC)</a></div></div>  </div>
+<div class="title">Server-Side RPC Primitives<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-c.html">Core Service API</a> &raquo; <a class="el" href="group__rpc.html">Remote Procedure Call (RPC)</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Server-Side RPC Primitives.  
-<a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -96,56 +99,46 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga555934f8d47e031c48cb9f8f0703d0ae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga555934f8d47e031c48cb9f8f0703d0ae"></a>
-DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-server.html#ga555934f8d47e031c48cb9f8f0703d0ae">dsn_rpc_register_handler</a> (dsn_task_code_t code, const char *name, <a class="el" href="group__exec-model.html#ga7fd5300dcd75225d3420c0f2b71ea7f1">dsn_rpc_request_handler_t</a> cb, void *context)</td></tr>
-<tr class="memdesc:ga555934f8d47e031c48cb9f8f0703d0ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">register callback to handle RPC request <br /></td></tr>
-<tr class="separator:ga555934f8d47e031c48cb9f8f0703d0ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6ad59faeb319e78159d0f6a017d07ae4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6ad59faeb319e78159d0f6a017d07ae4"></a>
-DSN_API void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-server.html#ga6ad59faeb319e78159d0f6a017d07ae4">dsn_rpc_unregiser_handler</a> (dsn_task_code_t code)</td></tr>
-<tr class="memdesc:ga6ad59faeb319e78159d0f6a017d07ae4"><td class="mdescLeft">&#160;</td><td class="mdescRight">unregister callback to handle RPC request, and returns void* context upon <a class="el" href="group__rpc-server.html#ga555934f8d47e031c48cb9f8f0703d0ae">dsn_rpc_register_handler</a> <br /></td></tr>
-<tr class="separator:ga6ad59faeb319e78159d0f6a017d07ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3e2c93a27e2f520799aa6bc4f8e3b150"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga3e2c93a27e2f520799aa6bc4f8e3b150"></a>
-DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-server.html#ga3e2c93a27e2f520799aa6bc4f8e3b150">dsn_rpc_reply</a> (dsn_message_t response)</td></tr>
-<tr class="memdesc:ga3e2c93a27e2f520799aa6bc4f8e3b150"><td class="mdescLeft">&#160;</td><td class="mdescRight">reply with a response which is created using dsn_msg_create_response <br /></td></tr>
-<tr class="separator:ga3e2c93a27e2f520799aa6bc4f8e3b150"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9700e41d164d7060da54d45d32c02eef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9700e41d164d7060da54d45d32c02eef"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-server.html#ga9700e41d164d7060da54d45d32c02eef">dsn_rpc_register_handler</a> (dsn_task_code_t code, const char *name, <a class="el" href="group__task-common.html#ga7fd5300dcd75225d3420c0f2b71ea7f1">dsn_rpc_request_handler_t</a> cb, void *context, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid DEFAULT(<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>{0}))</td></tr>
+<tr class="separator:ga9700e41d164d7060da54d45d32c02eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabce36eac5718ce1a07306cbf20936c7d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabce36eac5718ce1a07306cbf20936c7d"></a>
+DSN_API void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-server.html#gabce36eac5718ce1a07306cbf20936c7d">dsn_rpc_unregiser_handler</a> (dsn_task_code_t code, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid DEFAULT(<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>{0}))</td></tr>
+<tr class="separator:gabce36eac5718ce1a07306cbf20936c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadf3d8afdeba6faf0a67626397d10abaf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadf3d8afdeba6faf0a67626397d10abaf"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-server.html#gadf3d8afdeba6faf0a67626397d10abaf">dsn_rpc_reply</a> (dsn_message_t response, dsn_error_t err DEFAULT(0))</td></tr>
+<tr class="separator:gadf3d8afdeba6faf0a67626397d10abaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac4fb26611bd41f0a75af5d4d5a76ed59"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac4fb26611bd41f0a75af5d4d5a76ed59"></a>
 DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-server.html#gac4fb26611bd41f0a75af5d4d5a76ed59">dsn_rpc_forward</a> (dsn_message_t request, <a class="el" href="structdsn__address__t.html">dsn_address_t</a> addr)</td></tr>
-<tr class="memdesc:gac4fb26611bd41f0a75af5d4d5a76ed59"><td class="mdescLeft">&#160;</td><td class="mdescRight">forward the request to another server instead <br /></td></tr>
 <tr class="separator:gac4fb26611bd41f0a75af5d4d5a76ed59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9f90fc8574b8d95235373842c833bbbc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9f90fc8574b8d95235373842c833bbbc"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::serverlet</b> (const char *nm, int task_bucket_count=8)</td></tr>
 <tr class="separator:ga9f90fc8574b8d95235373842c833bbbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga763a0c183d6d6bd54030c159fc16c703"><td class="memTemplParams" colspan="2"><a class="anchor" id="ga763a0c183d6d6bd54030c159fc16c703"></a>
+<tr class="memitem:ga05eaab6f8c675b5a8c728922274e386b"><td class="memTemplParams" colspan="2"><a class="anchor" id="ga05eaab6f8c675b5a8c728922274e386b"></a>
 template&lt;typename TRequest &gt; </td></tr>
-<tr class="memitem:ga763a0c183d6d6bd54030c159fc16c703"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::register_rpc_handler</b> (dsn_task_code_t rpc_code, const char *rpc_name_, void(T::*handler)(const TRequest &amp;))</td></tr>
-<tr class="separator:ga763a0c183d6d6bd54030c159fc16c703"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae3f01c7743630aa3094c6804d69cc18b"><td class="memTemplParams" colspan="2"><a class="anchor" id="gae3f01c7743630aa3094c6804d69cc18b"></a>
+<tr class="memitem:ga05eaab6f8c675b5a8c728922274e386b"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::register_rpc_handler</b> (dsn_task_code_t rpc_code, const char *rpc_name_, void(T::*handler)(const TRequest &amp;), <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid=<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>{0})</td></tr>
+<tr class="separator:ga05eaab6f8c675b5a8c728922274e386b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae7e69fef03a291f5964c95cb72f7f511"><td class="memTemplParams" colspan="2"><a class="anchor" id="gae7e69fef03a291f5964c95cb72f7f511"></a>
 template&lt;typename TRequest , typename TResponse &gt; </td></tr>
-<tr class="memitem:gae3f01c7743630aa3094c6804d69cc18b"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::register_rpc_handler</b> (dsn_task_code_t rpc_code, const char *rpc_name_, void(T::*handler)(const TRequest &amp;, TResponse &amp;))</td></tr>
-<tr class="separator:gae3f01c7743630aa3094c6804d69cc18b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac42315ba64e2a9eaaf43789ee404eeef"><td class="memTemplParams" colspan="2"><a class="anchor" id="gac42315ba64e2a9eaaf43789ee404eeef"></a>
+<tr class="memitem:gae7e69fef03a291f5964c95cb72f7f511"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::register_rpc_handler</b> (dsn_task_code_t rpc_code, const char *rpc_name_, void(T::*handler)(const TRequest &amp;, TResponse &amp;), <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid=<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>{0})</td></tr>
+<tr class="separator:gae7e69fef03a291f5964c95cb72f7f511"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf266067e66188f1d9e25ad9d5c01e271"><td class="memTemplParams" colspan="2"><a class="anchor" id="gaf266067e66188f1d9e25ad9d5c01e271"></a>
 template&lt;typename TRequest , typename TResponse &gt; </td></tr>
-<tr class="memitem:gac42315ba64e2a9eaaf43789ee404eeef"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::register_async_rpc_handler</b> (dsn_task_code_t rpc_code, const char *rpc_name_, void(T::*handler)(const TRequest &amp;, rpc_replier&lt; TResponse &gt; &amp;))</td></tr>
-<tr class="separator:gac42315ba64e2a9eaaf43789ee404eeef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2784b842e8b8234f7024493c5412a25c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2784b842e8b8234f7024493c5412a25c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::register_rpc_handler</b> (dsn_task_code_t rpc_code, const char *rpc_name_, void(T::*handler)(dsn_message_t))</td></tr>
-<tr class="separator:ga2784b842e8b8234f7024493c5412a25c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa7e8841b28a609f80f1edb15dd36e3fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa7e8841b28a609f80f1edb15dd36e3fd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::unregister_rpc_handler</b> (dsn_task_code_t rpc_code)</td></tr>
-<tr class="separator:gaa7e8841b28a609f80f1edb15dd36e3fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf266067e66188f1d9e25ad9d5c01e271"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::register_async_rpc_handler</b> (dsn_task_code_t rpc_code, const char *rpc_name_, void(T::*handler)(const TRequest &amp;, rpc_replier&lt; TResponse &gt; &amp;), <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid=<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>{0})</td></tr>
+<tr class="separator:gaf266067e66188f1d9e25ad9d5c01e271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae50748d7a742041e7d83e452ba8637b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae50748d7a742041e7d83e452ba8637b5"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::register_rpc_handler</b> (dsn_task_code_t rpc_code, const char *rpc_name_, void(T::*handler)(dsn_message_t), <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid=<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>{0})</td></tr>
+<tr class="separator:gae50748d7a742041e7d83e452ba8637b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga273c3a7a5280b55354d044857b79bef4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga273c3a7a5280b55354d044857b79bef4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::unregister_rpc_handler</b> (dsn_task_code_t rpc_code, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid=<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>{0})</td></tr>
+<tr class="separator:ga273c3a7a5280b55354d044857b79bef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac0f261f377bc8387ea7fdffac9103872"><td class="memTemplParams" colspan="2"><a class="anchor" id="gac0f261f377bc8387ea7fdffac9103872"></a>
 template&lt;typename TResponse &gt; </td></tr>
 <tr class="memitem:gac0f261f377bc8387ea7fdffac9103872"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::serverlet&lt; T &gt;::reply</b> (dsn_message_t request, const TResponse &amp;resp)</td></tr>
 <tr class="separator:gac0f261f377bc8387ea7fdffac9103872"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Server-Side RPC Primitives. </p>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

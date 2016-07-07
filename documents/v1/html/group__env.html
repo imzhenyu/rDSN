@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -79,12 +84,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Environment<div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-c.html">Core API</a></div></div>  </div>
+<div class="title">Environment<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-c.html">Core Service API</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Non-deterministic Environment Input.  
-<a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
+<p>Note developers can easily plugin their own implementation to replace the underneath implementation of these primitives. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -93,7 +97,6 @@ DSN_API uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_now_n
 <tr class="separator:gac93b786c13b902e77aad5c846ad555fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2fa6de653afd74ec0064dd0625154772"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2fa6de653afd74ec0064dd0625154772"></a>
 DSN_API uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__env.html#ga2fa6de653afd74ec0064dd0625154772">dsn_random64</a> (uint64_t min, uint64_t max)</td></tr>
-<tr class="memdesc:ga2fa6de653afd74ec0064dd0625154772"><td class="mdescLeft">&#160;</td><td class="mdescRight">return [min, max] <br /></td></tr>
 <tr class="separator:ga2fa6de653afd74ec0064dd0625154772"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4f0f8e1cc946c433036786d13e6f0a69"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4f0f8e1cc946c433036786d13e6f0a69"></a>
 __inline uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_now_us</b> ()</td></tr>
@@ -103,21 +106,13 @@ __inline uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_now_
 <tr class="separator:ga11fd01598dca20d9e27af37c663e20f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa107176ad30a540ea799dec35dd9b724"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa107176ad30a540ea799dec35dd9b724"></a>
 __inline uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__env.html#gaa107176ad30a540ea799dec35dd9b724">dsn_random32</a> (uint32_t min, uint32_t max)</td></tr>
-<tr class="memdesc:gaa107176ad30a540ea799dec35dd9b724"><td class="mdescLeft">&#160;</td><td class="mdescRight">return [min, max] <br /></td></tr>
 <tr class="separator:gaa107176ad30a540ea799dec35dd9b724"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafe59fc3f7cfa8567d043c8fa2119dd4f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafe59fc3f7cfa8567d043c8fa2119dd4f"></a>
 __inline double&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_probability</b> ()</td></tr>
 <tr class="separator:gafe59fc3f7cfa8567d043c8fa2119dd4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Non-deterministic Environment Input. </p>
-<p>Note developers can easily plugin their own implementation to replace the underneath implementation of these primitives. </p>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

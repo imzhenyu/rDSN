@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['mask',['mask',['../structdsn__app.html#a1ee91f5fadccbdf739e8173863e8b7ce',1,'dsn_app']]],
-  ['message',['message',['../structdsn__cli__reply.html#a8a2e913a8fe79471ef80ec68286f3fb1',1,'dsn_cli_reply']]]
+  ['hash',['hash',['../structdsn__msg__options__t.html#adcbe648df5a6a19505371baff2bfd32d',1,'dsn_msg_options_t']]]
 ];

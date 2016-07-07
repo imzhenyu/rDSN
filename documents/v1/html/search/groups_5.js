@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['global_20checker',['Global Checker',['../group__app-checker.html',1,'']]]
+  ['how_2dtos',['How-Tos',['../group__how-to.html',1,'']]]
 ];

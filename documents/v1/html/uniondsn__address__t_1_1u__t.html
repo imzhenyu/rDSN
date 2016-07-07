@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -98,46 +103,42 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a562048015a3564b6e6a49972e6c1b1a2"><td class="memItemLeft" ><a class="anchor" id="a562048015a3564b6e6a49972e6c1b1a2"></a>
-struct {</td></tr>
-<tr class="memitem:aa7eabd9f20f209f9805618a8055b5208"><td class="memItemLeft" >
-&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>type</b>: 2</td></tr>
-<tr class="separator:aa7eabd9f20f209f9805618a8055b5208"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7db41120c13f5fbeeb8f82fd0fc1695"><td class="memItemLeft" >
-&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>padding</b>: 14</td></tr>
-<tr class="separator:aa7db41120c13f5fbeeb8f82fd0fc1695"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc99fddb6048f48b0bc4d326a7e46d5b"><td class="memItemLeft" >
-&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>port</b>: 16</td></tr>
-<tr class="separator:adc99fddb6048f48b0bc4d326a7e46d5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d1d9c47f404dd113e6d1af1395fa439"><td class="memItemLeft" >
-&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>ip</b>: 32</td></tr>
-<tr class="separator:a7d1d9c47f404dd113e6d1af1395fa439"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a562048015a3564b6e6a49972e6c1b1a2"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uniondsn__address__t_1_1u__t.html#a562048015a3564b6e6a49972e6c1b1a2">v4</a></td></tr>
-<tr class="memdesc:a562048015a3564b6e6a49972e6c1b1a2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aebe58bd51c617e7f9024189e369dc8e9">HOST_TYPE_IPV4</a> <br /></td></tr>
-<tr class="separator:a562048015a3564b6e6a49972e6c1b1a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3ad201c29bfed258a62a1aca6975ca5"><td class="memItemLeft" ><a class="anchor" id="ab3ad201c29bfed258a62a1aca6975ca5"></a>
-struct {</td></tr>
-<tr class="memitem:ac233f1af699d448a66917694bd57c268"><td class="memItemLeft" >
-&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>type</b>: 2</td></tr>
-<tr class="separator:ac233f1af699d448a66917694bd57c268"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a662df36ae117df9223d854bfe9b929e1"><td class="memItemLeft" >
-&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>uri</b>: 62</td></tr>
-<tr class="separator:a662df36ae117df9223d854bfe9b929e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3ad201c29bfed258a62a1aca6975ca5"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uniondsn__address__t_1_1u__t.html#ab3ad201c29bfed258a62a1aca6975ca5">uri</a></td></tr>
-<tr class="memdesc:ab3ad201c29bfed258a62a1aca6975ca5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aa50d4a851ac789ab6dcd75213fbb08da">HOST_TYPE_URI</a> <br /></td></tr>
-<tr class="separator:ab3ad201c29bfed258a62a1aca6975ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cd16f6d4a31a394af15b6703a6b8057"><td class="memItemLeft" ><a class="anchor" id="a0cd16f6d4a31a394af15b6703a6b8057"></a>
+<tr class="memitem:a0a4e3badedf03ff1385958df5a5ea8ec"><td class="memItemLeft" ><a class="anchor" id="a0a4e3badedf03ff1385958df5a5ea8ec"></a>
 struct {</td></tr>
 <tr class="memitem:a26d40a474cc305b6dc81946bcce55c33"><td class="memItemLeft" >
 &#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>type</b>: 2</td></tr>
 <tr class="separator:a26d40a474cc305b6dc81946bcce55c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe263a33836ce9e5ca57d99a4ced8bb7"><td class="memItemLeft" >
+<tr class="memitem:a1d89d52ed0fe11dda8323a508907a710"><td class="memItemLeft" >
+&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>padding</b>: 14</td></tr>
+<tr class="separator:a1d89d52ed0fe11dda8323a508907a710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afff6046d8b9b7b0ad7dbd275338d2862"><td class="memItemLeft" >
+&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>port</b>: 16</td></tr>
+<tr class="separator:afff6046d8b9b7b0ad7dbd275338d2862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab23b73e350370e7762c5bb808683e27b"><td class="memItemLeft" >
+&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>ip</b>: 32</td></tr>
+<tr class="separator:ab23b73e350370e7762c5bb808683e27b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a4e3badedf03ff1385958df5a5ea8ec"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uniondsn__address__t_1_1u__t.html#a0a4e3badedf03ff1385958df5a5ea8ec">v4</a></td></tr>
+<tr class="separator:a0a4e3badedf03ff1385958df5a5ea8ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af161f35dd906eb2283264873b8f9084a"><td class="memItemLeft" ><a class="anchor" id="af161f35dd906eb2283264873b8f9084a"></a>
+struct {</td></tr>
+<tr class="memitem:afc70c50cd27e374a82fbff003d0a7ce1"><td class="memItemLeft" >
+&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>type</b>: 2</td></tr>
+<tr class="separator:afc70c50cd27e374a82fbff003d0a7ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03142ec3f3127e5210f2ad04ac9900b7"><td class="memItemLeft" >
+&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>uri</b>: 62</td></tr>
+<tr class="separator:a03142ec3f3127e5210f2ad04ac9900b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af161f35dd906eb2283264873b8f9084a"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uniondsn__address__t_1_1u__t.html#af161f35dd906eb2283264873b8f9084a">uri</a></td></tr>
+<tr class="separator:af161f35dd906eb2283264873b8f9084a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89b09f740dcec961a6f5688d2a76dfd9"><td class="memItemLeft" ><a class="anchor" id="a89b09f740dcec961a6f5688d2a76dfd9"></a>
+struct {</td></tr>
+<tr class="memitem:ab03799bf3569d1a412ef20f39e423925"><td class="memItemLeft" >
+&#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<b>type</b>: 2</td></tr>
+<tr class="separator:ab03799bf3569d1a412ef20f39e423925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac82c4ba960fc75981c2bc188db41a7f4"><td class="memItemLeft" >
 &#160;&#160;&#160;unsigned long long&#160;&#160;&#160;<a class="el" href="uniondsn__address__t_1_1u__t.html#a24c9d423c33c32a18a4391aaee282080">group</a>: 62</td></tr>
-<tr class="memdesc:abe263a33836ce9e5ca57d99a4ced8bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">dsn_group_t <br /></td></tr>
-<tr class="separator:abe263a33836ce9e5ca57d99a4ced8bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cd16f6d4a31a394af15b6703a6b8057"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uniondsn__address__t_1_1u__t.html#a0cd16f6d4a31a394af15b6703a6b8057">group</a></td></tr>
-<tr class="memdesc:a0cd16f6d4a31a394af15b6703a6b8057"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795a34328cf8b3a8c23500835546f708a56c">HOST_TYPE_GROUP</a> <br /></td></tr>
-<tr class="separator:a0cd16f6d4a31a394af15b6703a6b8057"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ac82c4ba960fc75981c2bc188db41a7f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89b09f740dcec961a6f5688d2a76dfd9"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uniondsn__address__t_1_1u__t.html#a89b09f740dcec961a6f5688d2a76dfd9">group</a></td></tr>
+<tr class="separator:a89b09f740dcec961a6f5688d2a76dfd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa66895dad7394cd904e5ef9a685e5ebf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa66895dad7394cd904e5ef9a685e5ebf"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>value</b></td></tr>
 <tr class="separator:aa66895dad7394cd904e5ef9a685e5ebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,11 +147,7 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>value</b></td></t
 <li>include/dsn/c/<a class="el" href="api__layer1_8h_source.html">api_layer1.h</a></li>
 </ul>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

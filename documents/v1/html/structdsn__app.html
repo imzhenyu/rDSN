@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -89,56 +94,46 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structdsn__app-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">dsn_app Struct Reference<div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-models.html">Overview</a> &raquo; <a class="el" href="group__app-model.html">Application Model</a></div></div>  </div>
+<div class="title">dsn_app Struct Reference<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-c.html">Core Service API</a> &raquo; <a class="el" href="group__service-api-model.html">Application and Framework Models</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>developers define the following <a class="el" href="structdsn__app.html" title="developers define the following dsn_app data structure, and passes it to rDSN through dsn_register_ap...">dsn_app</a> data structure, and passes it to rDSN through <a class="el" href="group__app-model.html#ga74654f84f77a6fcec3682dae6bc521e5">dsn_register_app</a> so that the latter can manage the app appropriately.  
- <a href="structdsn__app.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer1__callbacks.html">layer1_callbacks</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">layer 1 app definition, mask = DSN_APP_MASK_DEFAULT  <a href="structdsn__app_1_1layer1__callbacks.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer2__callbacks.html">layer2_callbacks</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: layer 2 app definition.  <a href="structdsn__app_1_1layer2__callbacks.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app_1_1layer3__callbacks.html">layer3_callbacks</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: layer 3 app definition.  <a href="structdsn__app_1_1layer3__callbacks.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a1ee91f5fadccbdf739e8173863e8b7ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1ee91f5fadccbdf739e8173863e8b7ce"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app.html#a1ee91f5fadccbdf739e8173863e8b7ce">mask</a></td></tr>
-<tr class="memdesc:a1ee91f5fadccbdf739e8173863e8b7ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">application capability mask <br /></td></tr>
 <tr class="separator:a1ee91f5fadccbdf739e8173863e8b7ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dccaa5ebcdc8c8e69275135b6c3261d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7dccaa5ebcdc8c8e69275135b6c3261d"></a>
 char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__app.html#a7dccaa5ebcdc8c8e69275135b6c3261d">type_name</a> [DSN_MAX_APP_TYPE_NAME_LENGTH]</td></tr>
-<tr class="memdesc:a7dccaa5ebcdc8c8e69275135b6c3261d"><td class="mdescLeft">&#160;</td><td class="mdescRight">type <br /></td></tr>
 <tr class="separator:a7dccaa5ebcdc8c8e69275135b6c3261d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcac61cc478d0e25f9bab1ff2d24810d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adcac61cc478d0e25f9bab1ff2d24810d"></a>
 struct <a class="el" href="structdsn__app_1_1layer1__callbacks.html">dsn_app::layer1_callbacks</a>&#160;</td><td class="memItemRight" valign="bottom"><b>layer1</b></td></tr>
 <tr class="separator:adcac61cc478d0e25f9bab1ff2d24810d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac94f3daed4182d6117658aaafcc2c974"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac94f3daed4182d6117658aaafcc2c974"></a>
-struct <a class="el" href="structdsn__app_1_1layer2__callbacks.html">dsn_app::layer2_callbacks</a>&#160;</td><td class="memItemRight" valign="bottom"><b>layer2</b></td></tr>
-<tr class="separator:ac94f3daed4182d6117658aaafcc2c974"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3aaf308acb7948617fdb73009930c92e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3aaf308acb7948617fdb73009930c92e"></a>
-struct <a class="el" href="structdsn__app_1_1layer3__callbacks.html">dsn_app::layer3_callbacks</a>&#160;</td><td class="memItemRight" valign="bottom"><b>layer3</b></td></tr>
-<tr class="separator:a3aaf308acb7948617fdb73009930c92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9496853e493ea624f0c8a976ef60dc31"><td class="memItemLeft" ><a class="anchor" id="a9496853e493ea624f0c8a976ef60dc31"></a>
+struct {</td></tr>
+<tr class="memitem:a863d37ff053f83b572025022a0f53ff2"><td class="memItemLeft" >
+&#160;&#160;&#160;struct <b>layer2_framework_callbacks</b> {</td></tr>
+<tr class="memitem:ad213c25d362793019c58718051ec052a"><td class="memItemLeft" >
+&#160;&#160;&#160;&#160;&#160;&#160;<a class="el" href="group__service-api-model.html#gaa077f2096a4a2e9eb0f958460eb40adf">dsn_framework_rpc_request_handler</a>&#160;&#160;&#160;<b>on_rpc_request</b></td></tr>
+<tr class="separator:ad213c25d362793019c58718051ec052a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a863d37ff053f83b572025022a0f53ff2"><td class="memItemLeft" valign="top">&#160;&#160;&#160;}&#160;&#160;&#160;<b>frameworks</b></td></tr>
+<tr class="separator:a863d37ff053f83b572025022a0f53ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23833d40e01057a6652d2d6344437976"><td class="memItemLeft" >
+&#160;&#160;&#160;<a class="el" href="uniondsn__app__callbacks.html">dsn_app_callbacks</a>&#160;&#160;&#160;<a class="el" href="structdsn__app.html#aafdb9c48abac541139ebe1cdee2707b1">apps</a></td></tr>
+<tr class="separator:a23833d40e01057a6652d2d6344437976"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9496853e493ea624f0c8a976ef60dc31"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><b>layer2</b></td></tr>
+<tr class="separator:a9496853e493ea624f0c8a976ef60dc31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>developers define the following <a class="el" href="structdsn__app.html" title="developers define the following dsn_app data structure, and passes it to rDSN through dsn_register_ap...">dsn_app</a> data structure, and passes it to rDSN through <a class="el" href="group__app-model.html#ga74654f84f77a6fcec3682dae6bc521e5">dsn_register_app</a> so that the latter can manage the app appropriately. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>include/dsn/c/<a class="el" href="app__model_8h_source.html">app_model.h</a></li>
 </ul>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

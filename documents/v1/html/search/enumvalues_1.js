@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['task_5ftype_5faio',['TASK_TYPE_AIO',['../group__exec-model.html#ggaaef99f60d299e960b5910c1a19f36312a169c3edaf32719600233fef3f987fa02',1,'api_task.h']]],
-  ['task_5ftype_5fcompute',['TASK_TYPE_COMPUTE',['../group__exec-model.html#ggaaef99f60d299e960b5910c1a19f36312a310b24b0d82cc0ecdc8de6784c3ad21e',1,'api_task.h']]],
-  ['task_5ftype_5fcontinuation',['TASK_TYPE_CONTINUATION',['../group__exec-model.html#ggaaef99f60d299e960b5910c1a19f36312ae61f42bc61de34ce7dc05a414027b101',1,'api_task.h']]],
-  ['task_5ftype_5frpc_5frequest',['TASK_TYPE_RPC_REQUEST',['../group__exec-model.html#ggaaef99f60d299e960b5910c1a19f36312ab93cdaa737723ad06381d93f9d04e1b8',1,'api_task.h']]],
-  ['task_5ftype_5frpc_5fresponse',['TASK_TYPE_RPC_RESPONSE',['../group__exec-model.html#ggaaef99f60d299e960b5910c1a19f36312a0a71c16dfd7ae6d8763a56f7512c8b8d',1,'api_task.h']]]
+  ['host_5ftype_5fgroup',['HOST_TYPE_GROUP',['../group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795a34328cf8b3a8c23500835546f708a56c',1,'api_layer1.h']]],
+  ['host_5ftype_5fipv4',['HOST_TYPE_IPV4',['../group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aebe58bd51c617e7f9024189e369dc8e9',1,'api_layer1.h']]],
+  ['host_5ftype_5furi',['HOST_TYPE_URI',['../group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aa50d4a851ac789ab6dcd75213fbb08da',1,'api_layer1.h']]]
 ];

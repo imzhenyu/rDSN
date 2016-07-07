@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -91,19 +96,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>This is the complete list of members for <a class="el" href="structdsn__app__info.html">dsn_app_info</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="structdsn__app__info.html#acd9e94414450096810cd3018162ed1c6">app_context_ptr</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="structdsn__app__info.html#a58a94125a92222a86d0fcb7cfda3078b">app_id</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="structdsn__app__info.html#ae7abcd16f46fcc75e1d63f973a55eeec">data_dir</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="structdsn__app__info.html#a14b6ee77425d43f2e35c8162dd91d780">index</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="structdsn__app__info.html#a338c3263432cb6f282cc705a2a1d8d41">name</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>app</b> (defined in <a class="el" href="structdsn__app__info.html">dsn_app_info</a>)</td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structdsn__app__info.html#acd9e94414450096810cd3018162ed1c6">app_context_ptr</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structdsn__app__info.html#a58a94125a92222a86d0fcb7cfda3078b">app_id</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structdsn__app__info.html#ae7abcd16f46fcc75e1d63f973a55eeec">data_dir</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structdsn__app__info.html#a14b6ee77425d43f2e35c8162dd91d780">index</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="structdsn__app__info.html#a338c3263432cb6f282cc705a2a1d8d41">name</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structdsn__app__info.html#ad50d50c0c93250fdb5680ecf9d2de460">primary_address</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="structdsn__app__info.html#a908b05a46cdb504ad6c67328a1fd1732">role</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="structdsn__app__info.html#a554c6fa41a00a3df817c535c152bd08c">type</a></td><td class="entry"><a class="el" href="structdsn__app__info.html">dsn_app_info</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>

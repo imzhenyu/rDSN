@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,6 +16,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="rDSN.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,9 +24,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="icon.png" width=60 height=50 /></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">rDSN
-   &#160;<span id="projectnumber">1.0</span>
+   <div id="projectname"> <font size="5pt">Robust Distributed System Nucleus (rDSN)</font>
+   &#160;<span id="projectnumber">ver 1.0.0</span>
    </div>
   </td>
  </tr>
@@ -38,10 +41,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="index.html"><span>HOME</span></a></li>
+      <li><a href="group__install.html"><span>GET&#160;STARTED</span></a></li>
+      <li><a href="group__tutorials.html"><span>TUTORIALS</span></a></li>
+      <li><a href="group__how-to.html"><span>HOW&#160;TO</span></a></li>
+      <li><a href="group__api.html"><span>API</span></a></li>
+      <li><a href="group__about.html"><span>ABOUT</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -93,18 +98,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classdsn_1_1service__app-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">dsn::service_app Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span><div class="ingroups"><a class="el" href="group__dev.html">A Layered Stack for Distributed System Development</a> &raquo; <a class="el" href="group__dev-layer1.html">Zion: Write Robust and High-Performance Applications (layer 1)</a> &raquo; <a class="el" href="group__dev-layer1-models.html">Overview</a> &raquo; <a class="el" href="group__app-model.html">Application Model</a></div></div>  </div>
+<div class="title">dsn::service_app Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span><div class="ingroups"><a class="el" href="group__app-model.html">App-model</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a89de6f1ec1d43d13bf56cdfce8c901e4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89de6f1ec1d43d13bf56cdfce8c901e4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>service_app</b> (<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> <a class="el" href="classdsn_1_1gpid.html">gpid</a>)</td></tr>
+<tr class="separator:a89de6f1ec1d43d13bf56cdfce8c901e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10c52c5175436a10dafc583a82a230b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a10c52c5175436a10dafc583a82a230b5"></a>
 virtual ::<a class="el" href="classdsn_1_1error__code.html">dsn::error_code</a>&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (int argc, char **argv)=0</td></tr>
 <tr class="separator:a10c52c5175436a10dafc583a82a230b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a556b58a8abfe15a375343c3e39786507"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a556b58a8abfe15a375343c3e39786507"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>stop</b> (bool cleanup=false)=0</td></tr>
-<tr class="separator:a556b58a8abfe15a375343c3e39786507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad460cdce7ecb0d5f32f31205e68e5ede"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad460cdce7ecb0d5f32f31205e68e5ede"></a>
+virtual ::<a class="el" href="classdsn_1_1error__code.html">dsn::error_code</a>&#160;</td><td class="memItemRight" valign="bottom"><b>stop</b> (bool cleanup=false)=0</td></tr>
+<tr class="separator:ad460cdce7ecb0d5f32f31205e68e5ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2432360d0563a912b29c000ad48131a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2432360d0563a912b29c000ad48131a6"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_started</b> () const </td></tr>
 <tr class="separator:a2432360d0563a912b29c000ad48131a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,29 +122,28 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_started</b> () con
 <tr class="memitem:aa0b87bb7f8d4763104c9365b891597ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa0b87bb7f8d4763104c9365b891597ea"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const </td></tr>
 <tr class="separator:aa0b87bb7f8d4763104c9365b891597ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada12a07843600cd9f2bbffa11beaff1d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ada12a07843600cd9f2bbffa11beaff1d"></a>
+<a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_gpid</b> () const </td></tr>
+<tr class="separator:ada12a07843600cd9f2bbffa11beaff1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a9aea7eec67895b0cbe79f4ca7f92d364"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9aea7eec67895b0cbe79f4ca7f92d364"></a>
+<tr class="memitem:a597bc3fdc95b9c4001a6d30676b8e4a8"><td class="memTemplParams" colspan="2"><a class="anchor" id="a597bc3fdc95b9c4001a6d30676b8e4a8"></a>
 template&lt;typename TServiceApp &gt; </td></tr>
-<tr class="memitem:a9aea7eec67895b0cbe79f4ca7f92d364"><td class="memTemplItemLeft" align="right" valign="top">static void *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>app_create</b> (const char *)</td></tr>
-<tr class="separator:a9aea7eec67895b0cbe79f4ca7f92d364"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a597bc3fdc95b9c4001a6d30676b8e4a8"><td class="memTemplItemLeft" align="right" valign="top">static void *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>app_create</b> (const char *, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> <a class="el" href="classdsn_1_1gpid.html">gpid</a>)</td></tr>
+<tr class="separator:a597bc3fdc95b9c4001a6d30676b8e4a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae63868fa6bba04d42cb7b71be4560376"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae63868fa6bba04d42cb7b71be4560376"></a>
 static dsn_error_t&#160;</td><td class="memItemRight" valign="bottom"><b>app_start</b> (void *app, int argc, char **argv)</td></tr>
 <tr class="separator:ae63868fa6bba04d42cb7b71be4560376"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a523a55e9859e2fbbfdf91d2c0726fd34"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a523a55e9859e2fbbfdf91d2c0726fd34"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>app_destroy</b> (void *app, bool cleanup)</td></tr>
-<tr class="separator:a523a55e9859e2fbbfdf91d2c0726fd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77eadc89234d235758824cd120cb06d7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77eadc89234d235758824cd120cb06d7"></a>
+static dsn_error_t&#160;</td><td class="memItemRight" valign="bottom"><b>app_destroy</b> (void *app, bool cleanup)</td></tr>
+<tr class="separator:a77eadc89234d235758824cd120cb06d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/dsn/cpp/<a class="el" href="service__app_8h_source.html">service_app.h</a></li>
 </ul>
 </div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.11-->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.11
-</small></address>
 </body>
 </html>
