@@ -10,6 +10,12 @@ then
     exit -1
 fi
 
+if [ -n "$DSN_ROOT" -a -f "$DSN_ROOT/lib/libdsn.core.so" ]
+then
+    echo "ERROR: already installed at DSN_ROOT=$DSN_ROOT"
+    exit -1
+fi
+
 if [ ! -f "builder/output/lib/libdsn.core.so" ]
 then
     echo "ERROR: not build yet"
