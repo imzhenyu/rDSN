@@ -58,7 +58,6 @@ var searchData=
   ['dsn_5fmsg_5fcreate_5frequest',['dsn_msg_create_request',['../group__rpc-msg.html#gaa813b719f310a056750e1acb84dbc5d9',1,'api_layer1.h']]],
   ['dsn_5fmsg_5fcreate_5fresponse',['dsn_msg_create_response',['../group__rpc-msg.html#ga32effda3b6638effbbdca85e6e5777ea',1,'api_layer1.h']]],
   ['dsn_5fmsg_5ffrom_5faddress',['dsn_msg_from_address',['../group__rpc-msg.html#ga792fd9142ce0ffdf6761dc8c98d8ae8e',1,'api_layer1.h']]],
-  ['dsn_5fmsg_5fget_5fheader_5ftype',['dsn_msg_get_header_type',['../group__rpc-msg.html#ga41cb8ed953f69b2df5f0da41d443d262',1,'api_layer1.h']]],
   ['dsn_5fmsg_5fget_5foptions',['dsn_msg_get_options',['../group__rpc-msg.html#ga4c16069d272174bd4dfc064cb7153341',1,'api_layer1.h']]],
   ['dsn_5fmsg_5fread_5fcommit',['dsn_msg_read_commit',['../group__rpc-msg.html#ga58926b23bb18118f5174faa46f6769d0',1,'api_layer1.h']]],
   ['dsn_5fmsg_5fread_5fnext',['dsn_msg_read_next',['../group__rpc-msg.html#gab86d05d5ba0b278caa1624ef390fc5f3',1,'api_layer1.h']]],

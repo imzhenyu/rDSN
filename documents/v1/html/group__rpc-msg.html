@@ -154,9 +154,6 @@ typedef union <a class="el" href="uniondsn__global__partition__id.html">dsn_glob
 <tr class="memitem:ga58b4db21e3556c5cda8fa0b17f795fe7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga58b4db21e3556c5cda8fa0b17f795fe7"></a>
 typedef struct <a class="el" href="structdsn__msg__options__t.html">dsn_msg_options_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-msg.html#ga58b4db21e3556c5cda8fa0b17f795fe7">dsn_msg_options_t</a></td></tr>
 <tr class="separator:ga58b4db21e3556c5cda8fa0b17f795fe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2c1f352c256a13ae63638924ca342455"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2c1f352c256a13ae63638924ca342455"></a>
-typedef enum <a class="el" href="group__rpc-msg.html#gad2ea69330acf5b6e5bff70ec971018d1">dsn_msg_header_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-msg.html#ga2c1f352c256a13ae63638924ca342455">dsn_msg_header_type</a></td></tr>
-<tr class="separator:ga2c1f352c256a13ae63638924ca342455"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0528aaf4642c0218a002a1181f9a0f81"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0528aaf4642c0218a002a1181f9a0f81"></a>
 typedef ::dsn::ref_ptr&lt; rpc_read_stream &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::rpc_read_stream_ptr</b></td></tr>
 <tr class="separator:ga0528aaf4642c0218a002a1181f9a0f81"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,12 +178,6 @@ Enumerations</h2></td></tr>
 <tr class="memitem:ga8511aa285aa4b08c3756c61e97393de1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-msg.html#ga8511aa285aa4b08c3756c61e97393de1">dsn_msg_parameter_type_t</a> { <a class="el" href="group__rpc-msg.html#gga8511aa285aa4b08c3756c61e97393de1a782d73873978527632ef7e9119689c79">MSG_PARAM_NONE</a> = 0
  }</td></tr>
 <tr class="separator:ga8511aa285aa4b08c3756c61e97393de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad2ea69330acf5b6e5bff70ec971018d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad2ea69330acf5b6e5bff70ec971018d1"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-msg.html#gad2ea69330acf5b6e5bff70ec971018d1">dsn_msg_header_type</a> { <b>DHT_INVALID</b> = 0, 
-<b>DHT_DEFAULT</b> = 1, 
-<b>DHT_THRIFT</b> = 2, 
-<b>DHT_HTTP</b> = 3
- }</td></tr>
-<tr class="separator:gad2ea69330acf5b6e5bff70ec971018d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -217,8 +208,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <tr class="separator:gae423fd37b63d972b4c752bf895652c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4c16069d272174bd4dfc064cb7153341"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-msg.html#ga4c16069d272174bd4dfc064cb7153341">dsn_msg_get_options</a> (dsn_message_t msg, <a class="el" href="structdsn__msg__options__t.html">dsn_msg_options_t</a> *opts)</td></tr>
 <tr class="separator:ga4c16069d272174bd4dfc064cb7153341"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga41cb8ed953f69b2df5f0da41d443d262"><td class="memItemLeft" align="right" valign="top">DSN_API <a class="el" href="group__rpc-msg.html#gad2ea69330acf5b6e5bff70ec971018d1">dsn_msg_header_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__rpc-msg.html#ga41cb8ed953f69b2df5f0da41d443d262">dsn_msg_get_header_type</a> (dsn_message_t msg)</td></tr>
-<tr class="separator:ga41cb8ed953f69b2df5f0da41d443d262"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa6d108d6fab95e4e6404320a92c7f6ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa6d108d6fab95e4e6404320a92c7f6ee"></a>
 DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_msg_set_serailize_format</b> (dsn_message_t msg, <a class="el" href="group__rpc-msg.html#gad052d5c9ca16df579d7e4746d06ada9b">dsn_msg_serialize_format</a> fmt)</td></tr>
 <tr class="separator:gaa6d108d6fab95e4e6404320a92c7f6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -389,30 +378,6 @@ DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
   <table class="params">
     <tr><td class="paramname">msg</td><td>the message handle </td></tr>
     <tr><td class="paramname">opts</td><td>options to be get </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ga41cb8ed953f69b2df5f0da41d443d262"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">DSN_API <a class="el" href="group__rpc-msg.html#gad2ea69330acf5b6e5bff70ec971018d1">dsn_msg_header_type</a> dsn_msg_get_header_type </td>
-          <td>(</td>
-          <td class="paramtype">dsn_message_t&#160;</td>
-          <td class="paramname"><em>msg</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>get the message header type </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">msg</td><td>the message handle </td></tr>
   </table>
   </dd>
 </dl>

@@ -1,6 +1,7 @@
 var searchData=
 [
   ['about_20rdsn',['About rDSN',['../group__about.html',1,'']]],
+  ['aio_5fprovider',['aio_provider',['../classdsn_1_1aio__provider.html',1,'dsn']]],
   ['api',['API',['../group__api.html',1,'']]],
   ['app_2dmodel',['App-model',['../group__app-model.html',1,'']]],
   ['app_5fcallbacks',['app_callbacks',['../structdsn__app__callbacks_1_1app__callbacks.html',1,'dsn_app_callbacks']]],

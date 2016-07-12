@@ -85,39 +85,72 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">rDSN Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Robust Distributed System Nucleus (rDSN) is a modular framework for quickly building robust and high-performance distributed systems. The goal is to enable independent development and seamless integration of applications, frameworks, local runtime libraries, and tools, so that they can transparently benefit each other. The project was originally developed for Microsoft Bing, and now has been adopted in production both inside and outside Microsoft.</p>
+<div class="textblock"><p><b>Robust Distributed System Nucleus (rDSN)</b> is a framework for quickly building robust distributed systems. It has a microkernel for pluggable components, including applications, distributed frameworks, devops tools, and local runtime/resource providers, enabling their independent development and seamless integration. The project was originally developed for Microsoft Bing, and now has been adopted in production both inside and outside Microsoft.</p>
 <ul>
-<li><a href="#novel">What is great/novel about rDSN?</a></li>
-<li><a href="#cando">What can be done with rDSN?</a></li>
+<li><a href="#novel">How does rDSN build robustness?</a></li>
+<li><a href="#cando">What I can do with rDSN?</a></li>
 <li><a href="#existing">What are the existing modules I can immediately use?</a></li>
 <li><a class="el" href="group__install.html">Install and have a try now</a></li>
 </ul>
-<h3><a class="anchor" id="cando"></a> What can be done with rDSN? </h3>
+<h3><a class="anchor" id="cando"></a> What I can do with rDSN? </h3>
 <ul>
 <li>an enhanced event-driven RPC library such as libevent, Thrift, and GRPC (see [tutorial]() for what's better).</li>
 <li>a production Paxos framework to quickly turn a local component (e.g., rocksdb) into a online service with replication, partition, failure recovery, and reconfiguration supports ([tutorial]()).</li>
 <li>a scale-out and fail-over framework for stateless services such as Memcached ([tutorial]()).</li>
 <li>more as you can imagine.</li>
 </ul>
-<h3><a class="anchor" id="novel"></a> What is great/novel about rDSN? </h3>
+<h3><a class="anchor" id="novel"></a> How does rDSN build robustness? </h3>
 <ul>
-<li><b>microkernel architecture</b>: applications, frameworks (e.g., replication, scale-out, fail-over), local runtime libraries (e.g., network libraries, locks), and tools are all pluggable modules into a microkernel to enable independent development and seamless integration (therefore all modules are reusable and transparently benefit each other) <div class="image">
+<li><b>reduced system compelxity via microkernel architecture</b>: applications, frameworks (e.g., replication, scale-out, fail-over), local runtime libraries (e.g., network libraries, locks), and tools are all pluggable modules into a microkernel to enable independent development and seamless integration (therefore modules are reusable and transparently benefit each other) <div class="image">
 <img src="../imgs/arch.png"  alt="rDSN Architecture"/>
 </div>
 </li>
-<li><b>first-class dev&amp;op support</b>: dedicated tool API for tool development; built-in plugged tools for understanding, testing, debugging, and monitoring the upper applications and frameworks <div class="image">
+<li><b>auto-handled distributed system challenges</b>: built-in frameworks to achieve scalability, reliability, availability, and consistency etc. for the applications <div class="image">
+<img src="../imgs/rdsn-layer2.jpg"  alt="rDSN service model"/>
+</div>
+</li>
+<li><b>transparent tooling support</b>: dedicated tool API for tool development; built-in plugged tools for understanding, testing, debugging, and monitoring the upper applications and frameworks <div class="image">
 <img src="../imgs/viz.png"  alt="rDSN Architecture"/>
 </div>
 </li>
-<li><b>configurable runtime</b>: tailor the module instances and their mapping on demand with controllable system complexity (e.g., run all nodes in one simulator for testing, allocate CPU resources appropriately for avoiding resource contention, debug with progressively added system compelxity) <div class="image">
+<li><b>late resource binding with global deploy-time view</b>: tailor the module instances and their connections on demand with controllable system complexity and resource mapping (e.g., run all nodes in one simulator for testing, allocate CPU resources appropriately for avoiding resource contention, debug with progressively added system complexity) <div class="image">
 <img src="../imgs/config.png"  alt="rDSN Configuration"/>
 </div>
 </li>
 </ul>
-<h3><a class="anchor" id="existing"></a>Existing modules (and growing) </h3>
+<h3><a class="anchor" id="existing"></a>Existing pluggable modules (and growing) </h3>
 <h5>Distributed frameworks</h5>
+<ul>
+<li>a production Paxos framework to quickly turn a local component (e.g., rocksdb) into a online service with replication, partition, failure recovery, and reconfiguration supports</li>
+<li>a scale-out and fail-over framework for stateless services such as Memcached</li>
+</ul>
 <h5>Local runtime libraries</h5>
-<h5>Dev&amp;Op tools</h5>
+<ul>
+<li>network libraries on Linux/Windows supporting rDSN/Thrift/HTTP messages at the same time</li>
+<li>asynchronous disk IO on Linux/Windows</li>
+<li>locks, rwlocks, semaphores</li>
+<li>task queues</li>
+<li>timer services</li>
+<li>performance counters</li>
+<li>loggers (high-perf, screen)</li>
+</ul>
+<h5>Devops tools</h5>
+<ul>
+<li>nativerun and fastrun enables native deployment on Windows and Linux</li>
+<li>simulator debugs multiple nodes in one single process without worry about timeout</li>
+<li>explorer extracts task-level dependencies automatically</li>
+<li>tracer dumps logs for how requests are processed across tasks/nodes</li>
+<li>profiler shows detailed task-level performance data (e.g., queue-time, exec-time)</li>
+<li>fault-injector mimics data center failures to expose bugs early</li>
+<li>glboal-checker enables cross-node assertion</li>
+<li>replayer reproduces the bugs for easier root cause analysis</li>
+</ul>
+<h5>Other distributed providers and libraries</h5>
+<ul>
+<li>remote file copy</li>
+<li>perfect failure detector</li>
+<li>multi-master perfect failure detector</li>
+</ul>
 <h3>License and Support</h3>
 <p>rDSN is provided on Windows and Linux, with the MIT open source license. You can use the "issues" tab in github to report bugs. </p>
 </div></div><!-- contents -->

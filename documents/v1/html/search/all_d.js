@@ -5,6 +5,7 @@ var searchData=
   ['safe_5fhandle_3c_20dsn_5fmsg_5frelease_5fref_20_3e',['safe_handle&lt; dsn_msg_release_ref &gt;',['../classdsn_1_1safe__handle.html',1,'dsn']]],
   ['safe_5flate_5ftask',['safe_late_task',['../classdsn_1_1safe__late__task.html',1,'dsn']]],
   ['safe_5ftask_5fhandle',['safe_task_handle',['../classdsn_1_1safe__task__handle.html',1,'dsn']]],
+  ['semaphore_5fprovider',['semaphore_provider',['../classdsn_1_1semaphore__provider.html',1,'dsn']]],
   ['serialize_5fformat',['serialize_format',['../uniondsn__msg__context__t.html#a6955dc64aa198b300ca7c14ff03d1be3',1,'dsn_msg_context_t']]],
   ['serverlet',['serverlet',['../classdsn_1_1serverlet.html',1,'dsn']]],
   ['service_20api',['Service API',['../group__service-api.html',1,'']]],

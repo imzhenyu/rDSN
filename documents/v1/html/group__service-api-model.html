@@ -92,9 +92,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
-<ul>
-<li>Developers define the required application models and register them into rDSN so that the latter can manage the applications appropriately, such as creat/destroy/scale-out/replicate them.</li>
-</ul>
+<p>In rDSN, both applications and frameworks must implement a base abstract called <a class="el" href="structdsn__app.html">dsn_app</a>, which are registered into rDSN's service kernel via <a class="el" href="group__service-api-model.html#ga74654f84f77a6fcec3682dae6bc521e5">dsn_register_app</a>.</p>
+<p>Here is an example where we register two applications into rDSN; note we use the C++ wrappers atop our C API in this example.</p>
 <pre>
 int main(int argc, char** argv)
 {
@@ -104,71 +103,17 @@ int main(int argc, char** argv)
   dsn_run(argc, argv, true);
   return 0;
 }
-</pre><ul>
-<li>Developers config the application instances in config files, and rDSN creates them accordingly on start-up.</li>
-</ul>
-<pre></pre><pre>[apps..default]
-; arguments for the app instances
-arguments =</pre><pre>; count of app instances for this type (ports are 
-; automatically calculated accordingly to avoid confliction)
-count = 1</pre><pre>; delay seconds for when the apps should be started
-delay_seconds = 0</pre><pre>; path of a dynamic library which implement this app role, and register itself upon loaded
-dmodule =</pre><pre>;
-; when the service cannot automatically register its app types into rdsn
-; through dmoudule's dllmain or attribute(constructor), we require the dmodule%
-; implement an exporte function called "dsn_error_t dsn_bridge(const char* args);",
-; which loads the real target (e.g., a python/Java/php module), that registers their
-; app types and factories.
-dmodule_bridge_arguments =</pre><pre>; thread pools need to be started
-pools =</pre><pre>; RPC server listening ports needed for this app
-ports =</pre><pre>; whether to run the app instances or not
-run = true</pre><pre>; app type name, as given when registering by dsn_register_app
-type =</pre><pre>[apps.client]
-arguments = localhost 20101</pre><pre>delay_seconds = 1</pre><pre>pools = THREAD_POOL_DEFAULT, THREAD_POOL_TEST_TASK_QUEUE_1</pre><pre>type = test</pre><pre>[apps.server]</pre><pre>pools = THREAD_POOL_DEFAULT, THREAD_POOL_TEST_SERVER</pre><pre>ports = 20101</pre><pre>type = test</pre><pre></pre><ul>
-<li>Developers config the main tools and toollets to run the process, among many other configurations.</li>
-</ul>
+</pre><p>After the applications and frameworks are registered, developers specify the concrete instances in config files, and rDSN creates them accordingly on start-up.</p>
 <pre>
-[core]
-; use what tool to run this process, e.g., native, simulator, or fastrun
-tool = fastrun</pre><pre>; use what toollets, e.g., tracer, profiler, fault_injector
-toollets = tracer, profiler, fault_injector</pre><pre>; aio aspect providers, usually for tooling purpose
-aio_aspects =</pre><pre>; asynchonous file system provider
-aio_factory_name =</pre><pre>; whether to enable local command line interface (cli)
-cli_local = true</pre><pre>; whether to enable remote command line interface (using dsn.cli)
-cli_remote = false</pre><pre>; where to put the all the data/log/coredump, etc..
-data_dir = ./data</pre><pre>; how many disk engines? IOE_PER_NODE, or IOE_PER_QUEUE
-disk_io_mode =</pre><pre>; whether to start a default service app for serving the rDSN calls made in
-; non-rDSN threads, so that developers do not need to write dsn_mimic_app call before them
-; in this case, a [apps.mimic] section must be defined in config files
-enable_default_app_mimic = false</pre><pre>; environment aspect providers, usually for tooling purpose
-env_aspects =</pre><pre>; environment provider
-env_factory_name =</pre><pre>; io thread count, only for IOE_PER_NODE; for IOE_PER_QUEUE, task workers are served as io threads
-io_worker_count = 1</pre><pre>; recursive lock aspect providers, usually for tooling purpose
-lock_aspects =</pre><pre>; recursive exclusive lock provider
-lock_factory_name =</pre><pre>; non-recurisve lock aspect providers, usually for tooling purpose
-lock_nr_aspects =</pre><pre>; non-recurisve exclusive lock provider
-lock_nr_factory_name =</pre><pre>; logging provider
-logging_factory_name = dsn::tools::simple_logger</pre><pre>; logs with level below this will not be logged
-logging_start_level = LOG_LEVEL_DEBUG</pre><pre>; network aspect providers, usually for tooling purpose
-network_aspects =</pre><pre>; nfs provider
-nfs_factory_name =</pre><pre>; how many nfs engines? IOE_PER_NODE, or IOE_PER_QUEUE
-nfs_io_mode =</pre><pre>; whether to pause at startup time for easier debugging
-pause_on_start = false</pre><pre>; peformance counter provider
-perf_counter_factory_name =</pre><pre>; maximum number of performance counters
-perf_counter_max_count = 10000</pre><pre>; how many rpc engines? IOE_PER_NODE, or IOE_PER_QUEUE
-rpc_io_mode =</pre><pre>; non-recursive rwlock aspect providers, usually for tooling purpose
-rwlock_nr_aspects =</pre><pre>; non-recurisve rwlock provider
-rwlock_nr_factory_name =</pre><pre>; semaphore aspect providers, usually for tooling purpose
-semaphore_aspects =</pre><pre>; semaphore provider
-semaphore_factory_name =</pre><pre>; whether to start nfs
-start_nfs = false</pre><pre>; timer service aspect providers, usually for tooling purpose
-timer_aspects =</pre><pre>; timer service provider
-timer_factory_name =</pre><pre>; how many disk timer services? IOE_PER_NODE, or IOE_PER_QUEUE
-timer_io_mode =</pre><pre>; thread number for timer service for core itself
-timer_service_worker_count = 1
-</pre><ul>
-<li>Developers can also optionally configure many others to fit their special requirement according to the application and the scenario. For full configurations, developers can set <code>[core] cli_local = true</code>, and run <code>config-dump</code> command to get the latest config file with the help information. </li>
-</ul>
+[apps.client]
+arguments = localhost 20101  
+delay_seconds = 1
+pools = THREAD_POOL_DEFAULT
+type = test</pre><pre>[apps.server]  
+pools = THREAD_POOL_TEST_SERVER
+ports = 20101  
+type = server
+</pre><p>Developers usually run this using <code>./app config.ini</code>, or <code>./app</code> for more options. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -192,47 +137,34 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ga5d2cfa2ad1cf56ff782b2923d98d7248"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga5d2cfa2ad1cf56ff782b2923d98d7248"></a>
-typedef void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga5d2cfa2ad1cf56ff782b2923d98d7248">dsn_app_create</a>) (const char *, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>)</td></tr>
-<tr class="separator:ga5d2cfa2ad1cf56ff782b2923d98d7248"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac957d71ae15b8373a4afc40ddf90e9aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac957d71ae15b8373a4afc40ddf90e9aa"></a>
-typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gac957d71ae15b8373a4afc40ddf90e9aa">dsn_app_start</a>) (void *, int, char **)</td></tr>
-<tr class="separator:gac957d71ae15b8373a4afc40ddf90e9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4728fae8598a47941db94d7992497e11"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4728fae8598a47941db94d7992497e11"></a>
-typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga4728fae8598a47941db94d7992497e11">dsn_app_destroy</a>) (void *, bool)</td></tr>
-<tr class="separator:ga4728fae8598a47941db94d7992497e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa077f2096a4a2e9eb0f958460eb40adf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa077f2096a4a2e9eb0f958460eb40adf"></a>
-typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gaa077f2096a4a2e9eb0f958460eb40adf">dsn_framework_rpc_request_handler</a>) (void *, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a>, bool, dsn_message_t)</td></tr>
-<tr class="separator:gaa077f2096a4a2e9eb0f958460eb40adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae3628fa6dd4c3753883f54a52bd3d5d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae3628fa6dd4c3753883f54a52bd3d5d1"></a>
-typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gae3628fa6dd4c3753883f54a52bd3d5d1">dsn_app_on_batched_write_requests</a>) (void *, int64_t, dsn_message_t *, int)</td></tr>
-<tr class="separator:gae3628fa6dd4c3753883f54a52bd3d5d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7a29362457cb34b62f508a055b0cc4b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7a29362457cb34b62f508a055b0cc4b1"></a>
-typedef int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga7a29362457cb34b62f508a055b0cc4b1">dsn_app_get_physical_error</a>) (void *)</td></tr>
-<tr class="separator:ga7a29362457cb34b62f508a055b0cc4b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga013bd2992e82485e6af3cfd988dbd935"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga013bd2992e82485e6af3cfd988dbd935"></a>
-typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga013bd2992e82485e6af3cfd988dbd935">dsn_app_sync_checkpoint</a>) (void *, int64_t)</td></tr>
-<tr class="separator:ga013bd2992e82485e6af3cfd988dbd935"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga20864bbdac2449b4e291c53e5a5a38d8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga20864bbdac2449b4e291c53e5a5a38d8"></a>
-typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga20864bbdac2449b4e291c53e5a5a38d8">dsn_app_async_checkpoint</a>) (void *, int64_t)</td></tr>
-<tr class="separator:ga20864bbdac2449b4e291c53e5a5a38d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4e39614eea1972672f5753b7e44bc2f4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4e39614eea1972672f5753b7e44bc2f4"></a>
-typedef int64_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga4e39614eea1972672f5753b7e44bc2f4">dsn_app_get_last_checkpoint_decree</a>) (void *)</td></tr>
-<tr class="separator:ga4e39614eea1972672f5753b7e44bc2f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8c1827b6d4a7b32c45c2cd4243079155"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8c1827b6d4a7b32c45c2cd4243079155"></a>
-typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga8c1827b6d4a7b32c45c2cd4243079155">dsn_app_prepare_get_checkpoint</a>) (void *, void *, int, int *)</td></tr>
-<tr class="separator:ga8c1827b6d4a7b32c45c2cd4243079155"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3ebe4687df54d3288365cb638baa077e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga3ebe4687df54d3288365cb638baa077e"></a>
-typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga3ebe4687df54d3288365cb638baa077e">dsn_app_get_checkpoint</a>) (void *, int64_t, int64_t, void *, int, <a class="el" href="structdsn__app__learn__state.html">dsn_app_learn_state</a> *, int)</td></tr>
-<tr class="separator:ga3ebe4687df54d3288365cb638baa077e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga37d806d103836dcaab3166fae6bfb823"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga37d806d103836dcaab3166fae6bfb823"></a>
-typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga37d806d103836dcaab3166fae6bfb823">dsn_app_apply_checkpoint</a>) (void *, <a class="el" href="group__service-api-model.html#ga3855bcce10d73fc2e543203d5a373474">dsn_chkpt_apply_mode</a>, int64_t, const <a class="el" href="structdsn__app__learn__state.html">dsn_app_learn_state</a> *)</td></tr>
-<tr class="separator:ga37d806d103836dcaab3166fae6bfb823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeb10c4a30b6039ddc43b5e80e26bdf90"><td class="memItemLeft" align="right" valign="top">typedef void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gaeb10c4a30b6039ddc43b5e80e26bdf90">dsn_app_create</a>) (const char *app_name, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> id)</td></tr>
+<tr class="separator:gaeb10c4a30b6039ddc43b5e80e26bdf90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadde55be4ba91fcf354d6c67b9c9e14c1"><td class="memItemLeft" align="right" valign="top">typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gadde55be4ba91fcf354d6c67b9c9e14c1">dsn_app_start</a>) (void *app, int argc, char **argv)</td></tr>
+<tr class="separator:gadde55be4ba91fcf354d6c67b9c9e14c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga49d75be36b28bcb0112b292119d3df95"><td class="memItemLeft" align="right" valign="top">typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga49d75be36b28bcb0112b292119d3df95">dsn_app_destroy</a>) (void *app, bool cleanup)</td></tr>
+<tr class="separator:ga49d75be36b28bcb0112b292119d3df95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga09f08134db7f596579f02739e6512297"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga09f08134db7f596579f02739e6512297">dsn_framework_rpc_request_handler</a>) (void *app, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid, bool is_write_operation, dsn_message_t request)</td></tr>
+<tr class="separator:ga09f08134db7f596579f02739e6512297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaad14059d748d47facf6de6753fdd49eb"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gaad14059d748d47facf6de6753fdd49eb">dsn_app_on_batched_write_requests</a>) (void *app, int64_t decree, dsn_message_t *requests, int request_count)</td></tr>
+<tr class="separator:gaad14059d748d47facf6de6753fdd49eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad4d93b89614756e64f248f924c5c7785"><td class="memItemLeft" align="right" valign="top">typedef int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gad4d93b89614756e64f248f924c5c7785">dsn_app_get_physical_error</a>) (void *app)</td></tr>
+<tr class="separator:gad4d93b89614756e64f248f924c5c7785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6e66353a46e0819a3706c3975a4a824c"><td class="memItemLeft" align="right" valign="top">typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga6e66353a46e0819a3706c3975a4a824c">dsn_app_sync_checkpoint</a>) (void *app, int64_t last_decree)</td></tr>
+<tr class="separator:ga6e66353a46e0819a3706c3975a4a824c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4d1d438108d1a8526c5e3c621b58881a"><td class="memItemLeft" align="right" valign="top">typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga4d1d438108d1a8526c5e3c621b58881a">dsn_app_async_checkpoint</a>) (void *app, int64_t last_decree)</td></tr>
+<tr class="separator:ga4d1d438108d1a8526c5e3c621b58881a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa7ee0543eb43efe66f81f8e722daeb24"><td class="memItemLeft" align="right" valign="top">typedef int64_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gaa7ee0543eb43efe66f81f8e722daeb24">dsn_app_get_last_checkpoint_decree</a>) (void *app)</td></tr>
+<tr class="separator:gaa7ee0543eb43efe66f81f8e722daeb24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga643aa727fb50854f6f1455bd561f2ee7"><td class="memItemLeft" align="right" valign="top">typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga643aa727fb50854f6f1455bd561f2ee7">dsn_app_prepare_get_checkpoint</a>) (void *app, void *request_buffer, int capacity, int *used_size)</td></tr>
+<tr class="separator:ga643aa727fb50854f6f1455bd561f2ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaafab7ec4ba1221ea674258294281a137"><td class="memItemLeft" align="right" valign="top">typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gaafab7ec4ba1221ea674258294281a137">dsn_app_get_checkpoint</a>) (void *app, int64_t learn_start_decree, int64_t local_last_decree, void *learn_request, int learn_request_size, <a class="el" href="structdsn__app__learn__state.html">dsn_app_learn_state</a> *learn_state_buffer, int capacity)</td></tr>
+<tr class="separator:gaafab7ec4ba1221ea674258294281a137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf8b3d7ab876813a924123944efe6828a"><td class="memItemLeft" align="right" valign="top">typedef dsn_error_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gaf8b3d7ab876813a924123944efe6828a">dsn_app_apply_checkpoint</a>) (void *app, <a class="el" href="group__service-api-model.html#ga3855bcce10d73fc2e543203d5a373474">dsn_chkpt_apply_mode</a> mode, int64_t local_last_decree, const <a class="el" href="structdsn__app__learn__state.html">dsn_app_learn_state</a> *learn_state)</td></tr>
+<tr class="separator:gaf8b3d7ab876813a924123944efe6828a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac31933bdc48165a88e6aa389bb0a51d4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac31933bdc48165a88e6aa389bb0a51d4"></a>
 typedef union <a class="el" href="uniondsn__app__callbacks.html">dsn_app_callbacks</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#gac31933bdc48165a88e6aa389bb0a51d4">dsn_app_callbacks</a></td></tr>
 <tr class="separator:gac31933bdc48165a88e6aa389bb0a51d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7e9dbdf53d663f8f5c84f9ae0f0272ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7e9dbdf53d663f8f5c84f9ae0f0272ce"></a>
-typedef struct <a class="el" href="structdsn__app.html">dsn_app</a>&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_app</b></td></tr>
+<tr class="memitem:ga7e9dbdf53d663f8f5c84f9ae0f0272ce"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structdsn__app.html">dsn_app</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga7e9dbdf53d663f8f5c84f9ae0f0272ce">dsn_app</a></td></tr>
 <tr class="separator:ga7e9dbdf53d663f8f5c84f9ae0f0272ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga21d40db8e2c523b37533a5b7c1c88641"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga21d40db8e2c523b37533a5b7c1c88641"></a>
 typedef struct <a class="el" href="structdsn__app__info.html">dsn_app_info</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga21d40db8e2c523b37533a5b7c1c88641">dsn_app_info</a></td></tr>
@@ -273,6 +205,297 @@ DSN_API <a class="el" href="structdsn__app__info.html">dsn_app_info</a> *&#160;<
 <tr class="memitem:ga853c16c14e2e5274b94abda47b5b0ee6"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__service-api-model.html#ga853c16c14e2e5274b94abda47b5b0ee6">dsn_app_loader_wait</a> ()</td></tr>
 <tr class="separator:ga853c16c14e2e5274b94abda47b5b0ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="gaeb10c4a30b6039ddc43b5e80e26bdf90"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void*(* dsn_app_create) (const char *app_name, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> id)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>callback to create the app context </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app_name</td><td>type name registered on dsn_register_app </td></tr>
+    <tr><td class="paramname">id</td><td>assigned global partition id</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the app context used by other APIs to reference this application instance </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gadde55be4ba91fcf354d6c67b9c9e14c1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef dsn_error_t(* dsn_app_start) (void *app, int argc, char **argv)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>callback to run the app with the app context, similar to main(argc, argv) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">argc</td><td>as in traditional main(argc, argv) </td></tr>
+    <tr><td class="paramname">argv</td><td>as in traditional main(argc, argv)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>error code for app start </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga49d75be36b28bcb0112b292119d3df95"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef dsn_error_t(* dsn_app_destroy) (void *app, bool cleanup)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>callback to stop and destroy the app </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">cleanup</td><td>whether to cleanup the state belonging to this app</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>error code for app destroy </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga09f08134db7f596579f02739e6512297"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(* dsn_framework_rpc_request_handler) (void *app, <a class="el" href="uniondsn__global__partition__id.html">dsn_gpid</a> gpid, bool is_write_operation, dsn_message_t request)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>callback for framework to handle incoming rpc request, implemented by frameworks </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">gpid</td><td>global partition id </td></tr>
+    <tr><td class="paramname">is_write_operation</td><td>whether the incoming rpc reqeust is a write operation or not </td></tr>
+    <tr><td class="paramname">request</td><td>incoming rpc request message </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaad14059d748d47facf6de6753fdd49eb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(* dsn_app_on_batched_write_requests) (void *app, int64_t decree, dsn_message_t *requests, int request_count)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>batched rpc request from frameworks, used by frameworks, implemented by apps </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">decree</td><td>sequence number for this request batch (when request batches are sent to the apps in order) </td></tr>
+    <tr><td class="paramname">requests</td><td>incoming rpc request array ptr </td></tr>
+    <tr><td class="paramname">request_count</td><td>request count in this array </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gad4d93b89614756e64f248f924c5c7785"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef int(* dsn_app_get_physical_error) (void *app)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get physical error (e.g., disk failure) from the app, used by frameworks, implemented by apps </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>physical error code, e.g., disk failure, that is not always reproducible on another machine with the same input </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga6e66353a46e0819a3706c3975a4a824c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef dsn_error_t(* dsn_app_sync_checkpoint) (void *app, int64_t last_decree)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>checkpoint the application synchronously, used by frameworks, implemented by apps </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">last_decree</td><td>decree of the last request/request-batch applied to this app</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>error code for the checkpoint operation </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga4d1d438108d1a8526c5e3c621b58881a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef dsn_error_t(* dsn_app_async_checkpoint) (void *app, int64_t last_decree)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>checkpoint the application asynchronously, used by frameworks, implemented by apps </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">last_decree</td><td>decree of the last request/request-batch applied to this app</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>error code for the checkpoint operation </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaa7ee0543eb43efe66f81f8e722daeb24"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef int64_t(* dsn_app_get_last_checkpoint_decree) (void *app)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get the decree of last done checkpoint, used by frameworks, implemented by apps </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>decree of the last successfully done checkpoint (see last_decree parameter when doing checkpoint) </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga643aa727fb50854f6f1455bd561f2ee7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef dsn_error_t(* dsn_app_prepare_get_checkpoint) (void *app, void *request_buffer, int capacity, int *used_size)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>learner prepares a get checkpoint request for better fitting the local state (e.g., for delta learning), the request will be used by <a class="el" href="group__service-api-model.html#gaafab7ec4ba1221ea674258294281a137">dsn_app_get_checkpoint</a> below, used by frameworks, implemented by apps </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">request_buffer</td><td>a memory buffer to be filled with a custom learn request </td></tr>
+    <tr><td class="paramname">capcity</td><td>buffer size, in bytes </td></tr>
+    <tr><td class="paramname">used_size</td><td>this is the output value telling how many bytes are written by this custom learn request</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>error code for this operation </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaafab7ec4ba1221ea674258294281a137"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef dsn_error_t(* dsn_app_get_checkpoint) (void *app, int64_t learn_start_decree, int64_t local_last_decree, void *learn_request, int learn_request_size, <a class="el" href="structdsn__app__learn__state.html">dsn_app_learn_state</a> *learn_state_buffer, int capacity)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get checkpoint information from learnee, used by frameworks, implemented by apps </p>
+<p>can be used for both delta checkpoint [learn_start_decree, infinite), or full checkpoint.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">learn_start_decree</td><td>the first start decree we want to get for this (if delta) checkpoint </td></tr>
+    <tr><td class="paramname">local_last_decree</td><td>decree of the last request/request-batched that are applied locally </td></tr>
+    <tr><td class="paramname">learn_request</td><td>learn reqeust as prepared by <a class="el" href="group__service-api-model.html#ga643aa727fb50854f6f1455bd561f2ee7">dsn_app_prepare_get_checkpoint</a> above </td></tr>
+    <tr><td class="paramname">learn_request_size</td><td>buffer size (in bytes) of the learn request </td></tr>
+    <tr><td class="paramname">learn_state_buffer</td><td>output learn state, see <a class="el" href="structdsn__app__learn__state.html">dsn_app_learn_state</a>, to be used by dsn_app_apply_checkpoint below </td></tr>
+    <tr><td class="paramname">capacity</td><td>output learn state buffer size (in bytes)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>error code for this operation </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf8b3d7ab876813a924123944efe6828a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef dsn_error_t(* dsn_app_apply_checkpoint) (void *app, <a class="el" href="group__service-api-model.html#ga3855bcce10d73fc2e543203d5a373474">dsn_chkpt_apply_mode</a> mode, int64_t local_last_decree, const <a class="el" href="structdsn__app__learn__state.html">dsn_app_learn_state</a> *learn_state)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>apply checkpoint from remote nodes, used by frameworks, implemented by apps </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>context returned by dsn_app_create </td></tr>
+    <tr><td class="paramname">mode</td><td>see <a class="el" href="group__service-api-model.html#ga3855bcce10d73fc2e543203d5a373474">dsn_chkpt_apply_mode</a> </td></tr>
+    <tr><td class="paramname">local_last_decree</td><td>decree of the last request/request-batched that are applied locally </td></tr>
+    <tr><td class="paramname">learn_state</td><td>as returned from <a class="el" href="group__service-api-model.html#gaafab7ec4ba1221ea674258294281a137">dsn_app_get_checkpoint</a> above</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>error code for this operation </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga7e9dbdf53d663f8f5c84f9ae0f0272ce"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="structdsn__app.html">dsn_app</a>  <a class="el" href="structdsn__app.html">dsn_app</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>developers define the following <a class="el" href="structdsn__app.html" title="developers define the following dsn_app data structure, and passes it to rDSN through dsn_register_ap...">dsn_app</a> data structure, and passes it to rDSN through <a class="el" href="group__service-api-model.html#ga74654f84f77a6fcec3682dae6bc521e5">dsn_register_app</a> so that the latter can manage the app appropriately. </p>
+<p>Click into the corresponding types for what are the callback means. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a class="anchor" id="ga3855bcce10d73fc2e543203d5a373474"></a>
 <div class="memitem">
@@ -284,7 +507,7 @@ DSN_API <a class="el" href="structdsn__app__info.html">dsn_app_info</a> *&#160;<
       </table>
 </div><div class="memdoc">
 
-<p>checkpoint apply mode, see <a class="el" href="group__service-api-model.html#ga37d806d103836dcaab3166fae6bfb823">dsn_app_apply_checkpoint</a>, used by frameworks </p>
+<p>checkpoint apply mode, see <a class="el" href="group__service-api-model.html#gaf8b3d7ab876813a924123944efe6828a">dsn_app_apply_checkpoint</a>, used by frameworks </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="gga3855bcce10d73fc2e543203d5a373474a84e838a3223cf1fbc88a9e5af44a0f5b"></a>DSN_CHKPT_COPY&#160;</td><td class="fielddoc">
 <p>simply a checkpoint from remote machine is given, do not change the local state </p>
@@ -320,7 +543,7 @@ DSN_API <a class="el" href="structdsn__app__info.html">dsn_app_info</a> *&#160;<
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if it succeeds, false if it fails.</dd></dl>
 <p>An example is as follows: </p><pre>
-    <a class="el" href="structdsn__app.html">dsn_app</a> app;
+    <a class="el" href="structdsn__app.html" title="developers define the following dsn_app data structure, and passes it to rDSN through dsn_register_ap...">dsn_app</a> app;
     memset(&amp;app, 0, sizeof(app));
     app.mask = DSN_APP_MASK_APP;
     strncpy(app.type_name, type_name, sizeof(app.type_name));

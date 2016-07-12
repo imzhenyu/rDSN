@@ -82,6 +82,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="summary">
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Common Task Operations<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-c.html">Core Service API</a></div></div>  </div>
@@ -143,39 +145,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li></li>
 </ul>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:ga7800b4bff24ae27ed47d37ea2b4ee8f1"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga7800b4bff24ae27ed47d37ea2b4ee8f1">dsn_task_add_ref</a> (dsn_task_t task)</td></tr>
-<tr class="separator:ga7800b4bff24ae27ed47d37ea2b4ee8f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4e8303834afa73820d452b51ad7e40c3"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga4e8303834afa73820d452b51ad7e40c3">dsn_task_release_ref</a> (dsn_task_t task)</td></tr>
-<tr class="separator:ga4e8303834afa73820d452b51ad7e40c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1ce5abab055cbf2b556772bcadb23722"><td class="memItemLeft" align="right" valign="top">DSN_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1ce5abab055cbf2b556772bcadb23722">dsn_task_get_ref</a> (dsn_task_t task)</td></tr>
-<tr class="separator:ga1ce5abab055cbf2b556772bcadb23722"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad213948bd98a91645a71f86ffb704726"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gad213948bd98a91645a71f86ffb704726">dsn_task_cancel</a> (dsn_task_t task, bool wait_until_finished)</td></tr>
-<tr class="separator:gad213948bd98a91645a71f86ffb704726"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga46321f8db316b7c5ec69711a1b505d33"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga46321f8db316b7c5ec69711a1b505d33">dsn_task_set_delay</a> (dsn_task_t task, int delay_ms)</td></tr>
-<tr class="separator:ga46321f8db316b7c5ec69711a1b505d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad2132ff959dd085ef3dab403010e849f"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gad2132ff959dd085ef3dab403010e849f">dsn_task_cancel2</a> (dsn_task_t task, bool wait_until_finished, bool *finished)</td></tr>
-<tr class="separator:gad2132ff959dd085ef3dab403010e849f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8e46d56a7bba870f541314641220733e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8e46d56a7bba870f541314641220733e"></a>
-DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga8e46d56a7bba870f541314641220733e">dsn_task_cancel_current_timer</a> ()</td></tr>
-<tr class="separator:ga8e46d56a7bba870f541314641220733e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga49d3124fb20a3045483116a68bb99842"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga49d3124fb20a3045483116a68bb99842">dsn_task_wait</a> (dsn_task_t task)</td></tr>
-<tr class="separator:ga49d3124fb20a3045483116a68bb99842"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga91d4f179ce7623b105ab05af37965cc0"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga91d4f179ce7623b105ab05af37965cc0">dsn_task_wait_timeout</a> (dsn_task_t task, int timeout_milliseconds)</td></tr>
-<tr class="separator:ga91d4f179ce7623b105ab05af37965cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga55e6abfca72b95fe20c8b9ab371f7ed8"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_error_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga55e6abfca72b95fe20c8b9ab371f7ed8">dsn_task_error</a> (dsn_task_t task)</td></tr>
-<tr class="separator:ga55e6abfca72b95fe20c8b9ab371f7ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadec1ab58a32efb0ee0d1dd9e3dd8d304"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gadec1ab58a32efb0ee0d1dd9e3dd8d304">dsn_task_is_running_inside</a> (dsn_task_t t)</td></tr>
-<tr class="separator:gadec1ab58a32efb0ee0d1dd9e3dd8d304"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6fe69602ca4679d36d2ebc50f00e38cb"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_task_tracker_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga6fe69602ca4679d36d2ebc50f00e38cb">dsn_task_tracker_create</a> (int task_bucket_count)</td></tr>
-<tr class="separator:ga6fe69602ca4679d36d2ebc50f00e38cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6d37c53d694e913521e8a96dc429c33e"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga6d37c53d694e913521e8a96dc429c33e">dsn_task_tracker_destroy</a> (dsn_task_tracker_t tracker)</td></tr>
-<tr class="separator:ga6d37c53d694e913521e8a96dc429c33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1a44cdb0aed43452bdef334d9f691eb4"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1a44cdb0aed43452bdef334d9f691eb4">dsn_task_tracker_cancel_all</a> (dsn_task_tracker_t tracker)</td></tr>
-<tr class="separator:ga1a44cdb0aed43452bdef334d9f691eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaaa8752122c2ca74cdcdd77c1bcd392cc"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gaaa8752122c2ca74cdcdd77c1bcd392cc">dsn_task_tracker_wait_all</a> (dsn_task_tracker_t tracker)</td></tr>
-<tr class="separator:gaaa8752122c2ca74cdcdd77c1bcd392cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ga84ef868e609f93be7044c749df9fe0d0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga84ef868e609f93be7044c749df9fe0d0"></a>
+typedef enum <a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga84ef868e609f93be7044c749df9fe0d0">dsn_task_type_t</a></td></tr>
+<tr class="separator:ga84ef868e609f93be7044c749df9fe0d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga14718b967ec3ea97cd3dba20ada415c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga14718b967ec3ea97cd3dba20ada415c8"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a>) (void *)</td></tr>
+<tr class="separator:ga14718b967ec3ea97cd3dba20ada415c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7fd5300dcd75225d3420c0f2b71ea7f1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7fd5300dcd75225d3420c0f2b71ea7f1"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga7fd5300dcd75225d3420c0f2b71ea7f1">dsn_rpc_request_handler_t</a>) (dsn_message_t, void *)</td></tr>
+<tr class="separator:ga7fd5300dcd75225d3420c0f2b71ea7f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga16b06dc4b92bbf395490fa63edaba2ab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga16b06dc4b92bbf395490fa63edaba2ab"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga16b06dc4b92bbf395490fa63edaba2ab">dsn_rpc_response_handler_t</a>) (dsn_error_t, dsn_message_t, dsn_message_t, void *)</td></tr>
+<tr class="separator:ga16b06dc4b92bbf395490fa63edaba2ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1649c0fb4cf4fa3357f42434a74e78a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1649c0fb4cf4fa3357f42434a74e78a8"></a>
+typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1649c0fb4cf4fa3357f42434a74e78a8">dsn_aio_handler_t</a>) (dsn_error_t, size_t, void *)</td></tr>
+<tr class="separator:ga1649c0fb4cf4fa3357f42434a74e78a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa651801ce5668d46cfad11f5c3ef939a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa651801ce5668d46cfad11f5c3ef939a"></a>
+typedef enum <a class="el" href="group__task-common.html#ga750b2e748468dd17a36c4b5ecbb23155">dsn_task_priority_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gaa651801ce5668d46cfad11f5c3ef939a">dsn_task_priority_t</a></td></tr>
+<tr class="separator:gaa651801ce5668d46cfad11f5c3ef939a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1118e5a89dcd664ca5315b30b68bbee5"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a>) (void *)</td></tr>
+<tr class="separator:ga1118e5a89dcd664ca5315b30b68bbee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
 <tr class="memitem:gaaef99f60d299e960b5910c1a19f36312"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a> { <br />
 &#160;&#160;<a class="el" href="group__task-common.html#ggaaef99f60d299e960b5910c1a19f36312ab93cdaa737723ad06381d93f9d04e1b8">TASK_TYPE_RPC_REQUEST</a>, 
 <a class="el" href="group__task-common.html#ggaaef99f60d299e960b5910c1a19f36312a0a71c16dfd7ae6d8763a56f7512c8b8d">TASK_TYPE_RPC_RESPONSE</a>, 
@@ -198,26 +192,9 @@ DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <br />
  }</td></tr>
 <tr class="separator:ga750b2e748468dd17a36c4b5ecbb23155"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga84ef868e609f93be7044c749df9fe0d0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga84ef868e609f93be7044c749df9fe0d0"></a>
-typedef enum <a class="el" href="group__task-common.html#gaaef99f60d299e960b5910c1a19f36312">dsn_task_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga84ef868e609f93be7044c749df9fe0d0">dsn_task_type_t</a></td></tr>
-<tr class="separator:ga84ef868e609f93be7044c749df9fe0d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga14718b967ec3ea97cd3dba20ada415c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga14718b967ec3ea97cd3dba20ada415c8"></a>
-typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga14718b967ec3ea97cd3dba20ada415c8">dsn_task_handler_t</a>) (void *)</td></tr>
-<tr class="separator:ga14718b967ec3ea97cd3dba20ada415c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7fd5300dcd75225d3420c0f2b71ea7f1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7fd5300dcd75225d3420c0f2b71ea7f1"></a>
-typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga7fd5300dcd75225d3420c0f2b71ea7f1">dsn_rpc_request_handler_t</a>) (dsn_message_t, void *)</td></tr>
-<tr class="separator:ga7fd5300dcd75225d3420c0f2b71ea7f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga16b06dc4b92bbf395490fa63edaba2ab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga16b06dc4b92bbf395490fa63edaba2ab"></a>
-typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga16b06dc4b92bbf395490fa63edaba2ab">dsn_rpc_response_handler_t</a>) (dsn_error_t, dsn_message_t, dsn_message_t, void *)</td></tr>
-<tr class="separator:ga16b06dc4b92bbf395490fa63edaba2ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1649c0fb4cf4fa3357f42434a74e78a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1649c0fb4cf4fa3357f42434a74e78a8"></a>
-typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1649c0fb4cf4fa3357f42434a74e78a8">dsn_aio_handler_t</a>) (dsn_error_t, size_t, void *)</td></tr>
-<tr class="separator:ga1649c0fb4cf4fa3357f42434a74e78a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa651801ce5668d46cfad11f5c3ef939a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa651801ce5668d46cfad11f5c3ef939a"></a>
-typedef enum <a class="el" href="group__task-common.html#ga750b2e748468dd17a36c4b5ecbb23155">dsn_task_priority_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gaa651801ce5668d46cfad11f5c3ef939a">dsn_task_priority_t</a></td></tr>
-<tr class="separator:gaa651801ce5668d46cfad11f5c3ef939a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1118e5a89dcd664ca5315b30b68bbee5"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1118e5a89dcd664ca5315b30b68bbee5">dsn_task_cancelled_handler_t</a>) (void *)</td></tr>
-<tr class="separator:ga1118e5a89dcd664ca5315b30b68bbee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
 <tr class="memitem:ga2d4b0591b55e107d932446873619bdc1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2d4b0591b55e107d932446873619bdc1"></a>
 DSN_API dsn_threadpool_code_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga2d4b0591b55e107d932446873619bdc1">dsn_threadpool_code_register</a> (const char *name)</td></tr>
 <tr class="separator:ga2d4b0591b55e107d932446873619bdc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -263,6 +240,37 @@ DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn_t
 <tr class="memitem:ga93612e4cc989f28f027bbcd37b5ae19e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga93612e4cc989f28f027bbcd37b5ae19e"></a>
 DSN_API volatile int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga93612e4cc989f28f027bbcd37b5ae19e">dsn_task_queue_virtual_length_ptr</a> (dsn_task_code_t code, int hash DEFAULT(0))</td></tr>
 <tr class="separator:ga93612e4cc989f28f027bbcd37b5ae19e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7800b4bff24ae27ed47d37ea2b4ee8f1"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga7800b4bff24ae27ed47d37ea2b4ee8f1">dsn_task_add_ref</a> (dsn_task_t task)</td></tr>
+<tr class="separator:ga7800b4bff24ae27ed47d37ea2b4ee8f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4e8303834afa73820d452b51ad7e40c3"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga4e8303834afa73820d452b51ad7e40c3">dsn_task_release_ref</a> (dsn_task_t task)</td></tr>
+<tr class="separator:ga4e8303834afa73820d452b51ad7e40c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1ce5abab055cbf2b556772bcadb23722"><td class="memItemLeft" align="right" valign="top">DSN_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1ce5abab055cbf2b556772bcadb23722">dsn_task_get_ref</a> (dsn_task_t task)</td></tr>
+<tr class="separator:ga1ce5abab055cbf2b556772bcadb23722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad213948bd98a91645a71f86ffb704726"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gad213948bd98a91645a71f86ffb704726">dsn_task_cancel</a> (dsn_task_t task, bool wait_until_finished)</td></tr>
+<tr class="separator:gad213948bd98a91645a71f86ffb704726"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga46321f8db316b7c5ec69711a1b505d33"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga46321f8db316b7c5ec69711a1b505d33">dsn_task_set_delay</a> (dsn_task_t task, int delay_ms)</td></tr>
+<tr class="separator:ga46321f8db316b7c5ec69711a1b505d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad2132ff959dd085ef3dab403010e849f"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gad2132ff959dd085ef3dab403010e849f">dsn_task_cancel2</a> (dsn_task_t task, bool wait_until_finished, bool *finished)</td></tr>
+<tr class="separator:gad2132ff959dd085ef3dab403010e849f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8e46d56a7bba870f541314641220733e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8e46d56a7bba870f541314641220733e"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga8e46d56a7bba870f541314641220733e">dsn_task_cancel_current_timer</a> ()</td></tr>
+<tr class="separator:ga8e46d56a7bba870f541314641220733e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga49d3124fb20a3045483116a68bb99842"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga49d3124fb20a3045483116a68bb99842">dsn_task_wait</a> (dsn_task_t task)</td></tr>
+<tr class="separator:ga49d3124fb20a3045483116a68bb99842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga91d4f179ce7623b105ab05af37965cc0"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga91d4f179ce7623b105ab05af37965cc0">dsn_task_wait_timeout</a> (dsn_task_t task, int timeout_milliseconds)</td></tr>
+<tr class="separator:ga91d4f179ce7623b105ab05af37965cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga55e6abfca72b95fe20c8b9ab371f7ed8"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_error_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga55e6abfca72b95fe20c8b9ab371f7ed8">dsn_task_error</a> (dsn_task_t task)</td></tr>
+<tr class="separator:ga55e6abfca72b95fe20c8b9ab371f7ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadec1ab58a32efb0ee0d1dd9e3dd8d304"><td class="memItemLeft" align="right" valign="top">DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gadec1ab58a32efb0ee0d1dd9e3dd8d304">dsn_task_is_running_inside</a> (dsn_task_t t)</td></tr>
+<tr class="separator:gadec1ab58a32efb0ee0d1dd9e3dd8d304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6fe69602ca4679d36d2ebc50f00e38cb"><td class="memItemLeft" align="right" valign="top">DSN_API dsn_task_tracker_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga6fe69602ca4679d36d2ebc50f00e38cb">dsn_task_tracker_create</a> (int task_bucket_count)</td></tr>
+<tr class="separator:ga6fe69602ca4679d36d2ebc50f00e38cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6d37c53d694e913521e8a96dc429c33e"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga6d37c53d694e913521e8a96dc429c33e">dsn_task_tracker_destroy</a> (dsn_task_tracker_t tracker)</td></tr>
+<tr class="separator:ga6d37c53d694e913521e8a96dc429c33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1a44cdb0aed43452bdef334d9f691eb4"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#ga1a44cdb0aed43452bdef334d9f691eb4">dsn_task_tracker_cancel_all</a> (dsn_task_tracker_t tracker)</td></tr>
+<tr class="separator:ga1a44cdb0aed43452bdef334d9f691eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaa8752122c2ca74cdcdd77c1bcd392cc"><td class="memItemLeft" align="right" valign="top">DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__task-common.html#gaaa8752122c2ca74cdcdd77c1bcd392cc">dsn_task_tracker_wait_all</a> (dsn_task_tracker_t tracker)</td></tr>
+<tr class="separator:gaaa8752122c2ca74cdcdd77c1bcd392cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="ga1118e5a89dcd664ca5315b30b68bbee5"></a>
