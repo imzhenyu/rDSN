@@ -189,7 +189,10 @@ void mutation_log_shared::write_pending_mutations(bool release_lock)
                 lf->flush();
             }
 
-            // notify the callbacks
+            // release the block to ensure later write is possible
+            block = nullptr;
+
+            // notify the callbacks            
             for (auto& c : *callbacks)
             {
                 c->enqueue_aio(err, sz);
@@ -198,10 +201,8 @@ void mutation_log_shared::write_pending_mutations(bool release_lock)
             // start to write if possible
             if (err == ERR_OK)
             {
-                _slock.lock();
-
-                block = nullptr;
-                if (_pending_write)
+                _slock.lock();                
+                if (_issued_write.expired() && _pending_write)
                 {
                     write_pending_mutations(true);
                 }
@@ -413,6 +414,9 @@ void mutation_log_private::write_pending_mutations(bool release_lock)
                 update_max_commit_on_disk(max_commit);
             }
             
+            // release the block to ensure later write is possible
+            block = nullptr;
+
             // notify error when necessary
             if (err != ERR_OK)
             {
@@ -426,9 +430,8 @@ void mutation_log_private::write_pending_mutations(bool release_lock)
             {
                 // start to write if possible
                 _plock.lock();
-
-                block = nullptr;
-                if (_pending_write && 
+                if (_issued_write.expired() && 
+                    _pending_write &&
                     (static_cast<uint32_t>(_pending_write->size()) >= _batch_buffer_bytes
                     || static_cast<uint32_t>(_pending_write->data().size()) >= _batch_buffer_max_count)
                     )

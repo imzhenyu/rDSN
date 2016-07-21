@@ -425,8 +425,8 @@ private:
     // Preconditions:
     // - _pending_write != nullptr
     // - _issued_write.expired() == true (because only one async write is allowed at the same time)
-    // release_lock_required = true => this function must release the lock appropriately for less lock contention
-    void write_pending_mutations(bool release_lock_required = true);
+    // release_lock_required must be always true => this function must release the lock appropriately for less lock contention
+    void write_pending_mutations(bool release_lock_required);
 
     virtual void init_states() override;
 
