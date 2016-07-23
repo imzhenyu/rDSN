@@ -694,3 +694,5 @@ function(dsn_common_setup)
     dsn_setup_link_path()
     dsn_setup_install()
 endfunction(dsn_common_setup)
+
+set(DSN_CMAKE_INCLUDED "1")
