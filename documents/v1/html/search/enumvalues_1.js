@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['host_5ftype_5fgroup',['HOST_TYPE_GROUP',['../group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795a34328cf8b3a8c23500835546f708a56c',1,'api_layer1.h']]],
-  ['host_5ftype_5fipv4',['HOST_TYPE_IPV4',['../group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aebe58bd51c617e7f9024189e369dc8e9',1,'api_layer1.h']]],
-  ['host_5ftype_5furi',['HOST_TYPE_URI',['../group__rpc-addr.html#gga0f5497bac4044cfaf2b89133736d1795aa50d4a851ac789ab6dcd75213fbb08da',1,'api_layer1.h']]]
+  ['dsn_5fchkpt_5fcopy',['DSN_CHKPT_COPY',['../group__service-api-model.html#gga3855bcce10d73fc2e543203d5a373474a84e838a3223cf1fbc88a9e5af44a0f5b',1,'app_model.h']]],
+  ['dsn_5fchkpt_5flearn',['DSN_CHKPT_LEARN',['../group__service-api-model.html#gga3855bcce10d73fc2e543203d5a373474a7fe8f76eebfd9149b2cfb20645348e00',1,'app_model.h']]]
 ];

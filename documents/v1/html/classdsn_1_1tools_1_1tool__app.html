@@ -108,10 +108,9 @@ Inheritance diagram for dsn::tools::tool_app:</div>
  <div class="center">
   <img src="classdsn_1_1tools_1_1tool__app.png" usemap="#dsn::tools::tool_5Fapp_map" alt=""/>
   <map id="dsn::tools::tool_5Fapp_map" name="dsn::tools::tool_app_map">
-<area href="classdsn_1_1tools_1_1tool__base.html" alt="dsn::tools::tool_base" shape="rect" coords="134,0,258,24"/>
-<area href="classdsn_1_1tools_1_1fastrun.html" alt="dsn::tools::fastrun" shape="rect" coords="0,112,124,136"/>
-<area href="classdsn_1_1tools_1_1nativerun.html" alt="dsn::tools::nativerun" shape="rect" coords="134,112,258,136"/>
-<area href="classdsn_1_1tools_1_1simulator.html" alt="dsn::tools::simulator" shape="rect" coords="268,112,392,136"/>
+<area href="classdsn_1_1tools_1_1tool__base.html" alt="dsn::tools::tool_base" shape="rect" coords="67,0,191,24"/>
+<area href="classdsn_1_1tools_1_1nativerun.html" alt="dsn::tools::nativerun" shape="rect" coords="0,112,124,136"/>
+<area href="classdsn_1_1tools_1_1simulator.html" alt="dsn::tools::simulator" shape="rect" coords="134,112,258,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -123,25 +122,25 @@ typedef <a class="el" href="classdsn_1_1tools_1_1tool__app.html">tool_app</a> *(
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:gae517f89524322899e8e33b3c8b33923e"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>tool_app</b> (const char *name)</td></tr>
-<tr class="separator:gae517f89524322899e8e33b3c8b33923e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadc60c74483c7791ad9fbc3e39b122d8a"><td class="memItemLeft" align="right" valign="top">
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>tool_app</b> (const char *name)</td></tr>
+<tr class="separator:gadc60c74483c7791ad9fbc3e39b122d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3493668b54c9d961190582ad57b324fd"><td class="memItemLeft" align="right" valign="top">
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>install</b> (service_spec &amp;spec)=0</td></tr>
 <tr class="separator:ga3493668b54c9d961190582ad57b324fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad5f343cd2cad69cdb445cc69ef565c18"><td class="memItemLeft" align="right" valign="top">
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>run</b> ()</td></tr>
 <tr class="separator:gad5f343cd2cad69cdb445cc69ef565c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga858f774bc99e4df874f9ef554e189b2d"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>start_all_apps</b> ()</td></tr>
-<tr class="separator:ga858f774bc99e4df874f9ef554e189b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga79d234d8f3c2c04108d1a133c0f5dfa7"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>stop_all_apps</b> (bool cleanup)</td></tr>
-<tr class="separator:ga79d234d8f3c2c04108d1a133c0f5dfa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5d5b6719b0120a45b456c860a33c9707"><td class="memItemLeft" align="right" valign="top">
+virtual DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>start_all_apps</b> ()</td></tr>
+<tr class="separator:ga5d5b6719b0120a45b456c860a33c9707"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga136a1a7dfe0297436a5c8daa4d6a94f7"><td class="memItemLeft" align="right" valign="top">
+virtual DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>stop_all_apps</b> (bool cleanup)</td></tr>
+<tr class="separator:ga136a1a7dfe0297436a5c8daa4d6a94f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classdsn_1_1tools_1_1tool__base"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classdsn_1_1tools_1_1tool__base')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdsn_1_1tools_1_1tool__base.html">dsn::tools::tool_base</a></td></tr>
-<tr class="memitem:ga1f9fc8799acdd4468e8c3bbeaa53ebb0 inherit pub_methods_classdsn_1_1tools_1_1tool__base"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>tool_base</b> (const char *name)</td></tr>
-<tr class="separator:ga1f9fc8799acdd4468e8c3bbeaa53ebb0 inherit pub_methods_classdsn_1_1tools_1_1tool__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga38aa0f2471822e59258acb7352926536 inherit pub_methods_classdsn_1_1tools_1_1tool__base"><td class="memItemLeft" align="right" valign="top">
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>tool_base</b> (const char *name)</td></tr>
+<tr class="separator:ga38aa0f2471822e59258acb7352926536 inherit pub_methods_classdsn_1_1tools_1_1tool__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6fae8f3d7805f2c5cfd10379387d709b inherit pub_methods_classdsn_1_1tools_1_1tool__base"><td class="memItemLeft" align="right" valign="top">
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const </td></tr>
 <tr class="separator:ga6fae8f3d7805f2c5cfd10379387d709b inherit pub_methods_classdsn_1_1tools_1_1tool__base"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,9 +151,9 @@ Static Public Member Functions</h2></td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ga17a2cd2c0e21cfbb1bf6667500f4b835"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classdsn_1_1tools_1_1tool__app.html">tool_app</a> *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create</b> (const char *name)</td></tr>
 <tr class="separator:ga17a2cd2c0e21cfbb1bf6667500f4b835"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaaa64c527c171ef7774cb8d1d0046370f"><td class="memItemLeft" align="right" valign="top">
-static const service_spec &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_service_spec</b> ()</td></tr>
-<tr class="separator:gaaa64c527c171ef7774cb8d1d0046370f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gace52c95bb620e80ddc487f35f43aed35"><td class="memItemLeft" align="right" valign="top">
+static DSN_API const service_spec &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_service_spec</b> ()</td></tr>
+<tr class="separator:gace52c95bb620e80ddc487f35f43aed35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>

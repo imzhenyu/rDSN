@@ -112,14 +112,14 @@ typedef <a class="el" href="classdsn_1_1task__queue.html">task_queue</a> *(*&#16
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3d642c5602962d404fa7c1f4515dc7d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d642c5602962d404fa7c1f4515dc7d5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>task_queue</b> (task_worker_pool *pool, int index, <a class="el" href="classdsn_1_1task__queue.html">task_queue</a> *inner_provider)</td></tr>
-<tr class="separator:a3d642c5602962d404fa7c1f4515dc7d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a377fee441d1965d1304752e7db22c5e4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a377fee441d1965d1304752e7db22c5e4"></a>
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>task_queue</b> (task_worker_pool *pool, int index, <a class="el" href="classdsn_1_1task__queue.html">task_queue</a> *inner_provider)</td></tr>
+<tr class="separator:a377fee441d1965d1304752e7db22c5e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a690cb48ca728ae036713b80a7d550dd4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a690cb48ca728ae036713b80a7d550dd4"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>enqueue</b> (task *task)=0</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>enqueue</b> (<a class="el" href="classdsn_1_1task.html">task</a> *<a class="el" href="classdsn_1_1task.html">task</a>)=0</td></tr>
 <tr class="separator:a690cb48ca728ae036713b80a7d550dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91fa0541c4569320a6686beb17f00cfa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a91fa0541c4569320a6686beb17f00cfa"></a>
-virtual task *&#160;</td><td class="memItemRight" valign="bottom"><b>dequeue</b> (int &amp;batch_size)=0</td></tr>
+virtual <a class="el" href="classdsn_1_1task.html">task</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>dequeue</b> (int &amp;batch_size)=0</td></tr>
 <tr class="separator:a91fa0541c4569320a6686beb17f00cfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e7075ced6daf3e2d3b1544a2e5e09a2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e7075ced6daf3e2d3b1544a2e5e09a2"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>count</b> () const </td></tr>
@@ -172,7 +172,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>task_worker_pool</b>
 <tr class="separator:a4e83d9e37fcad3cef29f9fe68db6d6fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/dsn/internal/<a class="el" href="task__queue_8h_source.html">task_queue.h</a></li>
+<li>include/dsn/tool-api/<a class="el" href="task__queue_8h_source.html">task_queue.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.11-->

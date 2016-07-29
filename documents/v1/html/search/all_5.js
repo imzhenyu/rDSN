@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['global_20checker',['Global Checker',['../group__app-checker.html',1,'']]],
-  ['gpid',['gpid',['../structdsn__msg__options__t.html#a3cb293fa39b36c2db47a1828810adbf5',1,'dsn_msg_options_t']]],
-  ['gpid',['gpid',['../classdsn_1_1gpid.html',1,'dsn']]],
-  ['group',['group',['../uniondsn__address__t_1_1u__t.html#a24c9d423c33c32a18a4391aaee282080',1,'dsn_address_t::u_t::group()'],['../uniondsn__address__t_1_1u__t.html#a89b09f740dcec961a6f5688d2a76dfd9',1,'dsn_address_t::u_t::group()']]]
+  ['fault_20injector',['Fault Injector',['../group__fault-injector.html',1,'']]],
+  ['fault_5finjector',['fault_injector',['../classdsn_1_1tools_1_1fault__injector.html',1,'dsn::tools']]],
+  ['file_20operations',['File Operations',['../group__file.html',1,'']]],
+  ['file_5fstate_5fcount',['file_state_count',['../structdsn__app__learn__state.html#af7d65f2947caa0ae57e8cf07ad5a4450',1,'dsn_app_learn_state']]],
+  ['files',['files',['../structdsn__app__learn__state.html#aee0df65dd8693b5b7d0fd57365f80318',1,'dsn_app_learn_state']]],
+  ['from_5fdecree_5fexcluded',['from_decree_excluded',['../structdsn__app__learn__state.html#a13f354c679311c523731b75cd955120a',1,'dsn_app_learn_state']]]
 ];

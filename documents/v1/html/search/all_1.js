@@ -1,14 +1,14 @@
 var searchData=
 [
-  ['command_2dline_20interface_20_28cli_29',['Command-Line Interface (cli)',['../group__app-cli.html',1,'']]],
-  ['checksum',['Checksum',['../group__checksum.html',1,'']]],
-  ['clientlet',['clientlet',['../classdsn_1_1clientlet.html',1,'dsn']]],
-  ['configuration_20service',['Configuration Service',['../group__config.html',1,'']]],
-  ['connection_5foriented_5fnetwork',['connection_oriented_network',['../classdsn_1_1connection__oriented__network.html',1,'dsn']]],
-  ['context',['context',['../uniondsn__msg__context__t.html#a15cc1a1e9173d1fc0871407ee2182388',1,'dsn_msg_context_t::context()'],['../structdsn__msg__options__t.html#a876ea210b1d8d28ebca30adb4ce26745',1,'dsn_msg_options_t::context()'],['../structdsn__cli__reply.html#abb15a82d9d65d9bc60fff6bd05c14890',1,'dsn_cli_reply::context()']]],
-  ['create',['create',['../structdsn__app_1_1layer1__callbacks.html#a5f87216dfc2fc624c072a6bdf2d2c2e0',1,'dsn_app::layer1_callbacks']]],
-  ['client_2dside_20rpc_20primitives',['Client-Side RPC Primitives',['../group__rpc-client.html',1,'']]],
-  ['core_20service_20api',['Core Service API',['../group__service-api-c.html',1,'']]],
-  ['common_20task_20operations',['Common Task Operations',['../group__task-common.html',1,'']]],
-  ['component_20providers',['Component Providers',['../group__tool-api-providers.html',1,'']]]
+  ['about_20rdsn',['About rDSN',['../group__about.html',1,'']]],
+  ['aio_5fprovider',['aio_provider',['../classdsn_1_1aio__provider.html',1,'dsn']]],
+  ['aio_5ftask',['aio_task',['../classdsn_1_1aio__task.html',1,'dsn']]],
+  ['api',['API',['../group__api.html',1,'']]],
+  ['app_2dmodel',['App-model',['../group__app-model.html',1,'']]],
+  ['app_5fcallbacks',['app_callbacks',['../structdsn__app__callbacks_1_1app__callbacks.html',1,'dsn_app_callbacks']]],
+  ['app_5fcontext_5fptr',['app_context_ptr',['../structdsn__app__info.html#acd9e94414450096810cd3018162ed1c6',1,'dsn_app_info']]],
+  ['app_5fid',['app_id',['../structdsn__app__info.html#a58a94125a92222a86d0fcb7cfda3078b',1,'dsn_app_info::app_id()'],['../uniondsn__global__partition__id.html#accb72004e7b3bccad47e076bfa66875c',1,'dsn_global_partition_id::app_id()']]],
+  ['apps',['apps',['../structdsn__app.html#aafdb9c48abac541139ebe1cdee2707b1',1,'dsn_app']]],
+  ['application_20and_20framework_20models',['Application and Framework Models',['../group__service-api-model.html',1,'']]],
+  ['asynchronous_20tasks_20and_20timers',['Asynchronous Tasks and Timers',['../group__tasking.html',1,'']]]
 ];

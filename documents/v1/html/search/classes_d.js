@@ -1,14 +1,11 @@
 var searchData=
 [
-  ['task_5fcode',['task_code',['../classdsn_1_1task__code.html',1,'dsn']]],
-  ['task_5fqueue',['task_queue',['../classdsn_1_1task__queue.html',1,'dsn']]],
-  ['task_5fworker',['task_worker',['../classdsn_1_1task__worker.html',1,'dsn']]],
-  ['threadpool_5fcode',['threadpool_code',['../classdsn_1_1threadpool__code.html',1,'dsn']]],
-  ['timer_5fsafe_5ftask',['timer_safe_task',['../classdsn_1_1timer__safe__task.html',1,'dsn']]],
-  ['timer_5fservice',['timer_service',['../classdsn_1_1timer__service.html',1,'dsn']]],
-  ['tool_5fapp',['tool_app',['../classdsn_1_1tools_1_1tool__app.html',1,'dsn::tools']]],
-  ['tool_5fbase',['tool_base',['../classdsn_1_1tools_1_1tool__base.html',1,'dsn::tools']]],
-  ['toollet',['toollet',['../classdsn_1_1tools_1_1toollet.html',1,'dsn::tools']]],
-  ['tracer',['tracer',['../classdsn_1_1tools_1_1tracer.html',1,'dsn::tools']]],
-  ['transient_5fsafe_5ftask',['transient_safe_task',['../classdsn_1_1transient__safe__task.html',1,'dsn']]]
+  ['safe_5fhandle',['safe_handle',['../classdsn_1_1safe__handle.html',1,'dsn']]],
+  ['safe_5fhandle_3c_20dsn_5fmsg_5frelease_5fref_20_3e',['safe_handle&lt; dsn_msg_release_ref &gt;',['../classdsn_1_1safe__handle.html',1,'dsn']]],
+  ['safe_5flate_5ftask',['safe_late_task',['../classdsn_1_1safe__late__task.html',1,'dsn']]],
+  ['safe_5ftask_5fhandle',['safe_task_handle',['../classdsn_1_1safe__task__handle.html',1,'dsn']]],
+  ['semaphore_5fprovider',['semaphore_provider',['../classdsn_1_1semaphore__provider.html',1,'dsn']]],
+  ['serverlet',['serverlet',['../classdsn_1_1serverlet.html',1,'dsn']]],
+  ['service_5fapp',['service_app',['../classdsn_1_1service__app.html',1,'dsn']]],
+  ['simulator',['simulator',['../classdsn_1_1tools_1_1simulator.html',1,'dsn::tools']]]
 ];

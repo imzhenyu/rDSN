@@ -181,6 +181,12 @@ Static Public Member Functions</h2></td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a8853094d7a23109561a6c93ed9d72790"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classdsn_1_1perf__counter.html">perf_counter</a> *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create</b> (const char *app, const char *section, const char *name, dsn_perf_counter_type_t type, const char *dsptr)</td></tr>
 <tr class="separator:a8853094d7a23109561a6c93ed9d72790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7fc803150f90126b24283fd673920ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae7fc803150f90126b24283fd673920ea"></a>
+static DSN_API perf_counter_ptr&#160;</td><td class="memItemRight" valign="bottom"><b>get_counter</b> (const char *app, const char *section, const char *name, dsn_perf_counter_type_t flags, const char *dsptr, bool create_if_not_exist=false)</td></tr>
+<tr class="separator:ae7fc803150f90126b24283fd673920ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadc720639b3fd2dd85bbbb0ffbdd6435"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aadc720639b3fd2dd85bbbb0ffbdd6435"></a>
+static DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>remove_counter</b> (const char *full_name)</td></tr>
+<tr class="separator:aadc720639b3fd2dd85bbbb0ffbdd6435"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af796ec3847af64eb8f7cd88209127561"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af796ec3847af64eb8f7cd88209127561"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>build_full_name</b> (const char *app, const char *section, const char *name, std::string &amp;counter_name)</td></tr>
 <tr class="separator:af796ec3847af64eb8f7cd88209127561"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,7 +198,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>perf_counters</b></t
 <tr class="separator:a7c719e84400fa8f05f89ed13781cf229"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/dsn/internal/<a class="el" href="perf__counter_8h_source.html">perf_counter.h</a></li>
+<li>include/dsn/tool-api/<a class="el" href="perf__counter_8h_source.html">perf_counter.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.11-->

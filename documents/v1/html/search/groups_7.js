@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['logging_20service',['Logging Service',['../group__logging.html',1,'']]]
+  ['join_20points',['Join Points',['../group__tool-api-hooks.html',1,'']]]
 ];

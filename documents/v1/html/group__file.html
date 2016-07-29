@@ -83,6 +83,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">File Operations<div class="ingroups"><a class="el" href="group__api.html">API</a> &raquo; <a class="el" href="group__service-api.html">Service API</a> &raquo; <a class="el" href="group__service-api-c.html">Core Service API</a></div></div>  </div>
@@ -95,6 +97,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdsn__file__buffer__t.html">dsn_file_buffer_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ga72709b517dae8ee85080a94fed9de646"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="group__file.html#gace43baf410531e7f6d170ec2de49c0be">dsn_ctrl_code_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__file.html#ga72709b517dae8ee85080a94fed9de646">dsn_ctrl_code_t</a></td></tr>
+<tr class="separator:ga72709b517dae8ee85080a94fed9de646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:gace43baf410531e7f6d170ec2de49c0be"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__file.html#gace43baf410531e7f6d170ec2de49c0be">dsn_ctrl_code_t</a> { <b>CTL_BATCH_INVALID</b> = 0, 
+<a class="el" href="group__file.html#ggace43baf410531e7f6d170ec2de49c0bea3c3bcb2e04d06153f4f434f04395a04b">CTL_BATCH_WRITE</a> = 1, 
+<a class="el" href="group__file.html#ggace43baf410531e7f6d170ec2de49c0bea643dc93ae374cfe29cff44c03ba5761b">CTL_MAX_CON_READ_OP_COUNT</a> = 2, 
+<a class="el" href="group__file.html#ggace43baf410531e7f6d170ec2de49c0beae94211e7b4d8ac91984695185cefec4f">CTL_MAX_CON_WRITE_OP_COUNT</a> = 3
+ }</td></tr>
+<tr class="separator:gace43baf410531e7f6d170ec2de49c0be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -130,6 +146,47 @@ DSN_API size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__file.html#ga8d4e9a9c45106b622c0cd38f2819dc9f">dsn_file_task_enqueue</a> (dsn_task_t cb_task, dsn_error_t err, size_t size)</td></tr>
 <tr class="separator:ga8d4e9a9c45106b622c0cd38f2819dc9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="ga72709b517dae8ee85080a94fed9de646"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef enum <a class="el" href="group__file.html#gace43baf410531e7f6d170ec2de49c0be">dsn_ctrl_code_t</a>  <a class="el" href="group__file.html#gace43baf410531e7f6d170ec2de49c0be">dsn_ctrl_code_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>the following ctrl code are used by dsn_file_ctrl. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a class="anchor" id="gace43baf410531e7f6d170ec2de49c0be"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__file.html#gace43baf410531e7f6d170ec2de49c0be">dsn_ctrl_code_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>the following ctrl code are used by dsn_file_ctrl. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="ggace43baf410531e7f6d170ec2de49c0bea3c3bcb2e04d06153f4f434f04395a04b"></a>CTL_BATCH_WRITE&#160;</td><td class="fielddoc">
+<p>(batch) set write batch size </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="ggace43baf410531e7f6d170ec2de49c0bea643dc93ae374cfe29cff44c03ba5761b"></a>CTL_MAX_CON_READ_OP_COUNT&#160;</td><td class="fielddoc">
+<p>(throttling) maximum concurrent read ops </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="ggace43baf410531e7f6d170ec2de49c0beae94211e7b4d8ac91984695185cefec4f"></a>CTL_MAX_CON_WRITE_OP_COUNT&#160;</td><td class="fielddoc">
+<p>(throttling) maximum concurrent write ops </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ga9cfccda6a98cd51484ffbcbb6553f00b"></a>
 <div class="memitem">

@@ -114,61 +114,61 @@ Inheritance diagram for dsn::connection_oriented_network:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6f3711e3a416d602eff993d4a81d6cdc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6f3711e3a416d602eff993d4a81d6cdc"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>connection_oriented_network</b> (rpc_engine *srv, <a class="el" href="classdsn_1_1network.html">network</a> *inner_provider)</td></tr>
-<tr class="separator:a6f3711e3a416d602eff993d4a81d6cdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1d80fcc6228740af8b3438199cbd153"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab1d80fcc6228740af8b3438199cbd153"></a>
-rpc_session_ptr&#160;</td><td class="memItemRight" valign="bottom"><b>get_server_session</b> (::<a class="el" href="classdsn_1_1rpc__address.html">dsn::rpc_address</a> ep)</td></tr>
-<tr class="separator:ab1d80fcc6228740af8b3438199cbd153"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecab442dc02a0f3ab64d2cf4532eb3b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aecab442dc02a0f3ab64d2cf4532eb3b5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>on_server_session_accepted</b> (rpc_session_ptr &amp;s)</td></tr>
-<tr class="separator:aecab442dc02a0f3ab64d2cf4532eb3b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeae07eede2243d608d61f62e5f411bfd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeae07eede2243d608d61f62e5f411bfd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>on_server_session_disconnected</b> (rpc_session_ptr &amp;s)</td></tr>
-<tr class="separator:aeae07eede2243d608d61f62e5f411bfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfd70c5c23375281abcc220cb268dc93"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abfd70c5c23375281abcc220cb268dc93"></a>
-rpc_session_ptr&#160;</td><td class="memItemRight" valign="bottom"><b>get_client_session</b> (::<a class="el" href="classdsn_1_1rpc__address.html">dsn::rpc_address</a> ep)</td></tr>
-<tr class="separator:abfd70c5c23375281abcc220cb268dc93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37430811ed021abfd37e9eef2f721b52"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a37430811ed021abfd37e9eef2f721b52"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>on_client_session_connected</b> (rpc_session_ptr &amp;s)</td></tr>
-<tr class="separator:a37430811ed021abfd37e9eef2f721b52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af44ae5d4c0f93b917db2a1efb2d7c39d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af44ae5d4c0f93b917db2a1efb2d7c39d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>on_client_session_disconnected</b> (rpc_session_ptr &amp;s)</td></tr>
-<tr class="separator:af44ae5d4c0f93b917db2a1efb2d7c39d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11ccf3d0ee274fc820fc1d17e8fc8723"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a11ccf3d0ee274fc820fc1d17e8fc8723"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>send_message</b> (message_ex *request) override</td></tr>
-<tr class="separator:a11ccf3d0ee274fc820fc1d17e8fc8723"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69d482a3dc4fa6a538de57c1db8d3f06"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a69d482a3dc4fa6a538de57c1db8d3f06"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>inject_drop_message</b> (message_ex *msg, bool is_send) override</td></tr>
-<tr class="separator:a69d482a3dc4fa6a538de57c1db8d3f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f96baa032d8e0bd9d60969c0576f2f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f96baa032d8e0bd9d60969c0576f2f5"></a>
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>connection_oriented_network</b> (rpc_engine *srv, <a class="el" href="classdsn_1_1network.html">network</a> *inner_provider)</td></tr>
+<tr class="separator:a4f96baa032d8e0bd9d60969c0576f2f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b6797ed5f64edbdda31eff74b3cd08a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1b6797ed5f64edbdda31eff74b3cd08a"></a>
+DSN_API rpc_session_ptr&#160;</td><td class="memItemRight" valign="bottom"><b>get_server_session</b> (::<a class="el" href="classdsn_1_1rpc__address.html">dsn::rpc_address</a> ep)</td></tr>
+<tr class="separator:a1b6797ed5f64edbdda31eff74b3cd08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f68c32c106bc95ba2df724b51f4f45b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f68c32c106bc95ba2df724b51f4f45b"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>on_server_session_accepted</b> (rpc_session_ptr &amp;s)</td></tr>
+<tr class="separator:a1f68c32c106bc95ba2df724b51f4f45b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27959b5c613ce872d8584634b5277f2b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27959b5c613ce872d8584634b5277f2b"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>on_server_session_disconnected</b> (rpc_session_ptr &amp;s)</td></tr>
+<tr class="separator:a27959b5c613ce872d8584634b5277f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1fb436c99f992b0122698a9750f1025"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af1fb436c99f992b0122698a9750f1025"></a>
+DSN_API rpc_session_ptr&#160;</td><td class="memItemRight" valign="bottom"><b>get_client_session</b> (::<a class="el" href="classdsn_1_1rpc__address.html">dsn::rpc_address</a> ep)</td></tr>
+<tr class="separator:af1fb436c99f992b0122698a9750f1025"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5678eb1132571cb1801047364f829f46"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5678eb1132571cb1801047364f829f46"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>on_client_session_connected</b> (rpc_session_ptr &amp;s)</td></tr>
+<tr class="separator:a5678eb1132571cb1801047364f829f46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad02cdfdae215d6c18c23d00ff2aeaec7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad02cdfdae215d6c18c23d00ff2aeaec7"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>on_client_session_disconnected</b> (rpc_session_ptr &amp;s)</td></tr>
+<tr class="separator:ad02cdfdae215d6c18c23d00ff2aeaec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25525ddd768ca9e217a26e915c40bf67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a25525ddd768ca9e217a26e915c40bf67"></a>
+virtual DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>send_message</b> (message_ex *request) override</td></tr>
+<tr class="separator:a25525ddd768ca9e217a26e915c40bf67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6751370222d967535bdcdf012db61ab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6751370222d967535bdcdf012db61ab"></a>
+virtual DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>inject_drop_message</b> (message_ex *msg, bool is_send) override</td></tr>
+<tr class="separator:af6751370222d967535bdcdf012db61ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad662a73fbbb23dc2cb32238dac819f84"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad662a73fbbb23dc2cb32238dac819f84"></a>
 virtual rpc_session_ptr&#160;</td><td class="memItemRight" valign="bottom"><b>create_client_session</b> (::<a class="el" href="classdsn_1_1rpc__address.html">dsn::rpc_address</a> server_addr)=0</td></tr>
 <tr class="separator:ad662a73fbbb23dc2cb32238dac819f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classdsn_1_1network"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classdsn_1_1network')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdsn_1_1network.html">dsn::network</a></td></tr>
-<tr class="memitem:aacdb6bd6117b6a5d5301b4ff6055230e inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aacdb6bd6117b6a5d5301b4ff6055230e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>network</b> (rpc_engine *srv, <a class="el" href="classdsn_1_1network.html">network</a> *inner_provider)</td></tr>
-<tr class="separator:aacdb6bd6117b6a5d5301b4ff6055230e inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99af8bd91e0f0d6397586666f19684ba inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a99af8bd91e0f0d6397586666f19684ba"></a>
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>network</b> (rpc_engine *srv, <a class="el" href="classdsn_1_1network.html">network</a> *inner_provider)</td></tr>
+<tr class="separator:a99af8bd91e0f0d6397586666f19684ba inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47c14881a3b63c9be5fb95c4721b0d37 inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a47c14881a3b63c9be5fb95c4721b0d37"></a>
-virtual <a class="el" href="classdsn_1_1error__code.html">error_code</a>&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (rpc_channel channel, int port, bool client_only, io_modifer &amp;ctx)=0</td></tr>
+virtual <a class="el" href="classdsn_1_1error__code.html">error_code</a>&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (rpc_channel channel, int port, bool client_only, <a class="el" href="structdsn_1_1____io__mode__modifier____.html">io_modifer</a> &amp;ctx)=0</td></tr>
 <tr class="separator:a47c14881a3b63c9be5fb95c4721b0d37 inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e11ffeb062578a8a5cc7ceb7912be6c inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e11ffeb062578a8a5cc7ceb7912be6c"></a>
 virtual ::<a class="el" href="classdsn_1_1rpc__address.html">dsn::rpc_address</a>&#160;</td><td class="memItemRight" valign="bottom"><b>address</b> ()=0</td></tr>
 <tr class="separator:a6e11ffeb062578a8a5cc7ceb7912be6c inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a265cebb87871f44a294baee4d7faca72 inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a265cebb87871f44a294baee4d7faca72"></a>
-service_node *&#160;</td><td class="memItemRight" valign="bottom"><b>node</b> () const </td></tr>
-<tr class="separator:a265cebb87871f44a294baee4d7faca72 inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a957710a5075205685e3a4e9f4f6ea96a inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a957710a5075205685e3a4e9f4f6ea96a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>on_recv_request</b> (message_ex *msg, int delay_ms)</td></tr>
-<tr class="separator:a957710a5075205685e3a4e9f4f6ea96a inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab358a2ea6385e2324ababbc5f86c7cc6 inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab358a2ea6385e2324ababbc5f86c7cc6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>on_recv_reply</b> (uint64_t id, message_ex *msg, int delay_ms)</td></tr>
-<tr class="separator:ab358a2ea6385e2324ababbc5f86c7cc6 inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa415dc9423411c27ac471332b362ee40 inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa415dc9423411c27ac471332b362ee40"></a>
-message_parser_ptr&#160;</td><td class="memItemRight" valign="bottom"><b>new_message_parser</b> (network_header_format hdr_format)</td></tr>
-<tr class="separator:aa415dc9423411c27ac471332b362ee40 inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a718f13012ce6f070ce84764b56518523 inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a718f13012ce6f070ce84764b56518523"></a>
-std::pair&lt; message_parser::factory2, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_message_parser_info</b> (network_header_format hdr_format)</td></tr>
-<tr class="separator:a718f13012ce6f070ce84764b56518523 inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca41afceb2be92ded2d52136173d9376 inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca41afceb2be92ded2d52136173d9376"></a>
+DSN_API service_node *&#160;</td><td class="memItemRight" valign="bottom"><b>node</b> () const </td></tr>
+<tr class="separator:aca41afceb2be92ded2d52136173d9376 inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2193fad0c98acd2bde519a2f05dc0934 inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2193fad0c98acd2bde519a2f05dc0934"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>on_recv_request</b> (message_ex *msg, int delay_ms)</td></tr>
+<tr class="separator:a2193fad0c98acd2bde519a2f05dc0934 inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6bba19b1681210486c8cc705ff04b0a inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae6bba19b1681210486c8cc705ff04b0a"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>on_recv_reply</b> (uint64_t id, message_ex *msg, int delay_ms)</td></tr>
+<tr class="separator:ae6bba19b1681210486c8cc705ff04b0a inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a8249b467ce36832f9453d2f8951e89 inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7a8249b467ce36832f9453d2f8951e89"></a>
+DSN_API message_parser *&#160;</td><td class="memItemRight" valign="bottom"><b>new_message_parser</b> (network_header_format hdr_format)</td></tr>
+<tr class="separator:a7a8249b467ce36832f9453d2f8951e89 inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab56646c5d36f902ad1c52a1e814f612d inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab56646c5d36f902ad1c52a1e814f612d"></a>
+DSN_API std::pair&lt; message_parser::factory2, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_message_parser_info</b> (network_header_format hdr_format)</td></tr>
+<tr class="separator:ab56646c5d36f902ad1c52a1e814f612d inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19e1e0bfbfb9b66a13c1d7570e647f5b inherit pub_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a19e1e0bfbfb9b66a13c1d7570e647f5b"></a>
 rpc_engine *&#160;</td><td class="memItemRight" valign="bottom"><b>engine</b> () const </td></tr>
 <tr class="separator:a19e1e0bfbfb9b66a13c1d7570e647f5b inherit pub_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,12 +240,12 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a1813b7970c2d403f71a6189aa21de9f2 inherit pub_static_methods_classdsn_1_1network"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classdsn_1_1network.html">network</a> *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create</b> (rpc_engine *srv, <a class="el" href="classdsn_1_1network.html">network</a> *inner_provider)</td></tr>
 <tr class="separator:a1813b7970c2d403f71a6189aa21de9f2 inherit pub_static_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_static_methods_classdsn_1_1network"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classdsn_1_1network')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classdsn_1_1network.html">dsn::network</a></td></tr>
-<tr class="memitem:a673808cdaacbc563bd1c291eee247e3b inherit pro_static_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a673808cdaacbc563bd1c291eee247e3b"></a>
-static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_local_ipv4</b> ()</td></tr>
-<tr class="separator:a673808cdaacbc563bd1c291eee247e3b inherit pro_static_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf8683e86cb3ea889017932cc1fa42c8 inherit pro_static_methods_classdsn_1_1network"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaf8683e86cb3ea889017932cc1fa42c8"></a>
+static DSN_API uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_local_ipv4</b> ()</td></tr>
+<tr class="separator:aaf8683e86cb3ea889017932cc1fa42c8 inherit pro_static_methods_classdsn_1_1network"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/dsn/internal/<a class="el" href="network_8h_source.html">network.h</a></li>
+<li>include/dsn/tool-api/<a class="el" href="network_8h_source.html">network.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.11-->

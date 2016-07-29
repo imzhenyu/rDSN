@@ -82,6 +82,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="summary">
+<a href="#groups">Modules</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
@@ -92,6 +93,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Overview</h2>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
+Modules</h2></td></tr>
+<tr class="memitem:group__tool-api-hooks"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tool-api-hooks.html">Join Points</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdsn_1_1tools_1_1tool__base.html">dsn::tools::tool_base</a></td></tr>
@@ -151,9 +157,9 @@ typedef ref_ptr&lt; perf_counter &gt;&#160;</td><td class="memItemRight" valign=
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga1f9fc8799acdd4468e8c3bbeaa53ebb0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1f9fc8799acdd4468e8c3bbeaa53ebb0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_base::tool_base</b> (const char *name)</td></tr>
-<tr class="separator:ga1f9fc8799acdd4468e8c3bbeaa53ebb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga38aa0f2471822e59258acb7352926536"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga38aa0f2471822e59258acb7352926536"></a>
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_base::tool_base</b> (const char *name)</td></tr>
+<tr class="separator:ga38aa0f2471822e59258acb7352926536"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6fae8f3d7805f2c5cfd10379387d709b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6fae8f3d7805f2c5cfd10379387d709b"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_base::name</b> () const </td></tr>
 <tr class="separator:ga6fae8f3d7805f2c5cfd10379387d709b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,9 +167,9 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ds
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ga0e3fabd6b5eeb7caf61325b8df2ad177"><td class="memTemplItemLeft" align="right" valign="top">static toollet *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::tools::toollet::create</b> (const char *name)</td></tr>
 <tr class="separator:ga0e3fabd6b5eeb7caf61325b8df2ad177"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga63352cb35ca647c239bef7e0aa127083"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga63352cb35ca647c239bef7e0aa127083"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::toollet::toollet</b> (const char *name)</td></tr>
-<tr class="separator:ga63352cb35ca647c239bef7e0aa127083"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa6953dea9a1092c88a4b553644d3a795"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa6953dea9a1092c88a4b553644d3a795"></a>
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::toollet::toollet</b> (const char *name)</td></tr>
+<tr class="separator:gaa6953dea9a1092c88a4b553644d3a795"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7d2af57dbc829ab06b588b8079076f8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7d2af57dbc829ab06b588b8079076f8b"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::toollet::install</b> (service_spec &amp;spec)=0</td></tr>
 <tr class="separator:ga7d2af57dbc829ab06b588b8079076f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,81 +177,84 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::t
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ga17a2cd2c0e21cfbb1bf6667500f4b835"><td class="memTemplItemLeft" align="right" valign="top">static tool_app *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::tools::tool_app::create</b> (const char *name)</td></tr>
 <tr class="separator:ga17a2cd2c0e21cfbb1bf6667500f4b835"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae517f89524322899e8e33b3c8b33923e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae517f89524322899e8e33b3c8b33923e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::tool_app</b> (const char *name)</td></tr>
-<tr class="separator:gae517f89524322899e8e33b3c8b33923e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadc60c74483c7791ad9fbc3e39b122d8a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadc60c74483c7791ad9fbc3e39b122d8a"></a>
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::tool_app</b> (const char *name)</td></tr>
+<tr class="separator:gadc60c74483c7791ad9fbc3e39b122d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3493668b54c9d961190582ad57b324fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga3493668b54c9d961190582ad57b324fd"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::install</b> (service_spec &amp;spec)=0</td></tr>
 <tr class="separator:ga3493668b54c9d961190582ad57b324fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad5f343cd2cad69cdb445cc69ef565c18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad5f343cd2cad69cdb445cc69ef565c18"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::run</b> ()</td></tr>
 <tr class="separator:gad5f343cd2cad69cdb445cc69ef565c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga858f774bc99e4df874f9ef554e189b2d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga858f774bc99e4df874f9ef554e189b2d"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::start_all_apps</b> ()</td></tr>
-<tr class="separator:ga858f774bc99e4df874f9ef554e189b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga79d234d8f3c2c04108d1a133c0f5dfa7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga79d234d8f3c2c04108d1a133c0f5dfa7"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::stop_all_apps</b> (bool cleanup)</td></tr>
-<tr class="separator:ga79d234d8f3c2c04108d1a133c0f5dfa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaaa64c527c171ef7774cb8d1d0046370f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaaa64c527c171ef7774cb8d1d0046370f"></a>
-static const service_spec &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::get_service_spec</b> ()</td></tr>
-<tr class="separator:gaaa64c527c171ef7774cb8d1d0046370f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaeb156d460837203af439269802ad2e3e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaeb156d460837203af439269802ad2e3e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, timer_service::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:gaeb156d460837203af439269802ad2e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga26a377de396474f510bed1dd3bc898c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga26a377de396474f510bed1dd3bc898c6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, task_queue::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga26a377de396474f510bed1dd3bc898c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7110c77c9b584c420edccc030d7beac9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7110c77c9b584c420edccc030d7beac9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, task_worker::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga7110c77c9b584c420edccc030d7beac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa9be3864b6484e34c378a8baf0ce648c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa9be3864b6484e34c378a8baf0ce648c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, admission_controller::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:gaa9be3864b6484e34c378a8baf0ce648c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0070bfb90f7a3b54a5ca3c06d361cfa5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0070bfb90f7a3b54a5ca3c06d361cfa5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, lock_provider::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga0070bfb90f7a3b54a5ca3c06d361cfa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga89da155650eb53b626860f4238c53713"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga89da155650eb53b626860f4238c53713"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, lock_nr_provider::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga89da155650eb53b626860f4238c53713"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga28a5faf63ef4ffc20d072ad6f2cd201b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga28a5faf63ef4ffc20d072ad6f2cd201b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, rwlock_nr_provider::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga28a5faf63ef4ffc20d072ad6f2cd201b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga824255da4a398e5c203c9f5ed10adf19"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga824255da4a398e5c203c9f5ed10adf19"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, semaphore_provider::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga824255da4a398e5c203c9f5ed10adf19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2ce2ded9a0ca93c60ea8d0990558b924"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2ce2ded9a0ca93c60ea8d0990558b924"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, network::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga2ce2ded9a0ca93c60ea8d0990558b924"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa9dd988f157b9abf5cd4923719fa54be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa9dd988f157b9abf5cd4923719fa54be"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, aio_provider::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:gaa9dd988f157b9abf5cd4923719fa54be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab8dc21261feac8aa48bf23894751c799"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab8dc21261feac8aa48bf23894751c799"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, env_provider::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:gab8dc21261feac8aa48bf23894751c799"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf6ae31d3a6de59123a66169ae452ba76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf6ae31d3a6de59123a66169ae452ba76"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, perf_counter::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:gaf6ae31d3a6de59123a66169ae452ba76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6093aafb556186967ea44012d57211f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6093aafb556186967ea44012d57211f8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, logging_provider::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga6093aafb556186967ea44012d57211f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3cbeda5a1f3624df453aabd447b176a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga3cbeda5a1f3624df453aabd447b176a1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, memory_provider::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga3cbeda5a1f3624df453aabd447b176a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf8413ef49f81e6c7d7539ce8fe97d967"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf8413ef49f81e6c7d7539ce8fe97d967"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, nfs_node::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:gaf8413ef49f81e6c7d7539ce8fe97d967"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga51aa260c353190b09e2d14c8081c2d36"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga51aa260c353190b09e2d14c8081c2d36"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (network_header_format fmt, const std::vector&lt; const char * &gt; &amp;signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz)</td></tr>
-<tr class="separator:ga51aa260c353190b09e2d14c8081c2d36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga071bf8e559f20aaa24207d0fceb55b58"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga071bf8e559f20aaa24207d0fceb55b58"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_toollet</b> (const char *name, toollet::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:ga071bf8e559f20aaa24207d0fceb55b58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gade89f1c39dabe367400c4fac7aac1e9b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gade89f1c39dabe367400c4fac7aac1e9b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_tool</b> (const char *name, tool_app::factory f,::dsn::provider_type type)</td></tr>
-<tr class="separator:gade89f1c39dabe367400c4fac7aac1e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac33f1b585a3f87eb2af8a4b3581a2e30"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac33f1b585a3f87eb2af8a4b3581a2e30"></a>
-toollet *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::get_toollet</b> (const char *name,::dsn::provider_type type)</td></tr>
-<tr class="separator:gac33f1b585a3f87eb2af8a4b3581a2e30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5d5b6719b0120a45b456c860a33c9707"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga5d5b6719b0120a45b456c860a33c9707"></a>
+virtual DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::start_all_apps</b> ()</td></tr>
+<tr class="separator:ga5d5b6719b0120a45b456c860a33c9707"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga136a1a7dfe0297436a5c8daa4d6a94f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga136a1a7dfe0297436a5c8daa4d6a94f7"></a>
+virtual DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::stop_all_apps</b> (bool cleanup)</td></tr>
+<tr class="separator:ga136a1a7dfe0297436a5c8daa4d6a94f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gace52c95bb620e80ddc487f35f43aed35"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gace52c95bb620e80ddc487f35f43aed35"></a>
+static DSN_API const service_spec &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_app::get_service_spec</b> ()</td></tr>
+<tr class="separator:gace52c95bb620e80ddc487f35f43aed35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf0429d29cc5f5751de465ef726a29380"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf0429d29cc5f5751de465ef726a29380"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, timer_service::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:gaf0429d29cc5f5751de465ef726a29380"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga445642a1c6e00461d4d886ee1e550c2c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga445642a1c6e00461d4d886ee1e550c2c"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, task_queue::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga445642a1c6e00461d4d886ee1e550c2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga345d92ec1466ee71837b7fd53c99c88f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga345d92ec1466ee71837b7fd53c99c88f"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, task_worker::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga345d92ec1466ee71837b7fd53c99c88f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2599804479f2d59342790de695e7bc27"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2599804479f2d59342790de695e7bc27"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, admission_controller::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga2599804479f2d59342790de695e7bc27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga356f9f20c9cf2dc78f602322eb823ad7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga356f9f20c9cf2dc78f602322eb823ad7"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, lock_provider::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga356f9f20c9cf2dc78f602322eb823ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga70914f3f7c78743de7fb90dede69b50a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga70914f3f7c78743de7fb90dede69b50a"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, lock_nr_provider::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga70914f3f7c78743de7fb90dede69b50a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga45857f7527c349bda00ecb5c925f9f9b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga45857f7527c349bda00ecb5c925f9f9b"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, rwlock_nr_provider::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga45857f7527c349bda00ecb5c925f9f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad3e07d1f8c0fed35a01b895c85ef22fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad3e07d1f8c0fed35a01b895c85ef22fd"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, semaphore_provider::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:gad3e07d1f8c0fed35a01b895c85ef22fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7b4870a56d09e5710c25c0c7465af351"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7b4870a56d09e5710c25c0c7465af351"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, network::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga7b4870a56d09e5710c25c0c7465af351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf9277e9911b9c0fe9057580b0d60eb7e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf9277e9911b9c0fe9057580b0d60eb7e"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, aio_provider::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:gaf9277e9911b9c0fe9057580b0d60eb7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae1761da0116d6a9f563d09c42dc71caa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae1761da0116d6a9f563d09c42dc71caa"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, env_provider::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:gae1761da0116d6a9f563d09c42dc71caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae3aef39512929d99243bb4f3937fa8b2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae3aef39512929d99243bb4f3937fa8b2"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, perf_counter::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:gae3aef39512929d99243bb4f3937fa8b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9767e5a75aa19a809a11df98c448a322"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9767e5a75aa19a809a11df98c448a322"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, logging_provider::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga9767e5a75aa19a809a11df98c448a322"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga189ee433300ef8c498ac10bfa4c56c83"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga189ee433300ef8c498ac10bfa4c56c83"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, memory_provider::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga189ee433300ef8c498ac10bfa4c56c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2753068c94f7415244b3b30951bea5a0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2753068c94f7415244b3b30951bea5a0"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name, nfs_node::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga2753068c94f7415244b3b30951bea5a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga762549e3d011a101227df06dcc750264"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga762549e3d011a101227df06dcc750264"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (network_header_format fmt, const std::vector&lt; const char * &gt; &amp;signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz)</td></tr>
+<tr class="separator:ga762549e3d011a101227df06dcc750264"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga55ef6b2a93f51cac699086078390bc0e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga55ef6b2a93f51cac699086078390bc0e"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_component_provider</b> (const char *name,::dsn::dist::partition_resolver::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga55ef6b2a93f51cac699086078390bc0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2b32186fc24bda1411dcf4ef40637cf7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2b32186fc24bda1411dcf4ef40637cf7"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_toollet</b> (const char *name, toollet::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga2b32186fc24bda1411dcf4ef40637cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3c1fd8b13abedad54b63e724ac30e7cc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga3c1fd8b13abedad54b63e724ac30e7cc"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::register_tool</b> (const char *name, tool_app::factory f,::dsn::provider_type type)</td></tr>
+<tr class="separator:ga3c1fd8b13abedad54b63e724ac30e7cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab5ca15c9e67688b132027dd842f93aca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab5ca15c9e67688b132027dd842f93aca"></a>
+DSN_API toollet *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::internal_use_only::get_toollet</b> (const char *name,::dsn::provider_type type)</td></tr>
+<tr class="separator:gab5ca15c9e67688b132027dd842f93aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3b3a0ed45d07280a80de868e282802fb"><td class="memTemplParams" colspan="2"><a class="anchor" id="ga3b3a0ed45d07280a80de868e282802fb"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ga3b3a0ed45d07280a80de868e282802fb"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::tools::register_component_provider</b> (const char *name)</td></tr>
@@ -270,27 +279,24 @@ template&lt;typename T &gt; </td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ga6f2baed74f87b5c88d2fd8b85b31d91e"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>dsn::tools::get_toollet</b> (const char *name)</td></tr>
 <tr class="separator:ga6f2baed74f87b5c88d2fd8b85b31d91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0425ed1303c7f4783159931d4bfb6912"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0425ed1303c7f4783159931d4bfb6912"></a>
-tool_app *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::get_current_tool</b> ()</td></tr>
-<tr class="separator:ga0425ed1303c7f4783159931d4bfb6912"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga556cd146598dd4f030a860ff49da1615"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga556cd146598dd4f030a860ff49da1615"></a>
-configuration_ptr&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::config</b> ()</td></tr>
-<tr class="separator:ga556cd146598dd4f030a860ff49da1615"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac98d240e9d718e91c720c88ec319bbf5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac98d240e9d718e91c720c88ec319bbf5"></a>
-const service_spec &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::spec</b> ()</td></tr>
-<tr class="separator:gac98d240e9d718e91c720c88ec319bbf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaeff27bd5c2c3286ea25cf5be398bd626"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaeff27bd5c2c3286ea25cf5be398bd626"></a>
-const char *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::get_service_node_name</b> (service_node *node)</td></tr>
-<tr class="separator:gaeff27bd5c2c3286ea25cf5be398bd626"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf3d4cf9dbd381cf187fa08b440dc48ad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf3d4cf9dbd381cf187fa08b440dc48ad"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::is_engine_ready</b> ()</td></tr>
-<tr class="separator:gaf3d4cf9dbd381cf187fa08b440dc48ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga77c76a3e24392f0d398488a98c0ed0ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga77c76a3e24392f0d398488a98c0ed0ec"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::marshall</b> (::dsn::binary_writer &amp;writer, const remote_copy_request &amp;val)</td></tr>
-<tr class="separator:ga77c76a3e24392f0d398488a98c0ed0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga48d85bae3793abe9c71e3a7e3b8f4ccf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga48d85bae3793abe9c71e3a7e3b8f4ccf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::unmarshall</b> (::dsn::binary_reader &amp;reader, remote_copy_request &amp;val)</td></tr>
-<tr class="separator:ga48d85bae3793abe9c71e3a7e3b8f4ccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga66efe0cf5ac43a3614d4632da2f5e34e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga66efe0cf5ac43a3614d4632da2f5e34e"></a>
+DSN_API tool_app *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::get_current_tool</b> ()</td></tr>
+<tr class="separator:ga66efe0cf5ac43a3614d4632da2f5e34e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2a34c77a5bfdab67fa753f75cca162ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2a34c77a5bfdab67fa753f75cca162ee"></a>
+DSN_API const service_spec &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::spec</b> ()</td></tr>
+<tr class="separator:ga2a34c77a5bfdab67fa753f75cca162ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9cf86d0d7ed1256b24c4883980d1eefd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9cf86d0d7ed1256b24c4883980d1eefd"></a>
+DSN_API const char *&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::get_service_node_name</b> (service_node *node)</td></tr>
+<tr class="separator:ga9cf86d0d7ed1256b24c4883980d1eefd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae0a3153a9f05bcc494b531e2740a0312"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae0a3153a9f05bcc494b531e2740a0312"></a>
+DSN_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::is_engine_ready</b> ()</td></tr>
+<tr class="separator:gae0a3153a9f05bcc494b531e2740a0312"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaad42d26358c3f2d214060d437915c04"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaaad42d26358c3f2d214060d437915c04"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::marshall</b> (::dsn::binary_writer &amp;writer, const remote_copy_request &amp;val)</td></tr>
+<tr class="separator:gaaad42d26358c3f2d214060d437915c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga14a441700e56359aeee5456b3cec11a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga14a441700e56359aeee5456b3cec11a5"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::unmarshall</b> (::dsn::binary_reader &amp;reader, remote_copy_request &amp;val)</td></tr>
+<tr class="separator:ga14a441700e56359aeee5456b3cec11a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac293b3a3173208fd7eba99807047c14b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac293b3a3173208fd7eba99807047c14b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::rpc_session::delay_recv</b> (int delay_ms)</td></tr>
 <tr class="separator:gac293b3a3173208fd7eba99807047c14b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -300,15 +306,6 @@ Variables</h2></td></tr>
 <tr class="memitem:gae8867e2c603f2a5f72eb1eb753285be3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae8867e2c603f2a5f72eb1eb753285be3"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::tool_base::_name</b></td></tr>
 <tr class="separator:gae8867e2c603f2a5f72eb1eb753285be3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga087f96ce4e759a2c715bb5a14e7d4730"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga087f96ce4e759a2c715bb5a14e7d4730"></a>
-join_point&lt; void, configuration_ptr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::sys_init_before_app_created</b></td></tr>
-<tr class="separator:ga087f96ce4e759a2c715bb5a14e7d4730"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabba41cb11edd6709d5689203b1fb5e00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabba41cb11edd6709d5689203b1fb5e00"></a>
-join_point&lt; void, configuration_ptr &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::sys_init_after_app_created</b></td></tr>
-<tr class="separator:gabba41cb11edd6709d5689203b1fb5e00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0d3dd1150805b9ea23ec321cec455591"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0d3dd1150805b9ea23ec321cec455591"></a>
-join_point&lt; void, sys_exit_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dsn::tools::sys_exit</b></td></tr>
-<tr class="separator:ga0d3dd1150805b9ea23ec321cec455591"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.11-->

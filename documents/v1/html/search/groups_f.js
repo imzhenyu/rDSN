@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['utility_20api',['Utility API',['../group__service-api-utilities.html',1,'']]]
+  ['utility_20service_20api',['Utility Service API',['../group__service-api-utilities.html',1,'']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['performance_20counters',['Performance Counters',['../group__perf-counter.html',1,'']]],
-  ['profiler',['Profiler',['../group__profiler.html',1,'']]]
+  ['non_2drecursive_20read_2dwrite_20locks',['Non-recursive Read-Write Locks',['../group__sync-rwlock.html',1,'']]]
 ];

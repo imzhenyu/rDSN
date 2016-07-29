@@ -1,11 +1,15 @@
 var searchData=
 [
-  ['safe_5fhandle',['safe_handle',['../classdsn_1_1safe__handle.html',1,'dsn']]],
-  ['safe_5fhandle_3c_20dsn_5fmsg_5frelease_5fref_20_3e',['safe_handle&lt; dsn_msg_release_ref &gt;',['../classdsn_1_1safe__handle.html',1,'dsn']]],
-  ['safe_5flate_5ftask',['safe_late_task',['../classdsn_1_1safe__late__task.html',1,'dsn']]],
-  ['safe_5ftask_5fhandle',['safe_task_handle',['../classdsn_1_1safe__task__handle.html',1,'dsn']]],
-  ['semaphore_5fprovider',['semaphore_provider',['../classdsn_1_1semaphore__provider.html',1,'dsn']]],
-  ['serverlet',['serverlet',['../classdsn_1_1serverlet.html',1,'dsn']]],
-  ['service_5fapp',['service_app',['../classdsn_1_1service__app.html',1,'dsn']]],
-  ['simulator',['simulator',['../classdsn_1_1tools_1_1simulator.html',1,'dsn::tools']]]
+  ['remote_5fcopy_5frequest',['remote_copy_request',['../structdsn_1_1remote__copy__request.html',1,'dsn']]],
+  ['remote_5fcopy_5fresponse',['remote_copy_response',['../structdsn_1_1remote__copy__response.html',1,'dsn']]],
+  ['rpc_5faddress',['rpc_address',['../classdsn_1_1rpc__address.html',1,'dsn']]],
+  ['rpc_5fhandler_5finfo',['rpc_handler_info',['../structdsn_1_1rpc__handler__info.html',1,'dsn']]],
+  ['rpc_5fmessage_5fhelper',['rpc_message_helper',['../structdsn_1_1rpc_1_1rpc__message__helper.html',1,'dsn::rpc']]],
+  ['rpc_5fread_5fstream',['rpc_read_stream',['../classdsn_1_1rpc__read__stream.html',1,'dsn']]],
+  ['rpc_5freplier',['rpc_replier',['../classdsn_1_1rpc__replier.html',1,'dsn']]],
+  ['rpc_5frequest_5ftask',['rpc_request_task',['../classdsn_1_1rpc__request__task.html',1,'dsn']]],
+  ['rpc_5fresponse_5ftask',['rpc_response_task',['../classdsn_1_1rpc__response__task.html',1,'dsn']]],
+  ['rpc_5fsession',['rpc_session',['../classdsn_1_1rpc__session.html',1,'dsn']]],
+  ['rpc_5fwrite_5fstream',['rpc_write_stream',['../classdsn_1_1rpc__write__stream.html',1,'dsn']]],
+  ['rwlock_5fnr_5fprovider',['rwlock_nr_provider',['../classdsn_1_1rwlock__nr__provider.html',1,'dsn']]]
 ];

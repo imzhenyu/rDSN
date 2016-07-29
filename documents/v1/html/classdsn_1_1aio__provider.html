@@ -112,12 +112,12 @@ typedef <a class="el" href="classdsn_1_1aio__provider.html">aio_provider</a> *(*
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6945de1bb036531fe359a34866815631"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6945de1bb036531fe359a34866815631"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>aio_provider</b> (disk_engine *disk, <a class="el" href="classdsn_1_1aio__provider.html">aio_provider</a> *inner_provider)</td></tr>
-<tr class="separator:a6945de1bb036531fe359a34866815631"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a012fa76bf1ce02bbcb24d91a643f5583"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a012fa76bf1ce02bbcb24d91a643f5583"></a>
-service_node *&#160;</td><td class="memItemRight" valign="bottom"><b>node</b> () const </td></tr>
-<tr class="separator:a012fa76bf1ce02bbcb24d91a643f5583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe6a949fe51320a57d8f48d5064742a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe6a949fe51320a57d8f48d5064742a6"></a>
+DSN_API&#160;</td><td class="memItemRight" valign="bottom"><b>aio_provider</b> (disk_engine *disk, <a class="el" href="classdsn_1_1aio__provider.html">aio_provider</a> *inner_provider)</td></tr>
+<tr class="separator:abe6a949fe51320a57d8f48d5064742a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70d8536369957f54d25ae4f07b32b327"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70d8536369957f54d25ae4f07b32b327"></a>
+DSN_API service_node *&#160;</td><td class="memItemRight" valign="bottom"><b>node</b> () const </td></tr>
+<tr class="separator:a70d8536369957f54d25ae4f07b32b327"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6cf4ba1d5a314e8e77b6360ae4f400d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae6cf4ba1d5a314e8e77b6360ae4f400d"></a>
 virtual dsn_handle_t&#160;</td><td class="memItemRight" valign="bottom"><b>open</b> (const char *file_name, int flag, int pmode)=0</td></tr>
 <tr class="separator:ae6cf4ba1d5a314e8e77b6360ae4f400d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,13 +128,13 @@ virtual <a class="el" href="classdsn_1_1error__code.html">error_code</a>&#160;</
 virtual <a class="el" href="classdsn_1_1error__code.html">error_code</a>&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> (dsn_handle_t fh)=0</td></tr>
 <tr class="separator:afd863a7ef9ae01912349e7b9fbe17786"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab93b9e971435be7f5092c065114e1cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aab93b9e971435be7f5092c065114e1cd"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>aio</b> (aio_task *aio)=0</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>aio</b> (<a class="el" href="classdsn_1_1aio__task.html">aio_task</a> *aio)=0</td></tr>
 <tr class="separator:aab93b9e971435be7f5092c065114e1cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd5f4d42f31507ec6c2a7323c16b12da"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd5f4d42f31507ec6c2a7323c16b12da"></a>
-virtual disk_aio *&#160;</td><td class="memItemRight" valign="bottom"><b>prepare_aio_context</b> (aio_task *)=0</td></tr>
+virtual <a class="el" href="classdsn_1_1disk__aio.html">disk_aio</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>prepare_aio_context</b> (<a class="el" href="classdsn_1_1aio__task.html">aio_task</a> *)=0</td></tr>
 <tr class="separator:abd5f4d42f31507ec6c2a7323c16b12da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20eb03bd8c8f96d78a3c55f48e5fa9c2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a20eb03bd8c8f96d78a3c55f48e5fa9c2"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (io_modifer &amp;ctx)=0</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (<a class="el" href="structdsn_1_1____io__mode__modifier____.html">io_modifer</a> &amp;ctx)=0</td></tr>
 <tr class="separator:a20eb03bd8c8f96d78a3c55f48e5fa9c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
@@ -146,12 +146,12 @@ template&lt;typename T &gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:aa12c929afd8531cf9bf279faf8505bbc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa12c929afd8531cf9bf279faf8505bbc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>complete_io</b> (aio_task *aio, <a class="el" href="classdsn_1_1error__code.html">error_code</a> err, uint32_t bytes, int delay_milliseconds=0)</td></tr>
-<tr class="separator:aa12c929afd8531cf9bf279faf8505bbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d28bbf50a40a679f9925a811c82a62f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d28bbf50a40a679f9925a811c82a62f"></a>
+DSN_API void&#160;</td><td class="memItemRight" valign="bottom"><b>complete_io</b> (<a class="el" href="classdsn_1_1aio__task.html">aio_task</a> *aio, <a class="el" href="classdsn_1_1error__code.html">error_code</a> err, uint32_t bytes, int delay_milliseconds=0)</td></tr>
+<tr class="separator:a6d28bbf50a40a679f9925a811c82a62f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/dsn/internal/<a class="el" href="aio__provider_8h_source.html">aio_provider.h</a></li>
+<li>include/dsn/tool-api/<a class="el" href="aio__provider_8h_source.html">aio_provider.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.11-->
