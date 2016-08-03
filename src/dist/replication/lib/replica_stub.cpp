@@ -779,7 +779,7 @@ void replica_stub::query_configuration_by_node()
         _config_query_task->cancel(false);
     }
 
-    dsn_message_t msg = dsn_msg_create_request(RPC_CM_CONFIG_SYNC, 0, 0);
+    dsn_message_t msg = dsn_msg_create_request(RPC_CM_CONFIG_SYNC);
 
     configuration_query_by_node_request req;
     req.node = _primary_address;
@@ -940,7 +940,7 @@ void replica_stub::on_node_query_reply_scatter2(replica_stub_ptr this_, gpid gpi
 
 void replica_stub::remove_replica_on_meta_server(const app_info& info, const partition_configuration& config)
 {
-    dsn_message_t msg = dsn_msg_create_request(RPC_CM_UPDATE_PARTITION_CONFIGURATION, 0, 0);
+    dsn_message_t msg = dsn_msg_create_request(RPC_CM_UPDATE_PARTITION_CONFIGURATION);
 
     std::shared_ptr<configuration_update_request> request(new configuration_update_request);
     request->info = info;

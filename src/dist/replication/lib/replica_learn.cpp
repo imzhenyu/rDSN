@@ -200,7 +200,7 @@ void replica::init_learn(uint64_t signature)
         );
 
     _potential_secondary_states.learning_task = 
-        rpc::create_message(RPC_LEARN, request, gpid_to_hash(get_gpid()))
+        rpc::create_message(RPC_LEARN, request, std::chrono::milliseconds(0), gpid_to_hash(get_gpid()))
         .call(_config.primary, this, [this, req_cap = std::move(request)](error_code err, learn_response&& resp) mutable
         {
             on_learn_reply(err, std::move(req_cap), std::move(resp));

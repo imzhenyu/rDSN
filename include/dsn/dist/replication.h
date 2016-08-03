@@ -44,7 +44,7 @@ namespace dsn
 {
     namespace replication 
     {
-        inline uint64_t gpid_to_hash(gpid gpid)
+        inline int32_t gpid_to_hash(gpid gpid)
         {
             return dsn_gpid_to_hash(gpid.raw());
         }

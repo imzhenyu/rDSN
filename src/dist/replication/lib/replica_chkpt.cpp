@@ -127,6 +127,7 @@ namespace dsn {
                             auto response_alloc = std::make_shared<learn_response>(std::move(response));
                             on_copy_checkpoint_ack(err_local, rc, response_alloc);
                         },
+                        std::chrono::milliseconds(0),
                         gpid_to_hash(get_gpid())
                         );
                 }

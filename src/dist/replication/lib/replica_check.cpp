@@ -122,6 +122,7 @@ void replica::broadcast_group_check()
                 auto alloc = std::make_shared<group_check_response>(std::move(resp));
                 on_group_check_reply(err, request, alloc);
             },
+            std::chrono::milliseconds(0),
             gpid_to_hash(get_gpid())
             );
 

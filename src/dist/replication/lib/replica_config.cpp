@@ -349,7 +349,7 @@ void replica::update_configuration_on_meta_server(config_type::type type, ::dsn:
     update_local_configuration_with_no_ballot_change(partition_status::PS_INACTIVE);
     set_inactive_state_transient(true);
 
-    dsn_message_t msg = dsn_msg_create_request(RPC_CM_UPDATE_PARTITION_CONFIGURATION, 0, 0);
+    dsn_message_t msg = dsn_msg_create_request(RPC_CM_UPDATE_PARTITION_CONFIGURATION);
     
     std::shared_ptr<configuration_update_request> request(new configuration_update_request);
     request->info = _app_info;
