@@ -691,7 +691,11 @@ typedef union dsn_global_partition_id
 
 inline uint64_t dsn_gpid_to_hash(dsn_gpid gpid)
 {
-    return (((uint64_t)gpid.u.app_id) << 32) + gpid.u.partition_index;
+    // set high 32 bytes to (app_id + partition_index),
+    // and also set low 32 bytes to (app_id + partition_index),
+    // so that even if the hash code is casted to uint32 value, there is enough information entropy
+    return (((uint64_t)gpid.u.app_id + (uint64_t)gpid.u.partition_index) << 32)
+            + (uint64_t)gpid.u.app_id + (uint64_t)gpid.u.partition_index;
 }
 
 # define DSN_MSGM_TIMEOUT (0x1 << 0) ///< msg timeout is to be set/get
