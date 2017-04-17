@@ -8,6 +8,8 @@
 * [Related papers](#papers)
 
 ### Top Links
+
+[![Join the chat at https://gitter.im/imzhenyu/rDSN](https://badges.gitter.im/imzhenyu/rDSN.svg)](https://gitter.im/imzhenyu/rDSN?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
  * [[Case](https://github.com/imzhenyu/rocksdb)] RocksDB made replicated using rDSN!
  * [[Tutorial](https://github.com/Microsoft/rDSN/wiki/Tutorial:-one-box-cluster)] A one-box cluster demo to understand how rDSN helps service registration, deployment, monitoring etc..
  * [[Tutorial](https://github.com/Microsoft/rDSN/wiki/Tutorial:-Build-A-Single-Node-Counter-Service)] Build a counter service with built-in tools (e.g., codegen, auto-test, fault injection, bug replay, tracing)
