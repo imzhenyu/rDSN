@@ -48,15 +48,15 @@ For many tools/toollets, there are many task-level configurations, e.g.,
 ```
 [task..default]
 is_trace = true
-rpc_call_channel = RPC_CHANNEL_TCP
+
 
 [task.RPC_FD_FAILURE_DETECTOR_PING]
 is_trace = false
-rpc_call_channel = RPC_CHANNEL_UDP
+
 
 [task.RPC_FD_FAILURE_DETECTOR_PING_ACK]
 is_trace = false
-rpc_call_channel = RPC_CHANNEL_UDP
+
 ``` 
 
 For more configurations, using the cli command:

@@ -67,7 +67,7 @@
 # include <dsn/tool-api/logging_provider.h>
 # include <dsn/tool-api/memory_provider.h>
 # include <dsn/tool-api/timer_service.h>
-# include <dsn/tool-api/partition_resolver.h>
+# include <dsn/tool-api/channel.h>
 
 namespace dsn { namespace tools {
 
@@ -151,8 +151,9 @@ namespace internal_use_only
     DSN_API bool register_component_provider(const char* name, logging_provider::factory f, ::dsn::provider_type type);
     DSN_API bool register_component_provider(const char* name, memory_provider::factory f, ::dsn::provider_type type);
     DSN_API bool register_component_provider(const char* name, nfs_node::factory f, ::dsn::provider_type type);
-    DSN_API bool register_component_provider(network_header_format fmt, const std::vector<const char*>& signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz);
-    DSN_API bool register_component_provider(const char* name, ::dsn::dist::partition_resolver::factory f, ::dsn::provider_type type);
+    DSN_API bool register_component_provider(net_header_format fmt, const std::vector<const char*>& signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz);
+    DSN_API bool register_component_provider(const char* name, ::dsn::channel::factory f, ::dsn::provider_type type);
+
     DSN_API bool register_toollet(const char* name, toollet::factory f, ::dsn::provider_type type);
     DSN_API bool register_tool(const char* name, tool_app::factory f, ::dsn::provider_type type);
     DSN_API toollet* get_toollet(const char* name, ::dsn::provider_type type);
@@ -169,11 +170,13 @@ DSN_API extern join_point<void, sys_exit_type>     sys_exit;
 
 template <typename T> bool register_component_provider(const char* name) { return internal_use_only::register_component_provider(name, T::template create<T>, ::dsn::PROVIDER_TYPE_MAIN); }
 template <typename T> bool register_component_aspect(const char* name) { return internal_use_only::register_component_provider(name, T::template create<T>, ::dsn::PROVIDER_TYPE_ASPECT); }
-template <typename T> bool register_message_header_parser(network_header_format fmt, const std::vector<const char*>& signatures);
+template <typename T> bool register_message_header_parser(net_header_format fmt, const std::vector<const char*>& signatures);
 
 template <typename T> bool register_toollet(const char* name) { return internal_use_only::register_toollet(name, toollet::template create<T>, ::dsn::PROVIDER_TYPE_MAIN); }
 template <typename T> bool register_tool(const char* name) { return internal_use_only::register_tool(name, tool_app::template create<T>, ::dsn::PROVIDER_TYPE_MAIN); }
 template <typename T> T* get_toollet(const char* name) { return (T*)internal_use_only::get_toollet(name, ::dsn::PROVIDER_TYPE_MAIN); }
+
+DSN_API void register_system_rpc_handler(dsn_task_code_t code, const char* name, dsn_rpc_request_handler_t cb, void* param, int port = -1); // -1 for all nodes
 DSN_API tool_app* get_current_tool();
 DSN_API const service_spec& spec();
 DSN_API const char* get_service_node_name(service_node* node);
@@ -184,7 +187,7 @@ DSN_API bool is_engine_ready();
  */
 
 // --------- inline implementation -----------------------------
-template <typename T> bool register_message_header_parser(network_header_format fmt, const std::vector<const char*>& signatures)
+template <typename T> bool register_message_header_parser(net_header_format fmt, const std::vector<const char*>& signatures)
 {
     return internal_use_only::register_component_provider(fmt, signatures, T::template create<T>, T::template create2<T>, sizeof(T));
 }

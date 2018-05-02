@@ -41,18 +41,32 @@
 # include <aio.h>
 # include <fcntl.h>
 # include <cstdlib>
+# include <signal.h>
 
 # ifdef __TITLE__
 # undef __TITLE__
 # endif
 # define __TITLE__ "aio.provider.posix"
 
+#define IO_SIGNAL SIGUSR2   /* Signal used to notify I/O completion */
+
 namespace dsn {
     namespace tools {
+
+        void aio_sig_handler_on_mac(int sig, siginfo_t* si, void* ucontext);
 
         native_posix_aio_provider::native_posix_aio_provider(disk_engine* disk, aio_provider* inner_provider)
             : aio_provider(disk, inner_provider)
         {
+# ifdef __APPLE__
+            struct sigaction sa;
+            sa.sa_flags = SA_RESTART | SA_SIGINFO;
+            sa.sa_sigaction = aio_sig_handler_on_mac;
+            if (sigaction(IO_SIGNAL, &sa, NULL) == -1)
+            {
+                dfatal("sigaction for aio failed, err = %d", errno);
+            }
+# endif
         }
 
         native_posix_aio_provider::~native_posix_aio_provider()
@@ -119,12 +133,10 @@ namespace dsn {
             aio_internal(aio_tsk, true);
         }
 
-        void aio_completed(sigval sigval)
+        void aio_ctx_completed(posix_disk_aio_context* ctx)
         {
-            auto ctx = (posix_disk_aio_context *)sigval.sival_ptr;
-
             if (dsn::tls_dsn.magic != 0xdeadbeef)
-                task::set_tls_dsn_context(ctx->tsk->node(), nullptr, nullptr);
+                task::set_tls_dsn_context(ctx->tsk->node(), nullptr);
 
             int err = aio_error(&ctx->cb);
             if (err != EINPROGRESS)
@@ -155,6 +167,21 @@ namespace dsn {
             }
         }
 
+        void aio_sig_handler_on_mac(int sig, siginfo_t* si, void* ucontext)
+        {
+            printf ("aio completed, sig = %d, code = %x\n", sig, si->si_code);
+            //if (si->si_code == SI_ASYNCIO)
+            {
+                aio_ctx_completed((posix_disk_aio_context *)ucontext);
+            }
+        }
+
+        void native_aio_completed(sigval sigval)
+        {
+            auto ctx = (posix_disk_aio_context *)sigval.sival_ptr;
+            aio_ctx_completed(ctx);
+        }
+
         error_code native_posix_aio_provider::aio_internal(aio_task* aio_tsk, bool async, /*out*/ uint32_t* pbytes /*= nullptr*/)
         {
             auto aio = (posix_disk_aio_context *)aio_tsk->aio();
@@ -170,11 +197,16 @@ namespace dsn {
             aio->cb.aio_offset = aio->file_offset;
 
             // set up callback
+# ifdef __APPLE___
+            aio->cb.aio_sigevent.sigev_notify = SIGEV_SIGNAL;
+            aio->cb.aio_sigevent.sigev_signo = IO_SIGNAL;
+            aio->cb.aio_sigevent.sigev_value.sival_ptr = aio; 
+# else
             aio->cb.aio_sigevent.sigev_notify = SIGEV_THREAD;
-            aio->cb.aio_sigevent.sigev_notify_function = aio_completed;
+            aio->cb.aio_sigevent.sigev_notify_function = native_aio_completed;
             aio->cb.aio_sigevent.sigev_notify_attributes = nullptr;
             aio->cb.aio_sigevent.sigev_value.sival_ptr = aio;
-
+# endif
             if (!async)
             {
                 aio->evt = new utils::notify_event();
@@ -197,8 +229,9 @@ namespace dsn {
 
             if (r != 0)
             {
+                auto err = errno;
                 derror("file op failed, err = %d (%s). On FreeBSD, you may need to load"
-                       " aio kernel module by running 'sudo kldload aio'.", errno, strerror(errno));
+                       " aio kernel module by running 'sudo kldload aio'.", err, strerror(err));
 
                 if (async)
                 {

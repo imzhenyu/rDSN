@@ -45,13 +45,10 @@ var vm = new Vue({
 
             var client = new cliApp("http://"+localStorage['target_server']);
             result = client.call({
-                    args: new command({
-                    cmd: "pq",
-                    arguments: ['call']
-                }),
+                args: "pq call",
                 async: true,
                 on_success: function (data){
-                    data = JSON.parse(data);
+                    data = JSON.parse(data.substring(0,data.length-1));
                     task_list = data.task_list;
                     call_matrix = data.call_matrix;
                     self.sankeyNodes = [];
@@ -144,13 +141,10 @@ var vm = new Vue({
 
             client = new cliApp("http://"+localStorage['target_server']);
             result = client.call({
-                    args: new command({
-                    cmd: "pq",
-                    arguments: ['pool_sharer',self.currentTask]
-                }),
+                args: "pq pool_sharer "+ self.currentTask,
                 async: true,
                 on_success: function (data){
-                    self.sharer_list = JSON.parse(data);
+                    self.sharer_list = JSON.parse(data.substring(0,data.length-1));
                 },
                 on_fail: function (xhr, textStatus, errorThrown) {}
             });
@@ -174,13 +168,10 @@ var vm = new Vue({
             var self = this;
             client = new cliApp("http://"+localStorage['target_server']);
             result = client.call({
-                    args: new command({
-                    cmd: "pq",
-                    arguments: ['counter_sample',self.currentTask]
-                }),
+                args: "pq counter_sample " + self.currentTask,
                 async: true,
                 on_success: function (data){
-                    data = JSON.parse(data);
+                    data = JSON.parse(data.substring(0,data.length-1));
 
                     var xs = {};
                     var columns = [];
@@ -215,13 +206,10 @@ var vm = new Vue({
                     {
                         var client = new cliApp("http://"+localStorage['target_server']);
                         result = client.call({
-                                args: new command({
-                                cmd: "pq",
-                                arguments: ['counter_sample',self.currentTask]
-                            }),
+                            args: "pq counter_sample " + self.currentTask,
                             async: false,
                             on_success: function (data){
-                                data = JSON.parse(data);
+                                data = JSON.parse(data.substring(0,data.length-1));
                                 length_list = [];
                                 for(index in data)
                                 {
@@ -294,13 +282,10 @@ var vm = new Vue({
                 if(self.drawType != 'Realtime' || task != self.currentTask) return;
                 var client = new cliApp("http://"+localStorage['target_server']);
                 result = client.call({
-                        args: new command({
-                        cmd: "pq",
-                        arguments: ['counter_realtime',self.currentTask]
-                    }),
+                    args: "pq counter_realtime " + self.currentTask,
                     async: true,
                     on_success: function (data){
-                        data = JSON.parse(data);
+                        data = JSON.parse(data.substring(0,data.length-1));
 
                         var columns = [['x', a]];
                         for (i = 0; i < data.data.length; i++) {
@@ -324,13 +309,10 @@ var vm = new Vue({
             var self = this;
             var client = new cliApp("http://"+localStorage['target_server']);
             result = client.call({
-                    args: new command({
-                    cmd: "pq",
-                    arguments: ['counter_realtime',self.currentTask]
-                }),
+                args: "pq counter_realtime " + self.currentTask,
                 async: true,
                 on_success: function (data){
-                    data = JSON.parse(data);
+                    data = JSON.parse(data.substring(0,data.length-1));
 
                     var columns = [['x', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]];
                     for(index in data.data)
@@ -373,25 +355,19 @@ var vm = new Vue({
             var self = this;
             var client = new cliApp("http://"+localStorage['target_server']);
             result = client.call({
-                    args: new command({
-                    cmd: "pq",
-                    arguments: ['counter_breakdown',self.currentTask,'50']
-                }),
+                args: "pq counter_breakdown " + self.currentTask + " 50",
                 async: true,
                 on_success: function (data){
-                    data = JSON.parse(data);
+                    data = JSON.parse(data.substring(0,data.length-1));
                     
                     if(self.remoteMachine != '')
                     {
                         var client = new cliApp("http://"+localStorage['target_server']);
                         result = client.call({
-                                args: new command({
-                                cmd: "pq",
-                                arguments: ['counter_breakdown',self.currentTask,'50']
-                            }),
+                            args: "pq counter_breakdown " + self.currentTask + "50",
                             async: false,
                             on_success: function (data2){
-                                data2 = JSON.parse(data2);
+                                data2 = JSON.parse(data2.substring(0,data2.length-1));
                         
                                 for(index in data)
                                 {
@@ -477,16 +453,13 @@ var vm = new Vue({
         
         var client = new cliApp("http://"+localStorage['target_server']);
         result = client.call({
-                args: new command({
-                cmd: "pq",
-                arguments: ['task_list']
-            }),
+            args: "pq task_list",
             async: true,
             on_success: function (data){
                 if(data.indexOf('unknown command') > -1) 
                     self.setcurrentTask('Profiler is not opened. Please set "toolets = profiler" in the config file');
                     
-                self.taskList = JSON.parse(data);
+                self.taskList = JSON.parse(data.substring(0,data.length-1));
                 self.setcurrentTask(self.taskList[0]);
             },
             on_fail: function (xhr, textStatus, errorThrown) {}

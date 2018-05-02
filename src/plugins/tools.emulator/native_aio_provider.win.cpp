@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2015 Microsoft Corporation
  * 
- * -=- Robust Distributed System Nucleus (rDSN) -=- 
+ * -=- Robust Distributed System Nucleus (rdsn) -=- 
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -70,11 +70,11 @@ native_win_aio_provider::~native_win_aio_provider()
     }
 }
 
-void native_win_aio_provider::start(io_modifer& ctx)
+void native_win_aio_provider::start()
 {
-    _worker_thr = new std::thread([this, ctx]()
+    _worker_thr = new std::thread([this]()
     {
-        task::set_tls_dsn_context(node(), nullptr, ctx.queue);
+        task::set_tls_dsn_context(node(), nullptr);
 
         const char* name = ::dsn::tools::get_service_node_name(node());
         char buffer[128];
@@ -186,7 +186,7 @@ dsn_handle_t native_win_aio_provider::open(const char* file_name, int oflag, int
         if (_iocp != ::CreateIoCompletionPort(fileHandle, _iocp, 0, 0))
         {
             dassert(false, "cannot associate file handle %s to io completion port, err = 0x%x\n", file_name, ::GetLastError());
-            return 0;
+            return INVALID_HANDLE_VALUE;
         }
         else
         {
@@ -196,13 +196,13 @@ dsn_handle_t native_win_aio_provider::open(const char* file_name, int oflag, int
     else
     {
         derror("cannot create file %s, err = 0x%x\n", file_name, ::GetLastError());
-        return 0;
+        return INVALID_HANDLE_VALUE;
     }
 }
 
 error_code native_win_aio_provider::close(dsn_handle_t fh)
 {
-    if (fh == DSN_INVALID_FILE_HANDLE || ::CloseHandle((HANDLE)(fh)))
+    if (fh == INVALID_HANDLE_VALUE || ::CloseHandle((HANDLE)(fh)))
     {
         return ERR_OK;
     }
@@ -215,7 +215,7 @@ error_code native_win_aio_provider::close(dsn_handle_t fh)
 
 error_code native_win_aio_provider::flush(dsn_handle_t fh)
 {
-    if (fh == DSN_INVALID_FILE_HANDLE || ::FlushFileBuffers((HANDLE)(fh)))
+    if (fh == INVALID_HANDLE_VALUE || ::FlushFileBuffers((HANDLE)(fh)))
     {
         return ERR_OK;
     }

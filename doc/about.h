@@ -1,7 +1,0 @@
-/*!
-@defgroup about About rDSN 
-
- 
- */
- 
- 

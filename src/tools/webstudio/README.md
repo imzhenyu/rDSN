@@ -9,7 +9,7 @@ python -m pip install --upgrade pip
 python -m pip install -r requirement.txt
 ```
 
-Then you can simply start ```rDSN.WebStudio.py```, and visit ```http://localhost/8080``` to start with.  
+Then you can simply start ```rDSN.WebStudio.py```, and visit ```http://localhost:8088``` to start with.  
 
 ## How to use
 

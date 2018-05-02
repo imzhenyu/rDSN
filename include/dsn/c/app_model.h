@@ -75,7 +75,7 @@ extern "C" {
   [apps.client]
   arguments = localhost 20101  
   delay_seconds = 1
-  pools = THREAD_POOL_DEFAULT
+  pools = THREAD_POOL_IO, THREAD_POOL_DEFAULT
   type = test
   
   [apps.server]  
@@ -136,16 +136,18 @@ typedef dsn_error_t(*dsn_app_destroy)(
     \param gpid  global partition id
     \param is_write_operation whether the incoming rpc reqeust is a write operation or not
     \param request incoming rpc request message
+
+    \return return false when request is used asynchronously
  */
-typedef void(*dsn_framework_rpc_request_handler)(
-    void*         app,
+typedef bool (*dsn_framework_rpc_request_handler)(
+    void*          app,
     dsn_gpid      gpid,
-    bool          is_write_operation,
+    bool           is_write_operation,
     dsn_message_t request
     );
 
 /*! basic structure for state (e.g., full/delta checkpoint) transfer across nodes for an app, used by frameworks */
-struct dsn_app_learn_state
+typedef struct _dsn_app_learn_state_
 {
     int     total_learn_state_size; ///< memory used in the given buffer by this learn-state 
     int64_t from_decree_excluded;   ///< the start decree(sequence number, version) of the state
@@ -154,15 +156,15 @@ struct dsn_app_learn_state
     int     file_state_count;       ///< on-disk file count to be transferred
     void*   meta_state_ptr;         ///< in-memory state
     const char** files;             ///< on-disk file path array, end with nullptr
-};
+} dsn_app_learn_state;
 
 
 /*! checkpoint apply mode, see \ref dsn_app_apply_checkpoint, used by frameworks*/
-enum dsn_chkpt_apply_mode
+typedef enum _dsn_chkpt_apply_mode_
 {
     DSN_CHKPT_COPY,  ///< simply a checkpoint from remote machine is given, do not change the local state
     DSN_CHKPT_LEARN  ///< given a checkpoint from remote machine, prepare to change the local state
-};
+} dsn_chkpt_apply_mode;
 
 /*! 
     batched rpc request from frameworks, used by frameworks, implemented by apps 
@@ -175,7 +177,7 @@ enum dsn_chkpt_apply_mode
 typedef void(*dsn_app_on_batched_write_requests)(
     void*           app,
     int64_t         decree,
-    dsn_message_t*  requests,
+    dsn_message_t  requests,
     int             request_count
     );
 
@@ -441,12 +443,12 @@ extern DSN_API bool      dsn_mimic_app(
  start the system with given configuration
 
  \param config           the configuration file for this run
- \param sleep_after_init whether to sleep after rDSN initialization, default is false
-
+ \param sleep_after_init whether to sleep after initialization, default is false
  \return true if it succeeds, false if it fails.
  */
 extern DSN_API bool      dsn_run_config(
                             const char* config, 
+                            const char* config_overwrites DEFAULT(0),
                             bool sleep_after_init DEFAULT(false)
                             );
 
@@ -455,7 +457,7 @@ extern DSN_API bool      dsn_run_config(
 
  \param argc             argc in C main convention
  \param argv             argv in C main convention
- \param sleep_after_init whether to sleep after rDSN initialization, default is false
+ \param sleep_after_init whether to sleep after initialization, default is false
 
  \return true if it succeeds, false if it fails.
   
@@ -472,7 +474,15 @@ extern DSN_API bool      dsn_run_config(
 
  Note the argc, argv folllows the C main convention that argv[0] is the executable name.
  */
-extern DSN_API void dsn_run(int argc, char** argv, bool sleep_after_init DEFAULT(false));
+extern DSN_API void dsn_run(int argc, 
+                            char** argv, 
+                            bool sleep_after_init DEFAULT(false)
+                            );
+
+/*!
+ kick off the execution of the engine
+ */
+extern DSN_API void dsn_loop();
 
 /*!
  exit the process with the given exit code
@@ -506,14 +516,14 @@ extern DSN_API int  dsn_get_all_apps(/*out*/ dsn_app_info* info_buffer, int coun
  */
 extern DSN_API bool dsn_get_current_app_info(/*out*/ dsn_app_info* app_info);
 
-extern DSN_API dsn_app_info* dsn_get_app_info_ptr(dsn_gpid gpid DEFAULT(dsn_gpid{ 0 }));
+extern DSN_API dsn_app_info* dsn_get_app_info_ptr(dsn_gpid gpid DEFAULT(dsn_gpid{ .value = 0 }));
 
 /*!
  get current application data dir.
 
  \return null if it fails, else a pointer to the data path string.
  */
-extern DSN_API const char* dsn_get_app_data_dir(dsn_gpid gpid DEFAULT(dsn_gpid{ 0 }));
+extern DSN_API const char* dsn_get_app_data_dir(dsn_gpid gpid DEFAULT(dsn_gpid{ .value = 0 }));
 
 /*!
  signal the application loader that application types are registered.
@@ -543,6 +553,62 @@ extern DSN_API void dsn_app_loader_wait();
 
 /*@}*/
 
+
+/*!
+ @defgroup framework-api Framework APIs
+ @ingroup service-api-c
+    
+  APIs used by frameworks
+  
+ @{
+ */
+ 
+/*!
+Creates framework hosted application.
+
+\param type        registered app type
+\param gpid        assigned gpid.
+\param data_idr    assigned data directory
+\param app_context_for_downcalls app_context for usage by dsn_hosted_app_create/start/destroy
+\param app_context_for_callbacks  app_context used by upcalls retrived from dsn_get_app_callbacks
+
+\return error code: ERR_OK, ERR_SERVICE_ALREADY_EXIST, ERR_OBJECT_NOT_FOUND
+*/
+extern DSN_API dsn_error_t dsn_hosted_app_create(
+    const char* type,
+    dsn_gpid gpid, 
+    const char* data_dir,
+    /*our*/ void** app_context_for_downcalls, 
+    /*out*/void** app_context_for_callbacks
+    );
+
+/*!
+start framework hosted application.
+
+\param app_context_for_downcalls see \ref dsn_hosted_app_create
+\param argc same convention with traditional main
+\param argv same convention with traditional main
+*/
+extern DSN_API dsn_error_t dsn_hosted_app_start(void* app_context_for_downcalls, int argc, char** argv);
+
+/*!
+destroy framework hosted application.
+
+\param app_context_for_downcalls see \ref dsn_hosted_app_create
+\param cleanup clean up the state of given application
+*/
+extern DSN_API dsn_error_t dsn_hosted_app_destroy(void* app_context_for_downcalls, bool cleanup);
+
+/*!
+send an RPC request to a local application and execute
+
+\param app_context_for_downcalls see \ref dsn_hosted_app_create
+\param msg the RPC request
+\param exec_inline whether to execute the RPC handler within this call or not
+*/
+extern DSN_API void        dsn_hosted_app_commit_rpc_request(void* app_context_for_downcalls, dsn_message_t msg, bool exec_inline);
+
+/*@}*/
 
 # ifdef __cplusplus
 }

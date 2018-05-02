@@ -52,15 +52,14 @@ namespace dsn {
 
             int tid = ::dsn::utils::get_current_tid(); 
 
-            fprintf(fp, "%c%s (%" PRIu64 " %04x) ", s_level_char[log_level],
-                    str, ts, tid);
+            fprintf(fp, "%c%s (%d) ", s_level_char[log_level], str, tid);
 
             auto t = task::get_current_task_id();
             if (t)
             {
                 if (nullptr != task::get_current_worker2())
                 {
-                    fprintf(fp, "%6s.%7s%d.%016" PRIx64 ": ",
+                    fprintf(fp, "%s.%s%d.%016" PRIx64 ": ",
                         task::get_current_node_name(),
                         task::get_current_worker2()->pool_spec().name.c_str(),
                         task::get_current_worker2()->index(),
@@ -69,10 +68,8 @@ namespace dsn {
                 }
                 else
                 {
-                    fprintf(fp, "%6s.%7s.%05d.%016" PRIx64 ": ",
+                    fprintf(fp, "%s...%016" PRIx64 ": ",
                         task::get_current_node_name(),
-                        "io-thrd",
-                        tid,
                         t
                         );
                 }
@@ -81,7 +78,7 @@ namespace dsn {
             {
                 if (nullptr != task::get_current_worker2())
                 {
-                    fprintf(fp, "%6s.%7s%u: ",
+                    fprintf(fp, "%s.%s%d: ",
                         task::get_current_node_name(),
                         task::get_current_worker2()->pool_spec().name.c_str(),
                         task::get_current_worker2()->index()
@@ -89,10 +86,8 @@ namespace dsn {
                 }
                 else
                 {
-                    fprintf(fp, "%6s.%7s.%05d: ",
-                        task::get_current_node_name(),
-                        "io-thrd",
-                        tid
+                    fprintf(fp, "%s..: ",
+                        task::get_current_node_name()
                         );
                 }
             }
@@ -118,7 +113,7 @@ namespace dsn {
             va_list args
             )
         {
-            utils::auto_lock< ::dsn::utils::ex_lock_nr> l(_lock);
+            utils::auto_lock< ::dsn::utils::ex_lock> l(_lock);
 
             print_header(stdout, log_level);
             if (!_short_header)
@@ -227,13 +222,13 @@ namespace dsn {
 
         simple_logger::~simple_logger(void) 
         { 
-            utils::auto_lock< ::dsn::utils::ex_lock_nr> l(_lock);
+            utils::auto_lock< ::dsn::utils::ex_lock> l(_lock);
             ::fclose(_log);
         }
 
         void simple_logger::flush()
         {
-            utils::auto_lock< ::dsn::utils::ex_lock_nr> l(_lock);
+            utils::auto_lock< ::dsn::utils::ex_lock> l(_lock);
             ::fflush(_log);
             ::fflush(stdout);
         }
@@ -253,7 +248,7 @@ namespace dsn {
                 va_copy(args2, args);
             }
 
-            utils::auto_lock< ::dsn::utils::ex_lock_nr> l(_lock);
+            utils::auto_lock< ::dsn::utils::ex_lock> l(_lock);
          
             print_header(_log, log_level);
             if (!_short_header)

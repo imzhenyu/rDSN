@@ -41,6 +41,6 @@ int main(int argc, char** argv)
     dsn::register_app< ::dsn::service::cli>("cli");
 
     // specify what services and tools will run in config file, then run
-    dsn_run_config("config.ini", true);
+    dsn_run_config("cli.config.ini", nullptr, true);
     return 0;
 }

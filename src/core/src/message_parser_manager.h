@@ -46,7 +46,7 @@ namespace dsn
         {
             parser_factory_info() : fmt(NET_HDR_INVALID), factory(nullptr), factory2(nullptr), parser_size(0) {}
 
-            network_header_format fmt;
+            net_header_format fmt;
             message_parser::factory factory;
             message_parser::factory2 factory2;
             size_t parser_size;
@@ -56,10 +56,10 @@ namespace dsn
         message_parser_manager();
 
         // called only during system init, thread-unsafe
-        void register_factory(network_header_format fmt, const std::vector<const char*>& signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz);
+        void register_factory(net_header_format fmt, const std::vector<const char*>& signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz);
 
-        message_parser* create_parser(network_header_format fmt);
-        const parser_factory_info& get(network_header_format fmt) { return _factory_vec[fmt]; }
+        message_parser* create_parser(net_header_format fmt, bool is_client);
+        const parser_factory_info& get(net_header_format fmt) { return _factory_vec[fmt]; }
 
     private:
         std::vector<parser_factory_info> _factory_vec;

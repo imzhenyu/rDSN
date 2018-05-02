@@ -37,6 +37,8 @@
 
 # include <dsn/service_api_c.h>
 # include <dsn/cpp/callocator.h>
+# include <dsn/utility/misc.h>
+
 # include <vector>
 # include <list>
 # include <cstring>
@@ -47,9 +49,10 @@
 
 namespace dsn
 {
+    # ifdef _WIN32
     template<typename T>
     using safe_allocator = callocator<T, dsn_malloc, dsn_free>;
-
+    
     template <class T, class U>
     bool operator==(const safe_allocator<T>&, const safe_allocator<U>&)
     {
@@ -61,6 +64,13 @@ namespace dsn
         return false;
     }
 
+    # else
+    
+    template<typename T>
+    using safe_allocator = ::std::allocator<T>;
+    
+    # endif
+    
     template<typename T>
     using safe_vector = ::std::vector<T, safe_allocator<T> >;
 
@@ -68,132 +78,108 @@ namespace dsn
     using safe_list = ::std::list<T, safe_allocator<T> >;
 
     template<typename TKey, typename TValue>
-    using safe_map = ::std::map<TKey, TValue, safe_allocator<TKey> >;
+    using safe_map = ::std::map<
+            TKey, 
+            TValue, 
+            ::std::less<TKey>, 
+            safe_allocator< ::std::pair< const TKey, TValue > >
+            >;
 
     template<typename TKey, typename TValue>
-    using safe_unordered_map = ::std::unordered_map<TKey, TValue, safe_allocator<TKey> >;
+    using safe_unordered_map = ::std::unordered_map<
+            TKey, 
+            TValue, 
+            ::std::hash<TKey>,
+            ::std::equal_to<TKey>,
+            safe_allocator< ::std::pair< const TKey, TValue > >
+            >;
 
     using safe_string = ::std::basic_string<char, ::std::char_traits<char>, safe_allocator<char> >;
 
     using safe_sstream = ::std::basic_stringstream<char, ::std::char_traits<char>,
         safe_allocator<char> >;
 
-    /*class safe_string
+    namespace utils 
     {
-    public:
-        safe_string()
+        # ifdef _WIN32
+        
+        inline void split_args(const char* args, /*out*/ safe_vector<safe_string>& sargs, char splitter = ' ');
+        inline void split_args(const char* args, /*out*/ safe_list<safe_string>& sargs, char splitter = ' ');
+
+
+        // ------- inline implementation 
+
+        inline void split_args(const char* args, safe_vector<safe_string>& sargs, char splitter)
         {
-            _content = nullptr;
-            _length = 0;
+            sargs.clear();
+
+            safe_string v(args);
+
+            int lastPos = 0;
+            while (true)
+            {
+                auto pos = v.find(splitter, lastPos);
+                if (pos != safe_string::npos)
+                {
+                    safe_string s = v.substr(lastPos, pos - lastPos);
+                    if (s.length() > 0)
+                    {
+                        safe_string s2 = trim_string((char*)s.c_str());
+                        if (s2.length() > 0)
+                            sargs.push_back(s2);
+                    }
+                    lastPos = static_cast<int>(pos + 1);
+                }
+                else
+                {
+                    safe_string s = v.substr(lastPos);
+                    if (s.length() > 0)
+                    {
+                        safe_string s2 = trim_string((char*)s.c_str());
+                        if (s2.length() > 0)
+                            sargs.push_back(s2);
+                    }
+                    break;
+                }
+            }
         }
 
-        ~safe_string()
+        inline void split_args(const char* args, safe_list<safe_string>& sargs, char splitter)
         {
-            reset();
+            sargs.clear();
+
+            safe_string v(args);
+
+            int lastPos = 0;
+            while (true)
+            {
+                auto pos = v.find(splitter, lastPos);
+                if (pos != safe_string::npos)
+                {
+                    safe_string s = v.substr(lastPos, pos - lastPos);
+                    if (s.length() > 0)
+                    {
+                        safe_string s2 = trim_string((char*)s.c_str());
+                        if (s2.length() > 0)
+                            sargs.push_back(s2);
+                    }
+                    lastPos = static_cast<int>(pos + 1);
+                }
+                else
+                {
+                    safe_string s = v.substr(lastPos);
+                    if (s.length() > 0)
+                    {
+                        safe_string s2 = trim_string((char*)s.c_str());
+                        if (s2.length() > 0)
+                            sargs.push_back(s2);
+                    }
+                    break;
+                }
+            }
         }
-
-        safe_string(const char* s)
-        {
-            _length = static_cast<int>(strlen(s));
-            fill_string(s, _length);
-        }
-
-        safe_string(const std::string& s)
-        {
-            _length = static_cast<int>(s.length());
-            fill_string(s.c_str(), _length);
-        }
-
-        safe_string(const safe_string& s)
-        {
-            _length = s._length;
-            fill_string(s.c_str(), _length);
-        }
-
-
-        safe_string(safe_string&& r)
-        {
-            _length = r._length;
-            _content = r._content;
-
-            r._length = 0;
-            r._content = nullptr;
-        }
-
-        safe_string& operator = (const char* s)
-        {
-            _length = static_cast<int>(strlen(s));
-            fill_string(s, _length);
-            return *this;
-        }
-
-        safe_string& operator = (const safe_string& obj)
-        {
-            _length = obj._length;
-            fill_string(obj.c_str(), _length);
-            return *this;
-        }
-
-        safe_string& operator = (safe_string&& obj)
-        {
-            _length = obj._length;
-            _content = obj._content;
-
-            obj._length = 0;
-            obj._content = nullptr;
-
-            return *this;
-        }
-
-        bool operator == (const safe_string& obj)
-        {
-            return _length > 0
-                && _length == obj._length
-                && strcmp(_content, obj._content) == 0;
-        }
-
-        bool operator != (const safe_string& obj)
-        {
-            return !(*this == obj);
-        }
-
-        bool is_empty() const
-        {
-            return _content == nullptr;
-        }
-
-        int length() const
-        {
-            return _length;
-        }
-
-        const char* c_str() const
-        {
-            return _content;
-        }
-
-        void clear()
-        {
-            reset();
-        }
-
-    private:
-        void fill_string(const char* s, int length)
-        {
-            _content = (char*)dsn_malloc(length + 1);
-            memcpy(_content, s, length + 1);
-        }
-
-        void reset()
-        {
-            if (_content)
-                dsn_free(_content);
-            _content = nullptr;
-            _length = 0;
-        }
-
-    private:
-        char* _content;
-        int   _length;
-    };*/
+        
+        # endif 
+    }
 }
+

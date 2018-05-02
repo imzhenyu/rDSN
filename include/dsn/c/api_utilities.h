@@ -327,7 +327,7 @@ extern DSN_API uint32_t              dsn_crc32_concatenate(
                                         size_t   y_size
                                         );
 
-extern DSN_API uint64_t               dsn_crc64_compute(const void* ptr, size_t size, uint64_t init_crc);
+extern DSN_API uint64_t              dsn_crc64_compute(const void* ptr, size_t size, uint64_t init_crc);
 
 //
 // Given
@@ -408,10 +408,13 @@ extern DSN_API void*         dsn_transient_malloc(uint32_t size);
 /*! high-performance free for transient objects, paired with \ref dsn_transient_malloc */
 extern DSN_API void          dsn_transient_free(void* ptr);
 
-/*! common malloc, paird with dsn_free to ensure malloc/free are done by dsn.core */
+/*! high-performance realloc for transient objects, paired with \ref dsn_transient_free */
+extern DSN_API void*         dsn_transient_realloc(void* ptr, uint32_t size);
+
+/*! common malloc, paird with dsn_free to ensure malloc/free are done by dsn */
 extern DSN_API void*         dsn_malloc(uint32_t size);
 
-/*! common free, paird with dsn_malloc to ensure malloc/free are done by dsn.core */
+/*! common free, paird with dsn_malloc to ensure malloc/free are done by dsn */
 extern DSN_API void          dsn_free(void* ptr);
 
 /*@}*/

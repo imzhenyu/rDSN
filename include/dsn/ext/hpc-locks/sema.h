@@ -64,6 +64,7 @@ public:
 //---------------------------------------------------------
 
 #include <mach/mach.h>
+#include <mach/semaphore.h>
 
 class Semaphore
 {
@@ -92,9 +93,10 @@ public:
  
     bool wait(int timeout_milliseconds)
     {
-        // TODO: timeout
-        wait();
-        return true;
+        mach_timespec_t ts;
+        ts.tv_sec = timeout_milliseconds / 1000;
+        ts.tv_nsec = timeout_milliseconds % 1000 * 1000000;
+        return semaphore_timedwait(m_sema, ts) ==  KERN_SUCCESS;
     }
 
     void signal()

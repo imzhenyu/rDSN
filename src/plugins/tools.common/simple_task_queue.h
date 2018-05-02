@@ -37,7 +37,6 @@
 
 # include <dsn/tool_api.h>
 # include <dsn/utility/priority_queue.h>
-# include <boost/asio.hpp>
 
 namespace dsn {
     namespace tools {
@@ -52,21 +51,6 @@ namespace dsn {
         private:
             typedef utils::blocking_priority_queue<task*, TASK_PRIORITY_COUNT> tqueue;
             tqueue _samples;
-        };
-
-        class simple_timer_service : public timer_service
-        {
-        public:
-            simple_timer_service(service_node* node, timer_service* inner_provider);
-
-            // after milliseconds, the provider should call task->enqueue()        
-            virtual void add_timer(task* task) override;
-
-            virtual void start(io_modifer& ctx) override;
-
-        private:
-            boost::asio::io_service      _ios;
-            std::shared_ptr<std::thread> _worker;
         };
     }
 }

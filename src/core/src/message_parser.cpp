@@ -43,85 +43,140 @@
 
 namespace dsn {
 
+    // ------------------- net headr format ------------------------------
+    DEFINE_CUSTOMIZED_ID_TYPE(net_header_format_)
+
+    net_header_format::net_header_format(const char* name)
+    {
+        _internal_code = net_header_format_(name);
+    }
+
+    const char* net_header_format::to_string() const
+    {
+        return net_header_format_::to_string(_internal_code);
+    }
+
+    int net_header_format::max_value()
+    {
+        return net_header_format_::max_value();
+    }
+
+    const char* net_header_format::to_string(int code)
+    {
+        return net_header_format_::to_string(code);
+    }
+
+    bool net_header_format::is_exist(const char* name)
+    {
+        return net_header_format_::is_exist(name);
+    }
+
+    net_header_format net_header_format::from_string(const char* name, net_header_format invalid_value)
+    {
+        net_header_format ch;
+        ch._internal_code = net_header_format_::get_id(name);
+        if (ch._internal_code == -1)
+            return invalid_value;
+        else
+            return ch;
+    }
+
+    // ------------------- net channel ------------------------------
+    DEFINE_CUSTOMIZED_ID_TYPE(net_channel_)
+
+    net_channel::net_channel(const char* name)
+    {
+        _internal_code = net_channel_(name);
+    }
+
+    const char* net_channel::to_string() const
+    {
+        return net_channel_::to_string(_internal_code);
+    }
+
+    int net_channel::max_value()
+    {
+        return net_channel_::max_value();
+    }
+    
+    const char* net_channel::to_string(int code)
+    {
+        return net_channel_::to_string(code);
+    }
+
+    bool net_channel::is_exist(const char* name)
+    {
+        return net_channel_::is_exist(name);
+    }
+
+    net_channel net_channel::from_string(const char* name, net_channel invalid_value)
+    {
+        net_channel ch;
+        ch._internal_code = net_channel_::get_id(name);
+        if (ch._internal_code == -1)
+            return invalid_value;
+        else
+            return ch;
+    }
+
     // ------------------- header type ------------------------------
     struct header_type
     {
     public:
-        union
-        {
-            char stype[4];
-            int32_t itype;
-        } type;
+        std::string type;
 
         header_type()
         {
-            type.itype = -1;
+            type = "";
         }
 
-        header_type(int32_t itype)
+        header_type(const std::string& itype)
         {
-            type.itype = itype;
+            type = itype;
         }
 
         header_type(const char* str)
         {
-            memcpy(type.stype, str, sizeof(int32_t));
+            type = std::string(str);
         }
         
         header_type(const header_type& another)
         {
-            type.itype = another.type.itype;
+            type = another.type;
         }
         
         header_type& operator=(const header_type& another)
         {
-            type.itype = another.type.itype;
+            type = another.type;
             return *this;
         }
         
         bool operator==(const header_type& other) const
         {
-            return type.itype == other.type.itype;
+            return type == other.type;
         }
         
         bool operator!=(const header_type& other) const
         {
-            return type.itype != other.type.itype;
+            return type != other.type;
         }
         
-        std::string debug_string() const;
+        std::string debug_string() const { return type; }
 
     public:
-        static network_header_format header_type_to_c_type(const header_type& hdr_type);
-        static void register_header_signature(int32_t sig, network_header_format type);
+        static net_header_format bytes_to_format(const char* bytes, int len);
+        static net_header_format header_type_to_c_type(const header_type& hdr_type);
+        static void register_header_signature(const char* sig, net_header_format type);
 
     private:
-        static std::unordered_map<int32_t, network_header_format> s_fmt_map;
+        static std::map<std::string, net_header_format> s_fmt_map;
     };
 
-    std::unordered_map<int32_t, network_header_format> header_type::s_fmt_map;
+    std::map<std::string, net_header_format> header_type::s_fmt_map;
 
-    std::string header_type::debug_string() const
+    /*static*/ net_header_format header_type::header_type_to_c_type(const header_type& hdr_type)
     {
-        char buf[20];
-        char* ptr = buf;
-        for (int i = 0; i < 4; ++i) {
-            auto& c = type.stype[i];
-            if (isprint(c)) {
-                *ptr++ = c;
-            }
-            else {
-                sprintf(ptr, "\\%02X", c);
-                ptr += 3;
-            }
-        }
-        *ptr = '\0';
-        return std::string(buf);
-    }
-
-    /*static*/ network_header_format header_type::header_type_to_c_type(const header_type& hdr_type)
-    {
-        auto it = s_fmt_map.find(hdr_type.type.itype);
+        auto it = s_fmt_map.find(hdr_type.type);
         if (it != s_fmt_map.end())
         {
             return it->second;
@@ -130,14 +185,42 @@ namespace dsn {
             return NET_HDR_INVALID;
     }
 
-    /*static*/ void header_type::register_header_signature(int32_t sig, network_header_format type)
+    /*static*/ net_header_format header_type::bytes_to_format(const char* bytes, int len)
+    {
+        // longest prefix matching for 'bytes' and registered fmts
+        net_header_format lmatch = NET_HDR_INVALID;
+
+        for (auto& kv : s_fmt_map)
+        {
+            int clen = (int)kv.first.length();
+
+            // not enough bytes received
+            if (clen > len)
+                continue;
+
+            // longer header already matched
+            if (lmatch != NET_HDR_INVALID && strlen(lmatch.to_string()) >= clen)
+                continue;
+
+            // current header matched
+            if (memcmp((const void*)bytes, (const void*)kv.first.c_str(), clen) == 0)
+            {
+                ddebug("the current connection is now matched to '%s'", kv.second.to_string());
+                lmatch = kv.second;
+            }
+        }
+
+        return lmatch;
+    }
+
+    /*static*/ void header_type::register_header_signature(const char* sig, net_header_format type)
     {
         auto it = s_fmt_map.find(sig);
         if (it != s_fmt_map.end())
         {
             if (it->second != type)
             {
-                dassert(false, "signature %08x is already registerd for header type %s",
+                dassert(false, "signature '%s' is already registerd for header type %s",
                     sig, type.to_string()
                     );
             }
@@ -148,16 +231,35 @@ namespace dsn {
         }
     }
 
-    /*static*/ network_header_format message_parser::get_header_type(const char* bytes)
+    /*static*/ net_header_format message_parser::get_header_type(const char* bytes, int len)
     {
-        header_type ht(bytes);
-        return header_type::header_type_to_c_type(ht);
+        return header_type::bytes_to_format(bytes, len);
     }
 
-    /*static*/ safe_string message_parser::get_debug_string(const char* bytes)
+    /*static*/ safe_string message_parser::get_debug_string(const char* bytes, int len)
     {
-        header_type ht(bytes);
-        return ht.debug_string().c_str();
+        if (len > sizeof(uint32_t))
+            len = sizeof(uint32_t);
+
+        safe_string s;
+        s.resize((size_t)len);
+        memcpy((void*)s.c_str(), bytes, (size_t)len);
+        return s;
+    }
+
+    /*static*/ message_parser* message_parser::new_message_parser(net_header_format hdr_format, bool is_client)
+    {
+        if (hdr_format != NET_HDR_INVALID)
+        {
+            message_parser* parser = message_parser_manager::instance().create_parser(hdr_format, is_client);
+            dassert(parser, "message parser '%s' not registerd or invalid!", hdr_format.to_string());
+            parser->_header_format = hdr_format;
+            return parser;
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 
     //-------------------- msg reader --------------------
@@ -173,7 +275,8 @@ namespace dsn {
             // switch to next
             unsigned int sz = (read_next + _buffer_occupied > _buffer_block_size ?
                         read_next + _buffer_occupied : _buffer_block_size);
-            _buffer.assign(dsn::make_shared_array<char>(sz), 0, sz);
+            std::shared_ptr<char> holder(static_cast<char*>(dsn_transient_malloc(sz)), [](char* c) {dsn_transient_free(c);});
+            _buffer.assign(std::move(holder), 0, sz);
             _buffer_occupied = 0;
 
             // copy
@@ -194,7 +297,7 @@ namespace dsn {
     {
     }
 
-    void message_parser_manager::register_factory(network_header_format fmt, const std::vector<const char*>& signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz)
+    void message_parser_manager::register_factory(net_header_format fmt, const std::vector<const char*>& signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz)
     {
         if (static_cast<unsigned int>(fmt) >= _factory_vec.size())
         {
@@ -209,18 +312,16 @@ namespace dsn {
 
         for (auto& v : signatures)
         {
-            header_type type(v);
-            header_type::register_header_signature(type.type.itype, fmt);
+            header_type::register_header_signature(v, fmt);
         }
     }
 
-    message_parser* message_parser_manager::create_parser(network_header_format fmt)
+    message_parser* message_parser_manager::create_parser(net_header_format fmt, bool is_client)
     {
         parser_factory_info& info = _factory_vec[fmt];
         if (info.factory)
-            return info.factory();
+            return info.factory(is_client);
         else
             return nullptr;
     }
-
 }

@@ -7,17 +7,14 @@ var vm = new Vue({
     },
     methods: {
         update: function ()
-        {
+        {   
             var self = this;
             var client = new cliApp("http://"+localStorage['target_server']);
                 result = client.call({
-                    args: new command({
-                    cmd: "system.queue",
-                    arguments: ['']
-                }),
+                args: "system.queue",
                 async: true,
-                on_success: function (data){
-                    data = JSON.parse(data);
+                on_success: function (data){                
+                    data = JSON.parse(data.substring(0,data.length-1));
                     var queueList = [];
                     for(appIndex in data)
                     {

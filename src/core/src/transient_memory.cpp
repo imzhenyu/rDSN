@@ -114,7 +114,8 @@ namespace dsn
 
     void* tls_trans_malloc(size_t sz)
     {
-        sz += sizeof(std::shared_ptr<char>) + sizeof(uint32_t);
+        // shared-ptr, size, magic, <return> content
+        sz += sizeof(std::shared_ptr<char>) + sizeof(uint32_t) + sizeof(uint32_t);
         void* ptr;
         size_t sz2;
         tls_trans_mem_next(&ptr, &sz2, sz);
@@ -122,32 +123,68 @@ namespace dsn
         // add ref
         new (ptr) std::shared_ptr<char>(*::dsn::tls_trans_memory.block);
 
+        // add size
+        *(uint32_t*)((char*)(ptr)+sizeof(std::shared_ptr<char>)) = (uint32_t)sz;
+
         // add magic
-        *(uint32_t*)((char*)(ptr)+sizeof(std::shared_ptr<char>)) = 0xdeadbeef;
+        *(uint32_t*)((char*)(ptr)+sizeof(std::shared_ptr<char>) + sizeof(uint32_t)) = 0xdeadbeef;
 
         tls_trans_mem_commit(sz);
 
-        return (void*)((char*)(ptr)+sizeof(std::shared_ptr<char>) + sizeof(uint32_t));
+        return (void*)((char*)(ptr)+sizeof(std::shared_ptr<char>) + sizeof(uint32_t) + sizeof(uint32_t));
     }
 
     void tls_trans_free(void* ptr)
     {
+        // shared-ptr, size, magic, <ptr> content
         ptr = (void*)((char*)ptr - sizeof(uint32_t));
         dassert(*(uint32_t*)(ptr) == 0xdeadbeef, "invalid transient memory block");
 
+        ptr = (void*)((char*)ptr - sizeof(std::shared_ptr<char>) - sizeof(uint32_t));
+        ((std::shared_ptr<char>*)(ptr))->~shared_ptr<char>();
+    }
+
+    void* tls_trans_realloc(void* ptr, size_t size)
+    {
+        if (ptr == nullptr)
+            return tls_trans_malloc(size);
+
+        // shared-ptr, size, magic, <ptr> content
+        void* ptr0 = ptr;
+
+        ptr = (void*)((char*)ptr - sizeof(uint32_t));
+        dassert(*(uint32_t*)(ptr) == 0xdeadbeef, "invalid transient memory block");
+
+        ptr = (void*)((char*)ptr - sizeof(uint32_t));
+        uint32_t old_sz = *(uint32_t*)ptr;
+
+        if (old_sz >= (uint32_t)size) return ptr0;
+
+        void* ptr2 = tls_trans_malloc(size);
+        memcpy(ptr2, ptr0, size);
+
         ptr = (void*)((char*)ptr - sizeof(std::shared_ptr<char>));
         ((std::shared_ptr<char>*)(ptr))->~shared_ptr<char>();
+        return ptr2;
     }
 }
 
 DSN_API void* dsn_transient_malloc(uint32_t size)
 {
+    //return ::malloc(size);
     return ::dsn::tls_trans_malloc((size_t)size);
 }
 
 DSN_API void dsn_transient_free(void* ptr)
 {
+    //return ::free(ptr);
     return ::dsn::tls_trans_free(ptr);
+}
+
+DSN_API void* dsn_transient_realloc(void* ptr, uint32_t size)
+{
+    //return ::realloc(ptr, size);
+    return ::dsn::tls_trans_realloc(ptr, (size_t)size);
 }
 
 DSN_API void* dsn_malloc(uint32_t size)

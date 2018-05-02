@@ -77,6 +77,7 @@ struct customized_id
     static const char* to_string(int code);
     static bool is_exist(const char* name);
     static customized_id from_string(const char* name, customized_id invalid_value);
+    static int get_id(const char* name); // -1 for not exist
 
 protected:
     static int assign(const char* xxx);
@@ -146,6 +147,13 @@ customized_id<T> customized_id<T>::from_string(const char* name, customized_id i
     int id = customized_id_mgr<T>::instance().get_id(name);
     if (id == -1) return invalid_value;
     else return customized_id<T>(id);
+}
+
+
+template<typename T>
+int customized_id<T>::get_id(const char* name)
+{
+    return customized_id_mgr<T>::instance().get_id(name);
 }
 
 template<typename T>

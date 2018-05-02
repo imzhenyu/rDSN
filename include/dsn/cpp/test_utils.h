@@ -39,6 +39,7 @@
 # include <dsn/service_api_cpp.h>
 # include <dsn/tool-api/task.h>
 # include <dsn/tool-api/task_worker.h>
+# include <dsn/tool-api/thread_profiler.h>
 # include <gtest/gtest.h>
 # include <iostream>
 
@@ -58,6 +59,8 @@ DEFINE_TASK_CODE_RPC(RPC_TEST_HASH3, TASK_PRIORITY_COMMON, THREAD_POOL_TEST_SERV
 DEFINE_TASK_CODE_RPC(RPC_TEST_HASH4, TASK_PRIORITY_COMMON, THREAD_POOL_TEST_SERVER)
 DEFINE_TASK_CODE_RPC(RPC_TEST_STRING_COMMAND, TASK_PRIORITY_COMMON, THREAD_POOL_TEST_SERVER)
 
+DEFINE_TASK_CODE_RPC(RPC_TEST_BIG_PAYLOAD, TASK_PRIORITY_COMMON, THREAD_POOL_TEST_SERVER)
+
 DEFINE_TASK_CODE_AIO(LPC_AIO_TEST, TASK_PRIORITY_COMMON, THREAD_POOL_DEFAULT)
 DEFINE_TASK_CODE(LPC_TEST_HASH, TASK_PRIORITY_COMMON, THREAD_POOL_DEFAULT)
 DEFINE_TASK_CODE_AIO(LPC_AIO_TEST_READ, TASK_PRIORITY_COMMON, THREAD_POOL_DEFAULT)
@@ -66,39 +69,52 @@ DEFINE_TASK_CODE_AIO(LPC_AIO_TEST_NFS, TASK_PRIORITY_COMMON, THREAD_POOL_DEFAULT
 
 extern void run_all_unit_tests_when_necessary();
 
+static const char* big_payload = "kljfdlksdjf;sdjfsdfj;sdj21jl4j2l4jl242;";
+
 class test_client :
-    public ::dsn::serverlet<test_client>,
+    public ::dsn::rpc_service<test_client>,
     public ::dsn::service_app    
 {
 public:
     test_client(dsn_gpid gpid)
-        : ::dsn::serverlet<test_client>("test-server", 7), ::dsn::service_app(gpid)
+        : ::dsn::rpc_service<test_client>("", 7), ::dsn::service_app(gpid)
     {
     }
 
     void on_rpc_test(const std::string& test_id, ::dsn::rpc_replier<std::string>& replier)
     {
+        TPF_MARK("on_rpc_test.begin");
         std::string r = dsn::task::get_current_node_name();
         replier(std::move(r));
+        TPF_MARK("on_rpc_test.end");
     }
 
-    void on_rpc_string_test(dsn_message_t message) {
+    bool on_rpc_big_payload(dsn_message_t req)
+    {
+        int meta_info_big_payload_size;
+        ::dsn::unmarshall(req, meta_info_big_payload_size);
+
+        void* ptr;
+        size_t sz;
+        dsn_msg_read_next(req, &ptr, &sz);
+
+        dassert(sz >= (size_t)meta_info_big_payload_size,
+            "left message read buffer size must be greater than meta_info_big_payload_size");
+
+
+        bool succ = (0 == memcmp((const void*)big_payload, ptr, meta_info_big_payload_size));
+
+        dsn_msg_read_commit(req, (size_t)meta_info_big_payload_size);
+
+        reply(req, succ);
+        return true; // no async use of req, return req's ownership to the framework
+    }
+
+    bool on_rpc_string_test(dsn_message_t message) {
         std::string command;
         ::dsn::unmarshall(message, command);
 
-        if (command == "expect_talk_to_others") {
-            dsn::rpc_address next_addr = dsn::service_app::primary_address();
-            if (next_addr.port() != TEST_PORT_END) {
-                next_addr.assign_ipv4(next_addr.ip(), next_addr.port()+1);
-                ddebug("test_client_server, talk_to_others: %s", next_addr.to_std_string().c_str());
-                dsn_rpc_forward(message, next_addr.c_addr());
-            }
-            else {
-                ddebug("test_client_server, talk_to_me: %s", next_addr.to_std_string().c_str());
-                reply(message, next_addr.to_std_string());
-            }
-        }
-        else if (command == "expect_no_reply") {
+        if (command == "expect_no_reply") {
             if (dsn::service_app::primary_address().port() == TEST_PORT_END) {
                 ddebug("test_client_server, talk_with_reply: %s", dsn::service_app::primary_address().to_std_string().c_str());
                 reply(message, dsn::service_app::primary_address().to_std_string());
@@ -110,6 +126,7 @@ public:
         else {
             derror("unknown command");
         }
+        return true;
     }
 
     ::dsn::error_code start(int argc, char** argv)
@@ -118,6 +135,8 @@ public:
         if (argc == 1)
         {
             register_async_rpc_handler(RPC_TEST_HASH, "rpc.test.hash", &test_client::on_rpc_test);
+            register_rpc_handler(RPC_TEST_BIG_PAYLOAD, "rpc.test.big.payload", &test_client::on_rpc_big_payload);
+
             //used for corrupted message test
             register_async_rpc_handler(RPC_TEST_HASH1, "rpc.test.hash1", &test_client::on_rpc_test);
             register_async_rpc_handler(RPC_TEST_HASH2, "rpc.test.hash2", &test_client::on_rpc_test);

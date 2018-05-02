@@ -44,15 +44,16 @@ namespace dsn {
             : service_app(gpid)
         {
             _timeout = std::chrono::seconds(10); // 10 seconds by default
+            _target = nullptr;
         }
 
         void usage()
         {
             std::cout << "------------ rcli commands ------" << std::endl;
-            std::cout << "help:   show this message" << std::endl;
+            std::cout << "lhelp:  show this message" << std::endl;
             std::cout << "exit:   exit the console" << std::endl;
-            std::cout << "remote: set cli target by 'remote %machine% %port% %timeout_seconds%" << std::endl;
-            std::cout << "rhelp:  show help message of remote target" << std::endl;
+            std::cout << "remote: set cli target by 'remote %machine:port% %timeout_seconds%" << std::endl;
+            std::cout << "help:   show help message of remote target" << std::endl;
             std::cout << "all other commands are sent to remote target %machine%:%port%" << std::endl;
             std::cout << "---------------------------------" << std::endl;
         }
@@ -82,7 +83,7 @@ namespace dsn {
                     continue;
 
                 std::string cmd = args[0];
-                if (cmd == "help")
+                if (cmd == "lhelp")
                 {
                     usage();
                     continue;
@@ -93,49 +94,47 @@ namespace dsn {
                 }
                 else if (cmd == "remote")
                 {
-                    if (args.size() < 4)
+                    if (args.size() < 3)
                     {
-                        std::cout << "invalid parameters for remote command, try help" << std::endl;
+                        std::cout << "invalid parameters for remote command, try lhelp" << std::endl;
                         continue;
                     }
                     else
                     {
-                        std::string machine = args[1];
-                        int port = atoi(args[2].c_str());
-                        _timeout = std::chrono::seconds(atoi(args[3].c_str()));
+                        std::string addr = args[1];
+                        _timeout = std::chrono::seconds(atoi(args[2].c_str()));
 
-                        _target.assign_ipv4(machine.c_str(), port);
+                        if (nullptr != _target)
+                            dsn_rpc_channel_close(_target);
 
-                        std::cout << "remote target is set to " << machine << ":" << port << ", timeout = " << _timeout.count() << " seconds" <<std::endl;
+                        _target = dsn_rpc_channel_open(addr.c_str());
+                        _target_addr = addr;
+
+                        std::cout << "remote target is set to " << addr << ", timeout = " << _timeout.count() << " seconds" <<std::endl;
+                        _client.reset(new cli_client(_target));
                         continue;
                     }
                 }
                 else
                 {
-                    if (_target.is_invalid())
+                    if (_target == nullptr)
                     {
-                        std::cout << "remote target is not specified, try help" << std::endl;
+                        std::cout << "remote target is not specified, try lhelp" << std::endl;
                         continue;
                     }
 
-                    command rcmd;
-                    rcmd.cmd = cmd == "rhelp" ? "help" : cmd;
-                    for (size_t i = 1; i < args.size(); i++)
-                    {
-                        rcmd.arguments.push_back(args[i]);
-                    }
+                    std::cout << "CALL " << _target_addr << " ..." << std::endl;
 
-                    std::cout << "CALL " << _target.to_string() << " ..." << std::endl;
-                    error_code err;
-                    std::string result;
-                    std::tie(err, result) = _client.call_sync(rcmd, _timeout, 0, 0, _target);
-                    if (err == ERR_OK)
+                    cli_string req;
+                    req.content = std::move(cmdline);
+                    auto pr = _client->call_sync(req, _timeout, 0, 0);
+                    if (pr.first == ERR_OK)
                     {
-                        std::cout << result << std::endl;
+                        std::cout << pr.second.content << std::endl;
                     }
                     else
                     {
-                        std::cout << "remote cli failed, err = " << err.to_string() << std::endl;
+                        std::cout << "remote cli failed, err = " << pr.first.to_string() << std::endl;
                     }
                     continue;
                 }

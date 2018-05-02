@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2015 Microsoft Corporation
  * 
- * -=- Robust Distributed System Nucleus (rDSN) -=- 
+ * -=- Robust Distributed System Nucleus (rdsn) -=- 
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ namespace dsn {
             virtual void    aio(aio_task* aio);            
             virtual disk_aio* prepare_aio_context(aio_task* tsk);
             
-            virtual void start(io_modifer& ctx) override;
+            virtual void start() override;
 
         protected:
             error_code aio_internal(aio_task* aio, bool async, /*out*/ uint32_t* pbytes = nullptr);

@@ -37,7 +37,7 @@
 
 # include <dsn/service_api_c.h>
 # include <string>
-# include <dsn/cpp/utils.h>
+# include <dsn/utility/misc.h>
 # include <dsn/tool-api/task.h>
 
 namespace dsn {
@@ -84,7 +84,7 @@ namespace dsn {
 
         virtual ~nfs_node() {}
 
-        virtual ::dsn::error_code start(io_modifer& ctx) = 0;
+        virtual ::dsn::error_code start() = 0;
 
         virtual error_code stop() = 0;
 

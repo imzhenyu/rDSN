@@ -51,7 +51,6 @@ task_worker_pool::task_worker_pool(const threadpool_spec& opts, task_engine* own
     : _spec(opts), _owner(owner), _node(owner->node())
 {
     _is_running = false;
-    _per_node_timer_svc = nullptr;
 }
 
 void task_worker_pool::create()
@@ -59,10 +58,26 @@ void task_worker_pool::create()
     if (_is_running)
         return;
     
-    int qCount = _spec.partitioned ?  _spec.worker_count : 1;
+    // create task workers
+    for (int i = 0; i < _spec.worker_count; i++)
+    {
+        task_worker* worker = factory_store<task_worker>::create(
+            _spec.worker_factory_name.c_str(), PROVIDER_TYPE_MAIN, this, i, nullptr);
+        for (auto it = _spec.worker_aspects.begin();
+            it != _spec.worker_aspects.end();
+            ++it)
+        {
+            worker = factory_store<task_worker>::create(it->c_str(), PROVIDER_TYPE_ASPECT, this, i, worker);
+        }
+        _workers.push_back(worker);
+    }
+
+    // create task queues
+    int qCount = _spec.partitioned ? _spec.worker_count : 1;
     for (int i = 0; i < qCount; i++)
     {
-        auto q = factory_store<task_queue>::create(_spec.queue_factory_name.c_str(), PROVIDER_TYPE_MAIN, this, i, nullptr);
+        auto q = factory_store<task_queue>::create(
+            _spec.queue_factory_name.c_str(), PROVIDER_TYPE_MAIN, this, i, nullptr);
         for (auto it = _spec.queue_aspects.begin();
             it != _spec.queue_aspects.end();
              ++it)
@@ -73,7 +88,8 @@ void task_worker_pool::create()
 
         if (_spec.admission_controller_factory_name != "")
         {
-            admission_controller* controller = factory_store<admission_controller>::create(_spec.admission_controller_factory_name.c_str(), 
+            admission_controller* controller = factory_store<admission_controller>::create(
+                _spec.admission_controller_factory_name.c_str(), 
                 PROVIDER_TYPE_MAIN, 
                 q, _spec.admission_controller_arguments.c_str());
         
@@ -93,20 +109,14 @@ void task_worker_pool::create()
         }
     }
 
+    // bind each other
     for (int i = 0; i < _spec.worker_count; i++)
     {
         auto q = _queues[qCount == 1 ? 0 : i];
-        task_worker* worker = factory_store<task_worker>::create(_spec.worker_factory_name.c_str(), PROVIDER_TYPE_MAIN, this, q, i, nullptr);
-        for (auto it = _spec.worker_aspects.begin();
-            it != _spec.worker_aspects.end();
-             ++it)
-        {
-            worker = factory_store<task_worker>::create(it->c_str(), PROVIDER_TYPE_ASPECT, this, q, i, worker);
-        }
-        task_worker::on_create.execute(worker);
-        q->set_owner_worker(spec().partitioned ? worker : nullptr);
+        q->set_owner_worker(spec().partitioned ? _workers[i] : nullptr);
+        _workers[i]->bind_queue(q);
 
-        _workers.push_back(worker);
+        task_worker::on_create.execute(_workers[i]);
     }
 }
 
@@ -125,44 +135,19 @@ void task_worker_pool::start()
         _spec.worker_share_core ? "true" : "false",
         _spec.partitioned ? "true" : "false");
 
-    // setup cached ptrs for fast timer service access
-    if (service_engine::fast_instance().spec().timer_io_mode == IOE_PER_QUEUE)
-    {
-        for (size_t i = 0; i < _queues.size(); i++)
-        {
-            auto svc = node()->tsvc(_queues[i]);
-            dassert(svc, "per queue timer service must be present");
-            _per_queue_timer_svcs.push_back(svc);
-        }
-    }
-    else
-    {
-        _per_node_timer_svc = node()->tsvc(nullptr);
-    }
-
     _is_running = true;
-}
-
-void task_worker_pool::add_timer(task* t)
-{
-    dassert(t->delay_milliseconds() > 0,
-        "task delayed should be dispatched to timer service first");
-
-    if (_per_node_timer_svc)
-        _per_node_timer_svc->add_timer(t);
-    else
-    {
-        unsigned int idx = (_spec.partitioned ? static_cast<unsigned int>(t->hash()) % static_cast<unsigned int>(_queues.size()) : 0);
-        _per_queue_timer_svcs[idx]->add_timer(t);
-    }
 }
 
 void task_worker_pool::enqueue(task* t)
 {
-    dassert(t->spec().pool_code == spec().pool_code || t->spec().type == TASK_TYPE_RPC_RESPONSE, 
+    dbg_dassert(t->spec().pool_code == spec().pool_code || t->spec().type == TASK_TYPE_RPC_RESPONSE, 
         "Invalid thread pool used");
-    dassert(t->delay_milliseconds() == 0,
+    dbg_dassert(t->delay_milliseconds() == 0,
         "task delayed should be dispatched to timer service first");
+    dbg_dassert(_workers.size() > 0, "worker pool %s has 0 workers started when task %s is enqueued",
+        spec().name.c_str(),
+        t->spec().name.c_str()
+        );
 
     if (_is_running)
     {

@@ -45,7 +45,7 @@
 # include <dsn/utility/factory_store.h>
 # include <dsn/tool-api/task.h>
 # include <dsn/utility/singleton_store.h>
-# include <dsn/cpp/utils.h> 
+# include <dsn/utility/misc.h> 
 
 # include <dsn/utility/configuration.h>
 # include "command_manager.h"
@@ -56,6 +56,7 @@
 # include "coredump.h"
 # include "transient_memory.h"
 # include "library_utils.h"
+# include "raw_channel.h"
 # include <fstream>
 
 # ifndef _WIN32
@@ -84,6 +85,8 @@ static struct _all_info_
     ::dsn::service_engine                                     *engine;
     std::vector< ::dsn::task_spec*>                            task_specs;
     ::dsn::memory_provider                                    *memory;
+    ::dsn::task_worker                                        *main_thread_mapped_target;
+    int                                                        main_thread_id;
 
     bool is_config_completed() const {
         return magic == 0xdeadbeef && config_completed;
@@ -158,6 +161,9 @@ DSN_API void dsn_config_dump(const char* file)
 }
 
 extern void dsn_log_init();
+#ifdef _WIN32
+extern void net_init();
+#endif
 
 // load all modules: local components, tools, frameworks, apps
 static void load_all_modules(::dsn::configuration_ptr config)
@@ -168,7 +174,7 @@ static void load_all_modules(::dsn::configuration_ptr config)
     // load local components, toollets, and tools
     // [modules]
     // dsn.tools.common
-    // dsn.tools.hpc
+    // 
     std::vector<const char*> lmodules;
     config->get_all_keys("modules", lmodules);
     for (auto& m : lmodules)
@@ -215,12 +221,31 @@ static void load_all_modules(::dsn::configuration_ptr config)
     }
 
     // prepare search dirs
-    std::string config_file_path = config->get_file_name();
-    std::string absolute_path;    
-    ::dsn::utils::filesystem::get_absolute_path(config_file_path, absolute_path);
+    std::vector<std::string> search_dirs;
+
+        // (1) add where is specified in config file
+    std::vector<const char*> search_dirs2;
+    config->get_all_keys("library.paths", search_dirs2);
+
+    for (auto& p : search_dirs2)
+        search_dirs.emplace_back(p);
+
+        // (2) add where the current module is
+    const char* dlpath = ::dsn::utils::get_module_name((void*)load_all_modules);
+    dassert (nullptr != dlpath, "cannot find load_all_modules hosted module path");
+    std::string corepath(dlpath);
+    std::string absolute_path; 
+    ::dsn::utils::filesystem::get_absolute_path(corepath, absolute_path);
     std::string file_name = ::dsn::utils::filesystem::get_file_name(absolute_path);
     absolute_path = absolute_path.substr(0, absolute_path.length() - file_name.length() - 1);
-    std::vector<std::string> search_dirs = { absolute_path };
+    search_dirs.emplace_back(absolute_path);
+
+        // (3) add where the config file is
+    std::string config_file_path = config->get_file_name();  
+    ::dsn::utils::filesystem::get_absolute_path(config_file_path, absolute_path);
+    file_name = ::dsn::utils::filesystem::get_file_name(absolute_path);
+    absolute_path = absolute_path.substr(0, absolute_path.length() - file_name.length() - 1);
+    search_dirs.emplace_back(absolute_path);
 
     // do the real jobs
     for (auto m : modules)
@@ -231,10 +256,6 @@ static void load_all_modules(::dsn::configuration_ptr config)
             dassert(false, "cannot load shared library '%s' specified in config file",
                 m.first.c_str());
             break;
-        }
-        else
-        {
-            dwarn("load shared library '%s' successfully", m.first.c_str());
         }
 
 // attribute(contructor) is not reliable on *nix
@@ -277,7 +298,6 @@ static void load_all_modules(::dsn::configuration_ptr config)
     }
 }
 
-void run_all_unit_tests_prepare_when_necessary();
 bool run(
     const char* config_file, 
     const char* config_arguments, 
@@ -286,7 +306,14 @@ bool run(
     std::string& app_list
 )
 {
-    ::dsn::task::set_tls_dsn_context(nullptr, nullptr, nullptr);
+    if (dsn_all.is_engine_ready())
+        return true;
+    
+#ifdef _WIN32
+    net_init();
+#endif
+
+    //::dsn::task::set_tls_dsn_context(nullptr, nullptr);
 
     dsn_all.engine_ready = false;
     dsn_all.config_completed = false;
@@ -294,6 +321,8 @@ bool run(
     dsn_all.engine = &::dsn::service_engine::instance();
     dsn_all.config.reset(new ::dsn::configuration());
     dsn_all.memory = nullptr;
+    dsn_all.main_thread_mapped_target = nullptr;
+    dsn_all.main_thread_id = ::dsn::utils::get_current_tid();
     dsn_all.magic = 0xdeadbeef;
 
     if (!dsn_all.config->load(config_file, config_arguments, config_overwrites))
@@ -301,7 +330,10 @@ bool run(
         printf("Fail to load config file %s\n", config_file);
         return false;
     }
-    dwarn("load config file '%s' successfully", config_file);
+
+    dinfo("load config file '%s' successfully", 
+        config_file
+        );
 
     // pause when necessary
     if (dsn_all.config->get_value<bool>("core", "pause_on_start", false,
@@ -315,12 +347,25 @@ bool run(
         getchar();
     }
 
+    // sleep when necessary
+    int sleep_seconds = dsn_all.config->get_value<int32_t>("core", "sleep_seconds_on_start", 0,
+        "how many seconds for sleeping before continuing execution on start");
+    if (sleep_seconds > 0)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(sleep_seconds));
+    }
+
+# if defined(DSN_STATIC)
+    extern void link_all_dsn_plugins();
+    link_all_dsn_plugins();
+# else
     // load plugged modules
     load_all_modules(dsn_all.config);
+# endif
 
-    // prepare unit test run if necessary
-    run_all_unit_tests_prepare_when_necessary();
-    
+    // load in-core providers
+    ::dsn::tools::register_component_provider< ::dsn::raw_channel>("raw");
+
     for (int i = 0; i <= dsn_task_code_max(); i++)
     {
         dsn_all.task_specs.push_back(::dsn::task_spec::get(i));
@@ -445,6 +490,58 @@ bool run(
             ::dsn::service_engine::fast_instance().start_node(sp);
         }
     }
+
+    // switch main(current) thread to spec.main_thread_mapped_target
+    if (spec.main_thread_mapped_target.length() > 0) 
+    {
+        std::vector< ::dsn::safe_string> cs;
+        ::dsn::utils::split_args(spec.main_thread_mapped_target.c_str(), cs, '/');
+        if (cs.size() != 4) {
+            printf("invalid [core] main_thread_mapped_target = '%s', "
+                "must be of $app_type/$app_index/$thread_pool_id/$thread_index\n",
+                spec.main_thread_mapped_target.c_str()
+            );
+            return false;
+        }
+        ::dsn::safe_string m_app_type = cs[0];
+        int m_app_index = atoi(cs[1].c_str());
+        dsn_threadpool_code_t m_thread_pool_id = dsn_threadpool_code_from_string(cs[2].c_str(),
+             ::dsn::THREAD_POOL_INVALID);
+        int m_thread_index = atoi(cs[3].c_str());
+        ::dsn::task_worker *target_worker = nullptr;
+
+        auto& nodes = ::dsn::service_engine::fast_instance().get_all_nodes();
+        for (auto& kv : nodes) {
+            ::dsn::service_node* node = kv.second;
+            auto& app_spec = node->spec();
+            if (app_spec.type == m_app_type
+               && app_spec.index == m_app_index
+               && std::find(app_spec.pools.begin(), app_spec.pools.end(), m_thread_pool_id)
+                     != app_spec.pools.end()
+               && spec.threadpool_specs[m_thread_pool_id].worker_count > m_thread_index
+            ) {
+                target_worker = ::dsn::task_worker::remote(node, m_thread_pool_id, m_thread_index);
+                break;
+            }
+        }
+
+        if (nullptr == target_worker) {
+            printf("specified [core] main_thread_mapped_target = '%s' is not found or not enabled,"
+                "please make sure target app(type = %s, index = %d) and thread pool(%s) are targeted, "
+                "and the number of worker is greater than %d\n",
+                spec.main_thread_mapped_target.c_str(),
+                m_app_type.c_str(),
+                m_app_index, 
+                cs[2].c_str(),
+                m_thread_index
+            );
+            return false;
+        }
+        ::dsn::task::set_tls_dsn_context(target_worker->pool()->node(), target_worker);
+        dassert(::dsn::task::get_current_worker() == target_worker, 
+            "thread conversion from main to %s failed", spec.main_thread_mapped_target.c_str());
+        dsn_all.main_thread_mapped_target = target_worker;
+    }
         
     // start cli if necessary
     if (dsn_all.config->get_value<bool>("core", "cli_local", true,
@@ -487,7 +584,9 @@ bool run(
     dsn_all.tool->run();
 
     // add this to allow mimic app call from this thread.
-    memset((void*)&dsn::tls_dsn, 0, sizeof(dsn::tls_dsn));
+    if (spec.main_thread_mapped_target.length() == 0) {
+        memset((void*)&dsn::tls_dsn, 0, sizeof(dsn::tls_dsn));
+    }
 
     //
     if (sleep_after_init)
@@ -501,6 +600,18 @@ bool run(
     return true;
 }
 
+DSN_API void dsn_loop()
+{
+    dassert (dsn_all.main_thread_id == ::dsn::utils::get_current_tid(), 
+        "invalid call to dsn_loop as it should be only called in the same thread after dsn_run");
+    
+    if (dsn_all.main_thread_mapped_target == nullptr) {
+        derror("dsn_loop is skipped as [core] main_thread_mapped_target is not specified");
+        return;
+    }
+
+    dsn_all.main_thread_mapped_target->run_internal();
+}
 
 //
 // run the system with arguments
@@ -511,7 +622,7 @@ DSN_API void dsn_run(int argc, char** argv, bool sleep_after_init)
     {
         printf("invalid options for dsn_run\n"
             "// run the system with arguments\n"
-            "//   config [-cargs k1=v1;k2=v2] [-overwrite section1.k1=v1;section2.k2=v2] [-app_list app_name1@index1;app_name2@index]\n"
+            "// <dsn_run> config.ini [-cargs k1=v1;k2=v2] [-overwrite section1.k1=v1;section2.k2=v2] [-app_list app_name1@index1;app_name2@index]\n"
             "// e.g., config.ini -app_list replica@1 to start the first replica as a new process\n"
             "//       config.ini -app_list replica to start ALL replicas (count specified in config) as a new process\n"
             "//       config.ini -app_list replica -cargs replica-port=34556 to start with %%replica-port%% var in config.ini\n"
@@ -573,10 +684,10 @@ DSN_API void dsn_run(int argc, char** argv, bool sleep_after_init)
     }
 }
 
-DSN_API bool dsn_run_config(const char* config, bool sleep_after_init)
+DSN_API bool dsn_run_config(const char* config, const char* config_overwrites, bool sleep_after_init)
 {
     std::string name;
-    return run(config, nullptr, nullptr, sleep_after_init, name);
+    return run(config, nullptr, config_overwrites, sleep_after_init, name);
 }
 
 DSN_API int dsn_get_all_apps(dsn_app_info* info_buffer, int count)
@@ -593,7 +704,7 @@ DSN_API int dsn_get_all_apps(dsn_app_info* info_buffer, int count)
         info.app.app_context_ptr = node->get_app_context_ptr();
         info.app_id = node->id();
         info.index = node->spec().index;
-        info.primary_address = node->rpc(nullptr)->primary_address().c_addr();
+        info.primary_address = node->rpc()->primary_address().c_addr();
         strncpy(info.role, node->spec().role_name.c_str(), sizeof(info.role));
         strncpy(info.type, node->spec().type.c_str(), sizeof(info.type));
         strncpy(info.name, node->spec().name.c_str(), sizeof(info.name));
@@ -619,6 +730,14 @@ namespace dsn
         tool_app* get_current_tool()
         {
             return dsn_all.tool;
+        }
+
+
+        void register_system_rpc_handler(dsn_task_code_t code, const char* name, dsn_rpc_request_handler_t cb, void* param, int port)
+        {
+            ::dsn::service_engine::fast_instance().register_system_rpc_handler(
+                code, name, cb, param, port
+                );
         }
     }
 }

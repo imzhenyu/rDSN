@@ -36,7 +36,7 @@
 # include "disk_engine.h"
 # include <dsn/tool-api/perf_counter.h>
 # include <dsn/tool-api/aio_provider.h>
-# include <dsn/cpp/utils.h>
+# include <dsn/utility/misc.h>
 # include "transient_memory.h"
 
 # ifdef __TITLE__
@@ -114,13 +114,11 @@ void disk_file::ctrl(dsn_ctrl_code_t code, int param)
 
 aio_task* disk_file::read(aio_task* tsk)
 {
-    tsk->add_ref(); // release on completion
     return _read_queue.add_work(tsk, nullptr);
 }
 
 aio_task* disk_file::write(aio_task* tsk, void* ctx)
 {
-    tsk->add_ref(); // release on completion
     return _write_queue.add_work(tsk, ctx);
 }
 
@@ -129,8 +127,6 @@ aio_task* disk_file::on_read_completed(aio_task* wk, error_code err, size_t size
     dassert(wk->next == nullptr, "");
     auto ret = _read_queue.on_work_completed(wk, nullptr);
     wk->enqueue(err, size);
-    wk->release_ref(); // added in above read
-
     return ret;
 }
 
@@ -159,9 +155,6 @@ aio_task* disk_file::on_write_completed(aio_task* wk, void* ctx, error_code err,
         {
             wk->enqueue(err, size);
         }
-
-        wk->release_ref(); // added in above write
-
         wk = next;
     }
 
@@ -186,13 +179,13 @@ disk_engine::~disk_engine()
 {
 }
 
-void disk_engine::start(aio_provider* provider, io_modifer& ctx)
+void disk_engine::start(aio_provider* provider)
 {
     if (_is_running)
         return;  
 
     _provider = provider;
-    _provider->start(ctx);
+    _provider->start();
     _is_running = true;
 }
 
@@ -278,7 +271,7 @@ class batch_write_io_task : public aio_task
 {
 public:
     batch_write_io_task(aio_task* tasks, blob& buffer)
-        : aio_task(LPC_AIO_BATCH_WRITE, nullptr, tasks, nullptr)
+        : aio_task(LPC_AIO_BATCH_WRITE, nullptr, tasks, 0, nullptr)
     {
         _buffer = buffer;
     }
@@ -370,7 +363,6 @@ void disk_engine::process_write(aio_task* aio, uint32_t sz)
         dio->engine = aio->aio()->engine;
         dio->type = AIO_Write;
 
-        new_task->add_ref(); // released in complete_io
         return _provider->aio(new_task);
     }
 }
@@ -391,7 +383,6 @@ void disk_engine::complete_io(aio_task* aio, error_code err, uint32_t bytes, int
     if (aio->code() == LPC_AIO_BATCH_WRITE)
     {
         aio->enqueue(err, (size_t)bytes);
-        aio->release_ref(); // added in process_write
     }
 
     // no batching

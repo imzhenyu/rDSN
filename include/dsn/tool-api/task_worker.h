@@ -41,6 +41,7 @@
 # include <dsn/utility/dlib.h>
 # include <dsn/tool-api/perf_counter.h>
 # include <thread>
+# include <functional>
 
 namespace dsn {
  
@@ -54,21 +55,20 @@ namespace dsn {
 class task_worker : public extensible_object<task_worker, 4>
 {
 public:
-    template <typename T> static task_worker* create(task_worker_pool* pool, task_queue* q, int index, task_worker* inner_provider)
+    template <typename T> static task_worker* create(task_worker_pool* pool, int index, task_worker* inner_provider)
     {
-        return new T(pool, q, index, inner_provider);
+        return new T(pool, index, inner_provider);
     }
 
-    typedef task_worker*  (*factory)(task_worker_pool*, task_queue*, int, task_worker*);
+    typedef task_worker*  (*factory)(task_worker_pool*, int, task_worker*);
 
 public:
-    DSN_API task_worker(task_worker_pool* pool, task_queue* q, int index, task_worker* inner_provider);
+    DSN_API task_worker(task_worker_pool* pool, int index, task_worker* inner_provider);
     DSN_API virtual ~task_worker(void);
 
     // service management
-    DSN_API void start();
-    DSN_API void stop();
-
+    DSN_API virtual void start();
+    DSN_API virtual void stop();
     DSN_API virtual void loop(); // run tasks from _input_queue
 
     // inquery
@@ -77,8 +77,12 @@ public:
     int native_tid() const { return _native_tid; }
     task_worker_pool* pool() const { return _owner_pool; }
     task_queue* queue() const { return _input_queue; }
+    uint64_t affinity() const { return _affinity_mask; }
+    DSN_API void bind_queue(task_queue* q);
     DSN_API const threadpool_spec& pool_spec() const;
     DSN_API static task_worker* current();
+    DSN_API static task_worker* remote(task_worker_pool* pool, int index);
+    DSN_API static task_worker* remote(service_node* node, dsn_threadpool_code_t pool_id, int index);
 
 private:
     task_worker_pool* _owner_pool;    
@@ -90,15 +94,16 @@ private:
     bool             _is_running;
     utils::notify_event _started;
     int              _processed_task_count;
+    uint64_t         _affinity_mask;
 
 public:
     DSN_API static void set_name(const char* name);
     DSN_API static void set_priority(worker_priority_t pri);
     DSN_API static void set_affinity(uint64_t affinity);
 
-private:
+    // only used by task_worker_pool and dsn_loop right now
     void run_internal();
-
+    
 public:
     /*!
     @addtogroup tool-api-hooks

@@ -36,7 +36,9 @@ var vm = new Vue({
         description: '',
 
         info: '',
-        
+
+        duplicatedMachines: '',
+        duplicatedTargetCounter: null,
     },
     components: {
     },
@@ -61,13 +63,10 @@ var vm = new Vue({
             self.counterList = [];
             var client = new cliApp("http://" + machine );
             result = client.call({
-                    args: new command({
-                    cmd: "counter.list",
-                    arguments: ['']
-                }),
+                args: "counter.list",
                 async: true,
                 on_success: function (data){
-                    self.counterJSON = JSON.parse(data);
+                    self.counterJSON = JSON.parse(data.substring(0,data.length-1));
                     for (app in self.counterJSON) {
                         self.appList.push(app);
                     }
@@ -174,6 +173,38 @@ var vm = new Vue({
             localStorage.setItem(uuid, JSON.stringify(viewData));
 
             window.open(url);
+        },
+        setDuplicateCounterTarget: function(counter) {
+            var self = this;
+            self.duplicatedTargetCounter = counter;
+        },
+        duplicateCounter: function() {
+            var self = this;
+            var ms = self.duplicatedMachines;
+            var machines = ms.split('\n');
+            var ecounter = self.duplicatedTargetCounter;
+            var label = ecounter.label.substring(ecounter.label.indexOf(" * "));
+
+            for(index = 0; index < machines.length; ++index)
+            {
+                var m = machines[index];
+                if (m != null && m.length > 0) {
+                    var label2 = m + label;
+                    //alert (m);
+                    var flag = false;
+                    for(index2 in self.counterQueue)
+                    {
+                        if(self.counterQueue[index2].label==label2)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+
+                    if(!flag)
+                        self.counterQueue.push({machine: m, label: label2, name: ecounter.name, index:0});
+                }
+            }
         },
         loadView: function () {
             var self = this;

@@ -43,7 +43,7 @@
 
 DSN_API dsn_handle_t dsn_perf_counter_create(const char* section, const char* name, dsn_perf_counter_type_t type, const char* description)
 {
-    auto cnode = dsn::task::get_current_node2();
+    auto cnode = dsn::task::get_current_node();
     dassert(cnode != nullptr, "cannot get current service node!");
     auto c = dsn::perf_counters::instance().get_counter(cnode->name(), section, name, type, description, true);
     c->add_ref();
@@ -126,6 +126,12 @@ perf_counters::perf_counters(void)
         "counter.value - get current value of a specific counter",
         "counter.value app-name*section-name*counter-name",
         &perf_counters::get_counter_value
+        );
+
+    ::dsn::register_command("counter.allvalue", 
+        "counter.allvalue - get current value of all counter",
+        "counter.allvalue app-name*section-name*counter-name",
+        &perf_counters::get_all_counter_value
         );
 
     ::dsn::register_command("counter.sample",
@@ -273,6 +279,11 @@ safe_string perf_counters::list_counter(const safe_vector<safe_string>& args)
     return perf_counters::instance().list_counter_internal(args);
 }
 
+safe_string perf_counters::get_all_counter_value(const safe_vector<safe_string>& args)
+{
+    return perf_counters::instance().all_counter_value_internal(args);
+}
+
 struct counter_info
 {
     std::string name;
@@ -331,6 +342,21 @@ safe_string perf_counters::list_counter_internal(const safe_vector<safe_string>&
 
     std::stringstream ss;
     dsn::json::json_encode(ss, counters);
+    return ss.str().c_str();
+}
+
+safe_string perf_counters::all_counter_value_internal(const safe_vector<safe_string>& args) {
+    uint64_t ts = dsn_now_ns() / 1000000;
+    std::stringstream ss;
+    {
+        utils::auto_read_lock l(_lock);
+        for (auto& c : _counters) {
+            auto counter = c.second;
+            if(counter->type() != COUNTER_TYPE_NUMBER_PERCENTILES) {
+                ss<<ts<<","<<counter->name()<<","<<counter->get_value()<<std::endl;
+            }       
+        }
+    }   
     return ss.str().c_str();
 }
 

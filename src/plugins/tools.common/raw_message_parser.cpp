@@ -51,21 +51,15 @@ void raw_message_parser::notify_rpc_session_disconnected(rpc_session *sp)
 {
     if (!sp->is_client())
     {
-        message_ex* special_msg = message_ex::create_receive_message_with_standalone_header(blob());
-        dsn::message_header* header = special_msg->header;
-        header->context.u.is_request = 1;
-        header->context.u.is_forwarded = 0;
-        header->from_address = sp->remote_address();
-        header->gpid.value = 0;
-
-        strncpy(header->rpc_name, "RPC_CALL_RAW_SESSION_DISCONNECT", DSN_MAX_TASK_CODE_NAME_LENGTH);
+        auto special_msg = message_ex::create_receive_message_with_standalone_header();
+        special_msg->header->context.u.is_request = 1;
         special_msg->local_rpc_code = RPC_CALL_RAW_SESSION_DISCONNECT;
-        special_msg->hdr_format = NET_HDR_RAW;
-        sp->on_recv_message(special_msg, 0);
+        sp->on_recv_request(special_msg, 0);
     }
 }
 
-raw_message_parser::raw_message_parser()
+raw_message_parser::raw_message_parser(bool is_client)
+    : message_parser(is_client)
 {
     bool hooked = false;
     static std::atomic_bool s_handler_hooked(false);
@@ -83,35 +77,27 @@ void raw_message_parser::reset() {}
 
 message_ex* raw_message_parser::get_message_on_receive(message_reader* reader, /*out*/int& read_next)
 {
-    if (reader->_buffer_occupied == 0)
+    if (reader->length() == 0)
     {
-        if (reader->_buffer.length() > 0)
-            read_next = reader->_buffer.length();
+        if (reader->data() != nullptr)
+            read_next = reader->read_buffer_capacity();
         else
-            read_next = reader->_buffer_block_size;
+            read_next = reader->block_size();
         return nullptr;
     }
     else
     {
-        auto msg_length = reader->_buffer_occupied;
-        dsn::blob msg_blob = reader->_buffer.range(0, msg_length);
-        message_ex* new_message = message_ex::create_receive_message_with_standalone_header(msg_blob);
-        message_header* header = new_message->header;
+        auto msg_length = reader->length();
+        auto new_message = message_ex::create_receive_message_with_standalone_header(reader->range(msg_length));
+        auto header = new_message->header;
 
-        header->hdr_length = sizeof(*header);
         header->body_length = msg_length;
-        strncpy(header->rpc_name, "RPC_CALL_RAW_MESSAGE", DSN_MAX_TASK_CODE_NAME_LENGTH);        
-        header->gpid.value = 0;
+        new_message->dheader.rpc_name = "RPC_CALL_RAW_MESSAGE";
         header->context.u.is_request = 1;
-        header->context.u.is_forwarded = 0;
-        header->context.u.is_forward_supported = 0;
-
-        reader->_buffer = reader->_buffer.range(msg_length);
-        reader->_buffer_occupied = 0;
+        reader->consume(msg_length);
         read_next = 0;
 
         new_message->local_rpc_code = RPC_CALL_RAW_MESSAGE;
-        new_message->hdr_format = NET_HDR_RAW;
         return new_message;
     }
 }
@@ -136,7 +122,9 @@ int raw_message_parser::get_buffers_on_send(message_ex *msg, send_buf *buffers)
         buffers[i].buf = (void*)(buf.data() + offset);
         buffers[i].sz = buf.length() - offset;
         offset = 0;
-        ++i;
+
+        if (buffers[i].sz > 0)
+            ++i;
     }
     return i;
 }

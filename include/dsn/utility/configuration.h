@@ -160,7 +160,12 @@ template<> inline double configuration::get_value<double>(const char* section, c
     }   
     else
     {
-        return atof(value);
+        char *end;
+        double val = strtod(value, &end);
+        if (*end != '\0') {
+            printf("WARNING: configuration '[%s] %s' value '%s' has trailing characters after digits\n", section, key, value);
+        }
+        return val;
     }
 }
 
@@ -186,14 +191,12 @@ template<> inline long long configuration::get_value<long long>(const char* sect
     }
     else
     {
-        if (strlen(value) > 2 && (value[0] == '0' && (value[1] == 'x' || value[1] == 'X')))
-        {
-            long long unsigned int v;
-            sscanf(value, "0x%llx", &v);
-            return v;
+        char *end;
+        long long val = strncasecmp(value, "0x", 2) == 0 ? strtoll(value + 2, &end, 16) : strtoll(value, &end, 10);
+        if (*end != '\0') {
+            printf("WARNING: configuration '[%s] %s' value '%s' has trailing characters after digits\n", section, key, value);
         }
-        else
-            return atoll(value);
+        return val;
     }
 }
 
@@ -217,14 +220,12 @@ template<> inline long configuration::get_value<long>(const char* section, const
     }
     else
     {
-        if (strlen(value) > 2 && (value[0] == '0' && (value[1] == 'x' || value[1] == 'X')))
-        {
-            long v;
-            sscanf(value, "0x%lx", &v);
-            return v;
+        char *end;
+        long val = strncasecmp(value, "0x", 2) == 0 ? strtol(value + 2, &end, 16) : strtol(value, &end, 10);
+        if (*end != '\0') {
+            printf("WARNING: configuration '[%s] %s' value '%s' has trailing characters after digits\n", section, key, value);
         }
-        else
-            return (long)(atoi(value));
+        return val;
     }
 }
 

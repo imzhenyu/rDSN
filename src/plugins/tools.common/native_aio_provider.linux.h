@@ -41,12 +41,12 @@
 # include <dsn/tool_api.h>
 # include <dsn/utility/synchronize.h>
 # include <queue>
-# include <cinttypes>     /* uint64_t */
-# include <cstring>       /* memset() */
-# include <cstdio>        /* for perror() */
-# include <sys/syscall.h> /* for __NR_* definitions */
+# include <stdio.h>        /* for perror() */
+# include <sys/syscall.h>    /* for __NR_* definitions */
 # include <libaio.h>
-# include <fcntl.h>       /* O_RDWR */
+# include <fcntl.h>        /* O_RDWR */
+# include <string.h>        /* memset() */
+# include <inttypes.h>    /* uint64_t */
 
 namespace dsn {
     namespace tools {
@@ -63,7 +63,7 @@ namespace dsn {
             virtual void    aio(aio_task* aio) override;
             virtual disk_aio* prepare_aio_context(aio_task* tsk) override;
 
-            virtual void start(io_modifer& ctx) override;
+            virtual void start() override;
 
             struct linux_disk_aio_context : public disk_aio
             {

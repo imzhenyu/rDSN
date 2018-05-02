@@ -58,7 +58,8 @@ namespace dsn {
             entry.dummy = nullptr;
             entry.factory = (void*)factory;
             entry.type = type;
-            return singleton_store<std::string, factory_entry>::instance().put(std::string(name), entry);
+            std::string aname(name);
+            return singleton_store<std::string, factory_entry>::instance().put(std::move(aname), std::move(entry));
         }
 
         template<typename TFactory>
@@ -96,7 +97,8 @@ namespace dsn {
         static TFactory get_factory(const char* name, ::dsn::provider_type type)
         {
             factory_entry entry;
-            if (singleton_store<std::string, factory_entry>::instance().get(std::string(name), entry))
+            std::string aname(name);
+            if (singleton_store<std::string, factory_entry>::instance().get(aname, entry))
             {
                 if (entry.type != type)
                 {

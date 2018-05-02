@@ -42,49 +42,35 @@ namespace dsn {
         {
             if (spec.aio_factory_name == "")
             {
-                spec.aio_factory_name = ("dsn::tools::native_aio_provider");
+                spec.aio_factory_name = ("dsn::tools::hpc_aio_provider");
             }
 
             if (spec.env_factory_name == "")
-                spec.env_factory_name = ("dsn::env_provider");
+                spec.env_factory_name = ("dsn::tools::hpc_env_provider");
 
             if (spec.timer_factory_name == "")
-                spec.timer_factory_name = ("dsn::tools::simple_timer_service");
+                spec.timer_factory_name = "dsn::tools::hpc_timer_service";
+            
             {
                 network_client_config cs;
-                cs.factory_name = "dsn::tools::asio_network_provider";
+                cs.factory_name = "dsn::tools::hpc_network_provider";
                 cs.message_buffer_block_size = 1024 * 64;
-                spec.network_default_client_cfs[RPC_CHANNEL_TCP] = cs;
+                spec.network_default_client_cfs[NET_CHANNEL_TCP] = cs;
             }
             {
                 network_server_config cs2;
                 cs2.port = 0;
-                cs2.channel = RPC_CHANNEL_TCP;
-                cs2.factory_name = "dsn::tools::asio_network_provider";
+                cs2.channel = NET_CHANNEL_TCP;
+                cs2.factory_name = "dsn::tools::hpc_network_provider";
                 cs2.message_buffer_block_size = 1024 * 64;
                 spec.network_default_server_cfs[cs2] = cs2;
             }
-            {
-                network_client_config cs;
-                cs.factory_name = "dsn::tools::asio_udp_provider";
-                cs.message_buffer_block_size = 1024 * 64;
-                spec.network_default_client_cfs[RPC_CHANNEL_UDP] = cs;
-            }
-            {
-                network_server_config cs2;
-                cs2.port = 0;
-                cs2.channel = RPC_CHANNEL_UDP;
-                cs2.factory_name = "dsn::tools::asio_udp_provider";
-                cs2.message_buffer_block_size = 1024 * 64;
-                spec.network_default_server_cfs[cs2] = cs2;
-            }
-
 
             if (spec.perf_counter_factory_name == "")
                 spec.perf_counter_factory_name = "dsn::tools::simple_perf_counter";
 
             if (spec.logging_factory_name == "")
-                spec.logging_factory_name = "dsn::tools::simple_logger";
+                spec.logging_factory_name = "dsn::tools::hpc_logger";
 
             if (spec.memory_factory_name == "")
                 spec.memory_factory_name = "dsn::default_memory_provider";
@@ -107,17 +93,31 @@ namespace dsn {
             if (spec.nfs_factory_name == "")
                 spec.nfs_factory_name = "dsn::service::nfs_node_simple";
 
+
             for (auto it = spec.threadpool_specs.begin(); it != spec.threadpool_specs.end(); ++it)
             {
                 threadpool_spec& tspec = *it;
 
                 if (tspec.worker_factory_name == "")
-                    tspec.worker_factory_name = ("dsn::task_worker");
-
+                {
+                    if (tspec.pool_code == THREAD_POOL_IO)
+                    {
+                        tspec.worker_factory_name = "dsn::tools::io_looper";
+                        tspec.queue_factory_name = "dsn::tools::io_looper_queue";
+                        tspec.partitioned = true;
+                    }   
+                    else
+                        tspec.worker_factory_name = "dsn::task_worker";
+                }
+                
                 if (tspec.queue_factory_name == "")
-                    tspec.queue_factory_name = ("dsn::tools::simple_task_queue");
+                {
+                    if (tspec.pool_code == THREAD_POOL_IO)
+                        tspec.queue_factory_name = "dsn::tools::io_looper_queue";
+                    else
+                        tspec.queue_factory_name = "dsn::tools::hpc_task_queue";
+                }
             }
-
         }
 
         void nativerun::run()

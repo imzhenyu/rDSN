@@ -2,9 +2,7 @@
 
 function usage()
 {
-    echo "dsn.cg %name%.thrift|.proto cpp|csharp|js %out_dir% [format = binary|json] [mode = single]".PHP_EOL;
-    echo "\tformat - use binary(default) or json format to send rpc request/response".PHP_EOL;
-    echo "\tnotice : currently for js we only support json format of thrift".PHP_EOL;
+    echo "dsn.cg %name%.proto cpp %out_dir%".PHP_EOL;
 }
 
 if (count($argv) < 4)
@@ -39,7 +37,7 @@ $g_idl_format = "";
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') 
 {
-    $g_php_path = $g_cg_dir."/Windows/php.exe";
+    $g_php_path = $g_cg_dir."/tools/bin/php.exe";
 }
 
 if (count($argv) >= 5)
@@ -150,12 +148,13 @@ if (!file_exists($g_out_dir))
 }
 
 // generate service definition file from input idl file using the code generation tools
-$os_name = explode(" ", php_uname())[0];
+$el_uname = explode(" ", php_uname());
+$os_name = reset($el_uname);
 switch ($g_idl_type)
 {
 case "thrift":
     {
-        $command = $g_cg_dir."/".$os_name."/thrift --gen rdsn -out ".$g_out_dir." ".$g_idl;
+        $command = $g_cg_dir."/tools/thrift --gen rdsn -out ".$g_out_dir." ".$g_idl;
         echo "exec: ".$command.PHP_EOL;
         system($command);
         if (!file_exists($g_idl_php))
@@ -169,7 +168,7 @@ case "thrift":
         {
             $lang_with_options = $g_lang.":moveable_types";
         }
-        $command = $g_cg_dir."/".$os_name."/thrift --gen ".$lang_with_options." -out ".$g_out_dir." ".$g_idl;
+        $command = $g_cg_dir."/tools/thrift --gen ".$lang_with_options." -out ".$g_out_dir." ".$g_idl;
         echo "exec: ".$command.PHP_EOL;
         system($command);
     }
@@ -177,18 +176,24 @@ case "thrift":
 case "proto":
     {
         $g_idl_dir = dirname($g_idl);
-        $command = $g_cg_dir."/".$os_name."/protoc --rdsn_out=".$g_out_dir." ".$g_idl." -I=".$g_idl_dir;
+        $command = $g_cg_dir."/tools/bin/protoc --rdsn_out=".$g_out_dir." ".$g_idl." -I=".$g_idl_dir;
         echo "exec: ".$command.PHP_EOL;
         system($command);
         if (!file_exists($g_idl_php))
         {
-            echo "failed invoke protoc tool to generate '".$g_idl_php."'".PHP_EOL;
+            echo "failed to invoke ".$g_cg_dir."/tools/protoc tool to generate '".$g_idl_php."'".PHP_EOL;
             exit(0);
         }
 
-        $command = $g_cg_dir."/".$os_name."/protoc --".$g_lang."_out=".$g_out_dir." ".$g_idl." -I=".$g_idl_dir;
+        $command = "protoc --".$g_lang."_out=".$g_out_dir." ".$g_idl." -I=".$g_idl_dir;
         echo "exec: ".$command.PHP_EOL;
-        system($command);
+        if (FALSE == system($command))
+		{
+			echo "invoke system protoc failed, using rDSN's instead ...".PHP_EOL;
+		    $command = $g_cg_dir."/tools/bin/protoc --".$g_lang."_out=".$g_out_dir." ".$g_idl." -I=".$g_idl_dir;
+		    echo "exec: ".$command.PHP_EOL;
+			system($command);
+		}
     }
     break;
 default:

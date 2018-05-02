@@ -33,8 +33,10 @@
  *     xxxx-xx-xx, author, fix bug about xxx
  */
 
-# include <dsn/cpp/utils.h>
+# include <dsn/utility/dlib.h>
+# include <dsn/utility/misc.h>
 # include <dsn/utility/singleton.h>
+# include <dsn/service_api_c.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <random>
@@ -59,18 +61,21 @@ namespace dsn {
     namespace utils {
 
 
-        dsn_handle_t load_dynamic_library(const char* module, const std::vector<std::string>& search_dirs)
+        void* load_dynamic_library(const char* module, const std::vector<std::string>& search_dirs)
         {
             std::string module_name(module);
 # if defined(_WIN32)
             module_name += ".dll";
-# elif defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
+# elif defined(__linux__)
             module_name = "lib" + module_name + ".so";
+# elif defined(__APPLE__)
+            module_name = "lib" + module_name + ".dylib";
 # else
 # error not implemented yet
 # endif
 
             // search given dirs with priority
+            std::string succ_pass;
             std::vector<std::string> passes;
             for (auto & dr : search_dirs)
             {
@@ -81,20 +86,21 @@ namespace dsn {
             passes.push_back(module_name);
 
             // try 
-            dsn_handle_t hmod = nullptr;
+            void* hmod = nullptr;
             for (auto & m : passes)
             {
+                succ_pass = m;
 # if defined(_WIN32)
-                hmod = (dsn_handle_t)::LoadLibraryA(m.c_str());
+                hmod = (void*)::LoadLibraryA(m.c_str());
                 if (hmod == nullptr)
                 {
-                    // ddebug("load dynamic library '%s' failed, err = %d", m.c_str(), ::GetLastError());
+                    ddebug("load dynamic library '%s' failed, err = %d", m.c_str(), ::GetLastError());
                 }
 # else
-                hmod = (dsn_handle_t)dlopen(m.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+                hmod = (void*)dlopen(m.c_str(), RTLD_LAZY | RTLD_GLOBAL);
                 if (nullptr == hmod)
                 {
-                    // ddebug("load dynamic library '%s' failed, err = %s", m.c_str(), dlerror());
+                    ddebug("load dynamic library '%s' failed, err = %s", m.c_str(), dlerror());
                 }
 # endif 
                 else
@@ -103,30 +109,52 @@ namespace dsn {
 
             if (hmod == nullptr)
             {
-                derror("load dynamic library '%s' failed after trying all the following paths", module_name.c_str());
+                derror("load shared library '%s' failed after trying all the following paths", module_name.c_str());
                 for (auto& m : passes)
                 {
                     derror("\t%s", m.c_str());
                 }
             }
+            else
+            {
+                ddebug("load shared library '%s' successfully!", succ_pass.c_str());
+            }
             return hmod;
         }
 
-        dsn_handle_t load_symbol(dsn_handle_t hmodule, const char* symbol)
+        void* load_symbol(void* hmodule, const char* symbol)
         {
 # if defined(_WIN32)
-            return (dsn_handle_t)::GetProcAddress((HMODULE)hmodule, (LPCSTR)symbol);
+            return (void*)::GetProcAddress((HMODULE)hmodule, (LPCSTR)symbol);
 # else
-            return (dsn_handle_t)dlsym((void*)hmodule, symbol);
+            return (void*)dlsym((void*)hmodule, symbol);
 # endif 
         }
 
-        void unload_dynamic_library(dsn_handle_t hmodule)
+        void unload_dynamic_library(void* hmodule)
         {
 # if defined(_WIN32)
             ::CloseHandle((HMODULE)hmodule);
 # else
             dlclose((void*)hmodule);
+# endif
+        }
+
+        const char* get_module_name(void* addr)
+        {
+# if defined(_WIN32)
+# error not implemented
+# else
+            Dl_info info;
+            int err = dladdr(addr, &info);
+            // success
+            if (err != 0) {
+                return info.dli_fname;
+            }
+            else {
+                derror("dladdr for address %lp failed", addr);
+                return nullptr;
+            }
 # endif
         }
     }

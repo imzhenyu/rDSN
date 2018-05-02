@@ -62,11 +62,11 @@ namespace dsn {
             dassert(ret == 0, "io_destroy error, ret = %d", ret);
         }
 
-        void native_linux_aio_provider::start(io_modifer& ctx)
+        void native_linux_aio_provider::start()
         {
-            new std::thread([this, ctx]()
+            new std::thread([this]()
             {
-                task::set_tls_dsn_context(node(), nullptr, ctx.queue);
+                task::set_tls_dsn_context(node(), nullptr);
                 get_event();
             });
         }
@@ -141,6 +141,8 @@ namespace dsn {
                     struct iocb *io = events[0].obj;
                     complete_aio(io, static_cast<int>(events[0].res), static_cast<int>(events[0].res2));
                 }
+                else if (ret == -1*EINTR)
+                    continue;
                 else
                 {
                     dwarn("io_getevents returns %d, you probably want to try on another machine:-(", ret);

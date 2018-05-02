@@ -12,19 +12,18 @@ cliApp.prototype.unmarshall = function(buf, value, type) {
     return unmarshall_thrift_json(buf, value, type);
 }
 
-cliApp.prototype.internal_call = function(args,  hash) {
+cliApp.prototype.internal_call = function(args) {
     var self = this;
     var ret = null;
     dsn_call(
         this.url,
+        "",
         "RPC_CLI_CLI_CALL",
-        hash,
         "POST",
-        this.marshall(args, "struct"),
-        "DSF_THRIFT_JSON",
+        args+"\0",
         false,
         function(result) {
-            ret = self.unmarshall(result, null, "string");
+            ret = result;
         },
         function(xhr, textStatus, errorThrown) {
             ret = null;
@@ -33,19 +32,20 @@ cliApp.prototype.internal_call = function(args,  hash) {
     return ret;
 }
 
-cliApp.prototype.internal_async_call = function(args, on_success, on_fail, hash) {
+cliApp.prototype.internal_async_call = function(args, on_success, on_fail) {
     var self = this;
     var ret = null;
     dsn_call(
         this.url,
+        "",
         "RPC_CLI_CLI_CALL",
-        hash,
         "POST",
-        this.marshall(args, "struct"),
-        "DSF_THRIFT_JSON",
+        //this.marshall(args, "struct"),
+        args+"\0",
         true,
         function(result) {
-            ret = self.unmarshall(result, null, "string");
+            //ret = self.unmarshall(result, null, "string");
+            ret = result;
             on_success(ret);
         },
         function(xhr, textStatus, errorThrown) {
@@ -60,9 +60,9 @@ cliApp.prototype.internal_async_call = function(args, on_success, on_fail, hash)
 
 cliApp.prototype.call = function(obj) {
     if (!obj.async) {
-        return this.internal_call(obj.args, obj.hash);
+        return this.internal_call(obj.args);
     } else {
-        this.internal_async_call(obj.args, obj.on_success, obj.on_fail, obj.hash);
+        this.internal_async_call(obj.args, obj.on_success, obj.on_fail);
     }
 }
 

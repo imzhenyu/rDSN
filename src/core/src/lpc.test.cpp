@@ -38,25 +38,33 @@
 # include <dsn/service_api_cpp.h>
 # include <dsn/cpp/test_utils.h>
 
+struct test_context
+{
+    std::string result;
+    ::dsn::zevent evt;
+};
+
 void on_lpc_test(void* p)
 {
-    std::string& result = *(std::string*)p;
-    result = ::dsn::task::get_current_worker()->name().c_str();
+    auto c = (test_context*)p;
+    c->result = ::dsn::task::get_current_worker()->name().c_str();
+    c->evt.set();
 }
 
 void on_lpc_test2(void* p)
 {
-
+    auto c = (test_context*)p;
+    c->evt.set();
 }
 
 TEST(core, lpc)
 {
-    std::string result;
-    auto t = dsn_task_create(LPC_TEST_HASH, on_lpc_test, (void*)&result, 1);
-    dsn_task_add_ref(t);
-    dsn_task_call(t, 0);
-    dsn_task_wait(t);
-    dsn_task_release_ref(t);
-
-    EXPECT_TRUE(result.substr(0, result.length() - 2) == "client.THREAD_POOL_DEFAULT");
+    test_context tc;
+    dsn_task_lpc(
+        LPC_TEST_HASH,
+        on_lpc_test,
+        &tc
+    );
+    tc.evt.wait();
+    EXPECT_TRUE(tc.result.substr(0, tc.result.length() - 2) == "client.DEFAULT");
 }

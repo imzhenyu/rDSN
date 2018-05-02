@@ -42,65 +42,78 @@
 # include <dsn/cpp/callocator.h>
 # include <dsn/cpp/auto_codes.h>
 # include <dsn/cpp/address.h>
-# include <dsn/cpp/blob.h>
 # include <dsn/cpp/safe_string.h>
+# include <dsn/cpp/blob.h>
 # include <dsn/utility/link.h>
 # include <dsn/tool-api/global_config.h>
+# include <dsn/tool-api/network_ids.h>
 
 namespace dsn 
 {
+    class message_parser;
     class rpc_session;
-    typedef ::dsn::ref_ptr<rpc_session> rpc_session_ptr;
-
-    typedef struct dsn_buffer_t // binary compatible with WSABUF on windows
-    {
-        unsigned long length;
-        char          *buffer;
-    } dsn_buffer_t;
-
-    struct fast_code
-    {
-        uint32_t local_code;
-        uint32_t local_hash; // same hash from two processes indicates that
-                             // the mapping of rpc string and id are consistent, which
-                             // we leverage for optimization (fast rpc handler lookup)
-    };
-
+    class network;
     typedef struct message_header
     {
-        uint32_t       hdr_type;
-        uint32_t       hdr_version;
-        uint32_t       hdr_length;
-        uint32_t       hdr_crc32;
-        uint32_t       body_length;
-        uint32_t       body_crc32;
-        uint64_t       id;      // sequence id
-        uint64_t       trace_id;  // used for tracking source
-        char           rpc_name[DSN_MAX_TASK_CODE_NAME_LENGTH];
-        fast_code      rpc_code; // dsn::task_code
-        dsn_gpid       gpid;    // global partition id
-        dsn_msg_context_t context;
-        rpc_address       from_address; // always ipv4/v6 address,
-                                        // generally, it is the from_node's primary address, except the
-                                        // case described in message_ex::create_response()'s ATTENTION comment.
-                                        // the from_address is always the orignal client's address, it will
-                                        // not be changed in forwarding request.
+        uint32_t       hdr_type;    // must be the first four bytes, see message_parser for details
+        uint32_t       magic;
+        uint32_t       fix_hdr_length;  // fixed header length as sizeof(message_header)
+        uint32_t       dyn_hdr_length;  // dynamic header length as marshall mesasge_dynamic_header below
+        uint32_t       body_length;      // payload
+        uint32_t       id;          // sequence id
+        uint64_t       trace_id;    // used for tracking source
+
+        union msg_context_t
+        {
+            struct {
+                uint64_t is_request : 1;        ///< whether the RPC message is a request or response
+                uint64_t serialize_format : 4;  ///< dsn_msg_serialize_format
+                uint64_t server_error : 3;      ///< dsn_rpc_error_t, only used for is_request == 0
+                uint64_t app_id : 24;           ///< 1-based app id (0 for invalid when virtual nodes are not enabled)
+                uint64_t partition_index : 32;  ///< zero-based partition index
+            } u;
+            uint64_t context;                   ///< msg_context is of sizeof(uint64_t)
+        } context;
+        
+        // only used when context.u.is_request == 1
         struct
         {
             int32_t  timeout_ms;     // rpc timeout in milliseconds
             int32_t  thread_hash;    // thread hash used for thread dispatching
-            uint64_t partition_hash; // partition hash used for calculating partition index
         } client;
-
-        struct
-        {
-            char      error_name[DSN_MAX_ERROR_CODE_NAME_LENGTH];
-            fast_code error_code;  // dsn::error_code
-        } server;
     } message_header;
 
+    typedef struct message_dynamic_header
+    {
+        safe_string service_name;
+        const char* rpc_name;
+        safe_unordered_map<safe_string, safe_string>* headers; // use ptr to avoid ctor cost when no meta data is needed
+
+        DSN_API void add(safe_string&& key, safe_string&& value);
+        DSN_API void write(binary_writer & writer, message_ex* msg);
+        DSN_API void read(binary_reader & reader, message_ex* msg);
+
+        message_dynamic_header() : rpc_name("unknown"), headers(nullptr) {}
+        ~message_dynamic_header() { if (headers) delete headers; }
+
+    } message_dynamic_header;
+
+    // be compatible with WSABUF on windows and iovec on linux
+# ifdef _WIN32
+    struct send_buf
+    {
+        uint32_t sz;
+        void*    buf;
+    };
+# else
+    struct send_buf
+    {
+        void*    buf;
+        size_t   sz;
+    };
+# endif
+
     class message_ex :
-        public ref_counter, 
         public extensible_object<message_ex, 4>,
         public transient_object
     {
@@ -109,14 +122,28 @@ namespace dsn
         safe_vector<blob>      buffers; // header included for *send* message, 
                                         // header not included for *recieved*
 
-        // by rpc and network
-        rpc_session_ptr        io_session;     // send/recv session        
-        rpc_address            to_address;     // always ipv4/v6 address, it is the to_node's net address
-        rpc_address            server_address; // used by requests, and may be of uri/group address
-        dsn_task_code_t        local_rpc_code;
-        network_header_format  hdr_format;
-        int                    send_retry_count;
+        message_dynamic_header dheader;
 
+        // by rpc and network
+        rpc_address            from_address;    
+        rpc_address            to_address;
+        dsn_task_code_t       local_rpc_code;
+
+        // local context
+        union {
+            struct {
+                uint64_t          partition_hash;  // only used by client
+                rpc_response_task *call;
+            } client;
+            struct {
+                rpc_session *s;
+                network     *net;     
+            } server;
+        } u;
+
+        void*                  io_session_context;
+        uint64_t               io_session_secret; // send/recv sessions
+        
         // by message queuing
         dlink                  dl;
 
@@ -127,15 +154,17 @@ namespace dsn
         //
         // utility routines
         //
-        DSN_API error_code error();
-        DSN_API task_code rpc_code();
-        static uint64_t new_id() { return ++_id; }
+        task_code rpc_code();
+        static unsigned int get_body_and_dynhdr_length(char* hdr) { return ((message_header*)hdr)->body_length + ((message_header*)hdr)->dyn_hdr_length;; }
         static unsigned int get_body_length(char* hdr) { return ((message_header*)hdr)->body_length; }
+        static unsigned int get_dheader_length(char* hdr) { return ((message_header*)hdr)->dyn_hdr_length; }
+        gpid get_gpid() const;
 
         //
         // routines for create messages
         //
-        DSN_API static message_ex* create_receive_message(const blob& data);
+        DSN_API static message_ex* create_receive_message(blob&& data);
+        static message_ex* create_receive_message(const blob& data);
         DSN_API static message_ex* create_request(
             dsn_task_code_t rpc_code, 
             int timeout_milliseconds = 0,
@@ -143,32 +172,33 @@ namespace dsn
             uint64_t partition_hash = 0
             );
 
-        DSN_API static message_ex* create_receive_message_with_standalone_header(const blob& data);
+        DSN_API static message_ex* create_receive_message_with_standalone_header(blob&& data);
+        DSN_API static message_ex* create_receive_message_with_standalone_header();
         DSN_API message_ex* create_response();
-        DSN_API message_ex* copy(bool clone_content, bool copy_for_receive);
-        DSN_API message_ex* copy_and_prepare_send(bool clone_content);
 
         //
         // routines for buffer management
         //        
         DSN_API void write_next(void** ptr, size_t* size, size_t min_size);
         DSN_API void write_commit(size_t size);
-        DSN_API void write_append(const blob& data);
+        DSN_API void write_append(blob&& data);
+        void write_append(const blob& data);
         DSN_API bool read_next(void** ptr, size_t* size);
         DSN_API void read_commit(size_t size);
         size_t body_size() { return (size_t)header->body_length; }
         DSN_API void* rw_ptr(size_t offset_begin);
+        DSN_API void get_buffers(message_parser* parser, /*out*/ std::vector<send_buf>& buffers);
 
     private:
         DSN_API message_ex();
-        DSN_API void prepare_buffer_header();
+        DSN_API void pepare_buffer_header_on_write();
 
     private:        
-        static std::atomic<uint64_t> _id;
+        static std::atomic<uint32_t> _request_id;
 
     private:
         // by msg read & write
-        int                    _rw_index;     // current buffer index
+        int                    _read_index;   // current read buffer index
         int                    _rw_offset;    // current buffer offset
         bool                   _rw_committed; // mark if it is in middle state of reading/writing
         bool                   _is_read;      // is for read(recv) or write(send)
@@ -176,5 +206,31 @@ namespace dsn
     public:
         static uint32_t s_local_hash;  // used by fast_rpc_name
     };
+
+    // ---------------- inline ----------------------
+    inline gpid message_ex::get_gpid() const 
+    {
+        gpid gd; 
+        gd.set_app_id(header->context.u.app_id); 
+        gd.set_partition_index(header->context.u.partition_index); 
+        return gd; 
+    }
+
+    inline task_code message_ex::rpc_code()
+    {
+        return task_code(local_rpc_code);
+    }
+
+    inline /*static*/ message_ex* message_ex::create_receive_message(const blob& data)
+    {
+        blob tmp = data;
+        return create_receive_message(std::move(tmp));
+    }
+
+    inline void message_ex::write_append(const blob& data)
+    {
+        blob tmp = data;
+        write_append(std::move(tmp));
+    }
 
 } // end namespace

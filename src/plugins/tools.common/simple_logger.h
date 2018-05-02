@@ -61,7 +61,7 @@ namespace dsn {
             virtual void flush();
 
         private:
-            ::dsn::utils::ex_lock_nr _lock;
+            ::dsn::utils::ex_lock _lock;
             bool _short_header;
         };
 
@@ -88,7 +88,9 @@ namespace dsn {
 
         private:
             std::string _log_dir;
-            ::dsn::utils::ex_lock_nr _lock;
+            // use recursive log to avoid dead lock in signal_handler.
+            // It may cause log interleaving when handling signals.
+            ::dsn::utils::ex_lock _lock;
             FILE* _log;
             int _start_index;
             int _index;

@@ -44,55 +44,6 @@ namespace dsn
 {
     namespace tools
     {
-        simple_timer_service::simple_timer_service(service_node* node, timer_service* inner_provider)
-            : timer_service(node, inner_provider)
-        {
-            _worker = nullptr;
-        }
-
-        void simple_timer_service::start(io_modifer& ctx)
-        {
-            _worker = std::shared_ptr<std::thread>(new std::thread([this, ctx]()
-            {
-                task::set_tls_dsn_context(node(), nullptr, ctx.queue);
-
-                char buffer[128];
-                sprintf(buffer, "%s.%s.timer", 
-                    get_service_node_name(node()), 
-                    ctx.queue ? ctx.queue->get_name().c_str():""
-                    );
-
-                task_worker::set_name(buffer);
-                task_worker::set_priority(worker_priority_t::THREAD_xPRIORITY_ABOVE_NORMAL);
-
-                boost::asio::io_service::work work(_ios);
-                _ios.run();
-            }));
-        }
-
-        void simple_timer_service::add_timer(task* task)
-        {
-            std::shared_ptr<boost::asio::deadline_timer> timer(new boost::asio::deadline_timer(_ios));
-            timer->expires_from_now(boost::posix_time::milliseconds(task->delay_milliseconds()));
-            task->set_delay(0);
-
-            timer->async_wait([this, task, timer](const boost::system::error_code& ec)
-            {
-                if (!ec)
-                {
-                    task->enqueue();
-                }
-                else if (ec != ::boost::asio::error::operation_aborted)
-                {
-                    dfatal("timer failed for task %s, err = %u",
-                        task->spec().name.c_str(), ec.value());
-                }
-
-                // to consume the added ref count by task::enqueue for add_timer
-                task->release_ref();
-            });
-        }
-
         simple_task_queue::simple_task_queue(task_worker_pool* pool, int index, task_queue* inner_provider)
             : task_queue(pool, index, inner_provider), _samples("")
         {

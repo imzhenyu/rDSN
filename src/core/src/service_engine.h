@@ -69,9 +69,6 @@ public:
         disk_engine*     disk;
         nfs_node*        nfs;
         timer_service*   tsvc;
-
-        task_queue*      q;
-        task_worker_pool *pool;
         aio_provider     *aio;
 
         io_engine()
@@ -83,37 +80,31 @@ public:
 public:
     explicit service_node(service_app_spec& app_spec);
        
-    rpc_engine*  rpc(task_queue* q) const;
-    disk_engine* disk(task_queue* q) const;
-    nfs_node* nfs(task_queue* q) const;
-    timer_service* tsvc(task_queue* q) const;
-
-    rpc_engine*  node_rpc() const { return _per_node_io.rpc; }
-    disk_engine* node_disk() const { return _per_node_io.disk; }
-    nfs_node* node_nfs() const { return _per_node_io.nfs; }
-    timer_service* node_tsvc() const { return _per_node_io.tsvc; }
-
+    rpc_engine*  rpc() const { return _node_io.rpc; }
+    disk_engine* disk() const { return _node_io.disk; }
+    nfs_node* nfs() const { return _node_io.nfs; }
+    timer_service* tsvc() const { return _node_io.tsvc; }
     task_engine* computation() const { return _computation; }
-    const std::list<io_engine>& ios() const { return _ios; }
+
     void get_runtime_info(const safe_string& indent, const safe_vector<safe_string>& args, /*out*/ safe_sstream& ss);
     void get_queue_info(/*out*/ safe_sstream& ss);
 
-    error_code start_io_engine_in_node_start_task(const io_engine& io);
+    error_code start_io_engine_in_node_start_task();
 
     ::dsn::error_code start();
     dsn_error_t start_app();
 
     int id() const { return _app_spec.id; }
-    const char* name() const { return _app_spec.name.c_str(); }
+    const char* name() const { return _app_spec.pname.c_str(); }
     const service_app_spec& spec() const { return _app_spec;  }
     void* get_app_context_ptr() const { return _app_info.app.app_context_ptr; }
 
     bool  rpc_register_handler(rpc_handler_info* handler, dsn_gpid gpid);
-    rpc_handler_info* rpc_unregister_handler(dsn_task_code_t rpc_code, dsn_gpid gpid);
+    rpc_handler_info* rpc_unregister_handler(dsn_task_code_t rpc_code, dsn_gpid gpid, const char* service_name);
 
     dsn_app_info* get_l1_info() { return &_app_info; }
-    app_manager& get_l2_handler() { return _layer2_handler; }
-    void handle_l2_rpc_request(dsn_gpid gpid, bool is_write, dsn_message_t req);
+    app_manager& get_l2_handler() { return _framework; }
+    bool handle_l2_rpc_request(dsn_gpid gpid, bool is_write, dsn_message_t req);
     rpc_request_task* generate_l2_rpc_request_task(message_ex* req);
 
     static dsn_error_t start_app(void* app_context, const safe_string& args, dsn_app_start start, const safe_string& app_name);
@@ -124,19 +115,16 @@ private:
     service_app_spec _app_spec;
     task_engine*     _computation;
 
-    io_engine                                   _per_node_io;
-    std::unordered_map<task_queue*, io_engine>  _per_queue_ios;
-    std::list<io_engine>                        _ios; // all ios
+    io_engine                                   _node_io;
 
     // when this app is hosted by a layer2 handler app
-    app_manager                                 _layer2_handler;
-    rpc_handler_info                            _layer2_rpc_read_handler;
+    app_manager                                 _framework;
+    rpc_handler_info                            _layer2_rpc_redsn_handler;
     rpc_handler_info                            _layer2_rpc_write_handler;
 
 private:
-    error_code init_io_engine(io_engine& io, ioe_mode mode);
-    error_code start_io_engine_in_main(const io_engine& io);
-    void get_io(ioe_mode mode, task_queue* q, /*out*/ io_engine& io) const;
+    error_code init_io_engine();
+    error_code start_io_engine_in_main();
 };
 
 typedef std::map<int, service_node*> service_nodes_by_app_id;

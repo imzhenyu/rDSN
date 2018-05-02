@@ -142,19 +142,13 @@ var send_req_button = Vue.extend({
         document.getElementById("jsontable").innerHTML = "";
 
         var thisp = this;
-        var query_cmd, query_arguments;
-        query_arguments = thisp.cmdtext.split(" ");
-        query_cmd = query_arguments.shift();
         for (machineNum in this.machines)
         {
             var machine = this.machines[machineNum];
             (function(machine){
                 var client = new cliApp("http://" + machine);
                 result = client.call({
-                        args: new command({
-                        cmd: query_cmd,
-                        arguments: query_arguments
-                    }),
+                    args: thisp.cmdtext,
                     async: true,
                     on_success: function (data){
                         var resp = {};

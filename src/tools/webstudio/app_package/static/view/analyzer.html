@@ -211,7 +211,7 @@ a:hover {
                 <h4 class="text-center">Selected counters</h3>
                     <div class="well" style="max-height: 300px;overflow: auto;">
                     <ul class="list-group remove-list-box">
-                        <li class="list-group-item" v-for="counter in counterQueue">{{counter.label}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" @click="removeCounterFromQueue(counter)"></span></li>
+                        <li class="list-group-item" v-for="counter in counterQueue">{{counter.label}}&nbsp;<button type="button" class="btn btn-default" data-toggle="modal" data-target="#duplicatedMachinesModel" @click="setDuplicateCounterTarget(counter)"> duplicate</button><span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" @click="removeCounterFromQueue(counter)"></span></li>
                     </ul>
                     </div>
             </div>
@@ -223,6 +223,29 @@ a:hover {
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- duplicate counter Modal -->
+    <div id="duplicatedMachinesModel" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Duplicate counter for following machines (name/ip:port)</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <textarea class="form-control" rows="5" id="duplicatedMachines" v-model="duplicatedMachines"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" data-toggle="modal" @click="duplicateCounter">Do It</button>
+            </div>
+            </div>
+        </div>
     </div>
 
     <!-- Save View Modal -->

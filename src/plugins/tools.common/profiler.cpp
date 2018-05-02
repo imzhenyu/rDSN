@@ -66,7 +66,6 @@ START<======== queue(server) ======ENQUEUE <===================== net(reply) ===
 */
 #include "profiler.h"
 #include <dsn/service_api_c.h>
-#include "shared_io_service.h"
 #include "profiler_header.h"
 #include <dsn/tool-api/command.h>
 #include <dsn/tool-api/perf_counter.h>
@@ -75,7 +74,6 @@ START<======== queue(server) ======ENQUEUE <===================== net(reply) ===
 # undef __TITLE__
 # endif
 # define __TITLE__ "toollet.profiler"
-using namespace dsn::service;
     
 namespace dsn {
     namespace tools {
@@ -128,16 +126,17 @@ namespace dsn {
         {
             uint64_t& qts = task_ext_for_profiler::get(this_);
             uint64_t now = dsn_now_ns();
-            auto ptr = s_spec_profilers[this_->spec().code].ptr[TASK_QUEUEING_TIME_NS];
-            if(ptr !=nullptr)
+            auto counters = s_spec_profilers[this_->spec().code].ptr;
+            auto ptr = counters[TASK_QUEUEING_TIME_NS];
+            if(ptr != nullptr)
                 ptr->set(now - qts);
             qts = now;
 
-            ptr = s_spec_profilers[this_->spec().code].ptr[TASK_IN_QUEUE];
+            ptr = counters[TASK_IN_QUEUE];
             if (ptr != nullptr)
                 ptr->decrement();
 
-            ptr = s_spec_profilers[this_->spec().code].ptr[TASK_EXEC_COUNT];
+            ptr = counters[TASK_EXEC_COUNT];
             if (ptr != nullptr)
                 ptr->increment();
         }
@@ -146,13 +145,14 @@ namespace dsn {
         {
             uint64_t qts = task_ext_for_profiler::get(this_);
             uint64_t now = dsn_now_ns();
-            auto ptr = s_spec_profilers[this_->spec().code].ptr[TASK_EXEC_TIME_NS];
+            auto counters = s_spec_profilers[this_->spec().code].ptr;
+            auto ptr = counters[TASK_EXEC_TIME_NS];
             if (ptr != nullptr)
                 ptr->set(now - qts);
 
-            ptr = s_spec_profilers[this_->spec().code].ptr[TASK_THROUGHPUT];
+            ptr = counters[TASK_THROUGHPUT];
             if (ptr != nullptr)
-                s_spec_profilers[this_->spec().code].ptr[TASK_THROUGHPUT]->increment();
+                ptr->increment();
         }
 
         static void profiler_on_task_cancelled(task* this_)
@@ -197,13 +197,13 @@ namespace dsn {
         {
             uint64_t& ats = task_ext_for_profiler::get(this_);
             uint64_t now = dsn_now_ns();
-
-            auto ptr = s_spec_profilers[this_->spec().code].ptr[AIO_LATENCY_NS];
+            auto counters = s_spec_profilers[this_->spec().code].ptr;
+            auto ptr = counters[AIO_LATENCY_NS];
             if (ptr != nullptr)
                 ptr->set(now - ats);
             ats = now;
 
-            ptr = s_spec_profilers[this_->spec().code].ptr[TASK_IN_QUEUE];
+            ptr = counters[TASK_IN_QUEUE];
             if (ptr != nullptr)
                 ptr->increment();
         }
@@ -246,7 +246,7 @@ namespace dsn {
         // return true means continue, otherwise early terminate with task::set_error_code
         static void profiler_on_rpc_reply(task* caller, message_ex* msg)
         {
-            auto& prof = s_spec_profilers[caller->spec().code];
+            auto& prof = s_spec_profilers[msg->local_rpc_code];
             if (prof.collect_call_count)
             {
                 prof.call_counts[msg->local_rpc_code]++;
@@ -267,10 +267,10 @@ namespace dsn {
                     if (p999_latency > 0.0 && latency >= p999_latency)
                     {
                         dwarn("%s HIGH SERVER LATENCY (%d ms), %s => %s, trace_id = %016" PRIx64 "",
-                            msg->header->rpc_name,
+                            msg->dheader.rpc_name,
                             static_cast<int>(p999_latency / 1000000.0),                            
                             msg->to_address.to_string(),
-                            msg->header->from_address.to_string(),
+                            msg->from_address.to_string(),
                             msg->header->trace_id
                         );
                     }
@@ -299,9 +299,9 @@ namespace dsn {
                             dwarn("%s HIGH CLIENT LATENCY (%d ms), %s => %s, trace_id = %016" PRIx64 "",
                                 resp->spec().name.c_str(),
                                 static_cast<int>(p999_latency / 1000000.0),
-                                resp->get_request()->header->from_address.to_string(), 
-                                resp->get_request()->to_address.to_string(),                                
-                                resp->get_request()->header->trace_id
+                                resp->get_response()->to_address.to_string(),
+                                resp->get_response()->from_address.to_string(),
+                                resp->get_response()->header->trace_id
                             );
                         }
                     }
@@ -399,7 +399,10 @@ namespace dsn {
 
         void profiler::install(service_spec& spec)
         {
-            s_spec_profilers = new task_spec_profiler[dsn_task_code_max() + 1];
+            int max_id = dsn_task_code_max();
+            dinfo("install profiler with max task code = %d", max_id);
+
+            s_spec_profilers = new task_spec_profiler[max_id + 1];
             task_ext_for_profiler::register_ext();
             message_ext_for_profiler::register_ext();
             dassert(sizeof(counter_info_ptr) / sizeof(counter_info*) == PREF_COUNTER_COUNT, "PREF COUNTER ERROR");
@@ -408,7 +411,7 @@ namespace dsn {
             auto collect_call_count = dsn_config_get_value_bool("task..default", "collect_call_count", true, 
                 "whether to collect how many time this kind of tasks invoke each of other kinds tasks");
 
-            for (int i = 0; i <= dsn_task_code_max(); i++)
+            for (int i = 0; i <= max_id; i++)
             {
                 if (i == TASK_CODE_INVALID)
                     continue;

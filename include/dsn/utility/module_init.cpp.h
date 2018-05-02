@@ -49,6 +49,17 @@
 //
 
 
+# ifdef DSN_STATIC
+
+# define MODULE_INIT_BEGIN(x) void dsn_module_init_##x() {
+# define MODULE_INIT_END }
+# define MODULE_LINK(x) \
+    extern void dsn_module_init_##x(); \
+    dinfo("init module "#x); \
+    dsn_module_init_##x();
+
+# else // !DSN_STATIC 
+
 # if defined(__GNUC__) || defined(_WIN32)
 # else
 # error "dsn init on shared lib loading is not supported on this platform yet"
@@ -94,4 +105,6 @@ bool APIENTRY DllMain(HMODULE hModule,
 #endif
 
 # endif
+
+# endif // !DSN_STATIC
 

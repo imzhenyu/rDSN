@@ -45,7 +45,7 @@ namespace dsn { namespace tools {
         node_scoper(service_node* node)
         {
             task::get_tls_dsn(&_old);
-            task::set_tls_dsn_context(node, nullptr, nullptr);
+            task::set_tls_dsn_context(node, nullptr);
         }
 
         ~node_scoper()

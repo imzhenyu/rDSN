@@ -161,7 +161,11 @@ var vm = new Vue({
         self.AS_STATES[self.AS_DROPPED] = "DROPPED";
 
         self.filterKey = getParameterByName("filterKey");
-        self.update(); 
+        self.update();
+
+        if (getParameterByName("meta_server") != null && getParameterByName("meta_server") != "")
+            localStorage.setItem('target_meta_server', getParameterByName("meta_server"));
+ 
         //query each machine their service state
         self.updateTimer = setInterval(function () {
             self.update(); 

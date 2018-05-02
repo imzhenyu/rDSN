@@ -49,6 +49,7 @@
 
 # ifdef __APPLE__
 # include <mach/thread_policy.h>
+extern "C" int pthread_setname_np(const char*);
 # endif
 
 # endif
@@ -64,20 +65,59 @@ namespace dsn {
 join_point<void, task_worker*> task_worker::on_start("task_worker::on_start");
 join_point<void, task_worker*> task_worker::on_create("task_worker::on_create");
 
-task_worker::task_worker(task_worker_pool* pool, task_queue* q, int index, task_worker* inner_provider)
+task_worker* task_worker::remote(task_worker_pool* pool, int index)
+{
+    if (index >= 0 && index < pool->workers().size())
+        return pool->workers()[index];
+    else
+        return nullptr;
+}
+
+task_worker* task_worker::remote(service_node* node, dsn_threadpool_code_t pool_id, int index)
+{
+    auto pool = node->computation()->pools()[pool_id];
+    dassert(pool != nullptr, "pool %s is not listed in '[%s] pools'",
+        dsn_threadpool_code_to_string(pool_id),
+        node->spec().config_section.c_str()
+    );
+    return remote(pool, index);
+}
+
+task_worker::task_worker(task_worker_pool* pool, int index, task_worker* inner_provider)
 {
     _owner_pool = pool;
-    _input_queue = q;
+    _input_queue = nullptr;
     _index = index;
-    _native_tid = ::dsn::utils::get_invalid_tid();
+    if (pool) _native_tid = ::dsn::utils::get_invalid_tid();
+    else _native_tid = ::dsn::utils::get_current_tid();
 
-    char name[256];
-    sprintf(name, "%5s.%s.%u", pool->node()->name(), pool->spec().name.c_str(), index);
-    _name = name;
+    if (pool) 
+    {
+        char name[256];
+        char* tname = (char*)pool->spec().name.c_str();
+        if (pool->spec().name.length() > 12 && 0 == memcmp(tname, "THREAD_POOL_", 12))
+        {
+            tname += 12;
+        }
+
+        sprintf(name, "%5s.%s.%u", pool->node()->name(), tname, index);
+        _name = name;
+    }
+    else 
+    {
+        _name = "eloop";
+    }
+
     _is_running = false;
 
     _thread = nullptr;
     _processed_task_count = 0;
+    _affinity_mask = ~0ULL;
+}
+
+void task_worker::bind_queue(task_queue* q)
+{
+    _input_queue = q;
 }
 
 task_worker::~task_worker()
@@ -90,9 +130,41 @@ void task_worker::start()
     if (_is_running)
         return;
 
+    dassert(_input_queue, 
+        "binding queue for '%s' is not ready, please invoke bind_queue before start",
+        _name.c_str()
+        );
+
     _is_running = true;
 
-    _thread = new std::thread(std::bind(&task_worker::run_internal, this));
+    _thread = new std::thread([this]() {
+        while (_thread == nullptr)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        std::thread* pthis = _thread;
+        _started.notify();
+
+        auto& s = service_engine::fast_instance().spec().main_thread_mapped_target;
+        if (s.length() > 0) {
+            auto& app_spec = this->pool()->node()->spec();
+            ::dsn::safe_string complete_name = app_spec.type 
+               + "/" + std::to_string(app_spec.index)
+               + "/" + dsn_threadpool_code_to_string(pool()->spec().pool_code)
+               + "/" + std::to_string(this->index())
+               ;
+            if (complete_name == s) {
+                dinfo("thread %s is replaced by main thread, exit ...", complete_name.c_str());
+                pthis->detach();
+                delete pthis;
+                _thread = nullptr;
+                return;
+            } 
+        }
+
+        // run thread body
+        this->run_internal();
+    });
 
     _started.wait();
 }
@@ -104,10 +176,12 @@ void task_worker::stop()
 
     _is_running = false;
 
-    _thread->join();
-    delete _thread;
-    _thread = nullptr;
-
+    if (_thread != nullptr) {
+        _thread->join();
+        delete _thread;
+        _thread = nullptr;
+    }
+    
     _is_running = false;
 }
 
@@ -148,11 +222,12 @@ void task_worker::set_name(const char* name)
         .substr(0, (16 - 1))
     # endif
     ;
-    auto tid = pthread_self();
     int err = 0;
     # ifdef __FreeBSD__
+    auto tid = pthread_self();
     pthread_set_name_np(tid, thread_name.c_str());
     # elif defined(__linux__)
+    auto tid = pthread_self();
     err = pthread_setname_np(tid, thread_name.c_str());
     # elif defined(__APPLE__)
     err = pthread_setname_np(thread_name.c_str());
@@ -281,16 +356,17 @@ void task_worker::set_affinity(uint64_t affinity)
     {
         dwarn("Fail to set thread affinity. err = %d", err);
     }
+    else
+    {
+        ddebug("[OK] set thread (id = %d) with affinity %" PRIx64, 
+            ::dsn::utils::get_current_tid(), affinity
+            );
+    }
 }
 
 void task_worker::run_internal()
 {
-    while (_thread == nullptr)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
-
-    task::set_tls_dsn_context(pool()->node(), this, queue());
+    task::set_tls_dsn_context(pool()->node(), this);
     
     _native_tid = ::dsn::utils::get_current_tid();
     set_name(name().c_str());
@@ -301,6 +377,7 @@ void task_worker::run_internal()
         if (pool_spec().worker_affinity_mask > 0) 
         {
             set_affinity(pool_spec().worker_affinity_mask);
+            _affinity_mask = pool_spec().worker_affinity_mask;
         }
     }
     else
@@ -325,10 +402,9 @@ void task_worker::run_internal()
         current_mask -= (current_mask & (current_mask - 1));
 
         set_affinity(current_mask);
+        _affinity_mask = current_mask;
     }
-
-    _started.notify();
-
+    
     on_start.execute(this);
 
     loop();

@@ -63,7 +63,6 @@
 # include <dsn/cpp/address.h>
 # include <dsn/tool-api/task.h>
 # include "group_address.h"
-# include "uri_address.h"
 
 namespace dsn
 {
@@ -71,7 +70,7 @@ namespace dsn
 }
 
 #ifdef _WIN32
-static void net_init()
+void net_init()
 {
     static std::once_flag flag;
     static bool flag_inited = false;
@@ -138,14 +137,14 @@ DSN_API uint32_t dsn_ipv4_local(const char* network_interface)
         while (i != nullptr)
         {
             if (i->ifa_name != nullptr &&
-                i->ifa_addr != nullptr 
+                i->ifa_addr != nullptr
                 )
             {
                 if (strcmp(i->ifa_name, network_interface) == 0 ||
                     (network_interface[0] == '\0' && strncmp(i->ifa_name, "eth", 3) == 0)
-                   )
+                    )
                 {
-                    if (i->ifa_addr->sa_family == AF_INET && 
+                    if (i->ifa_addr->sa_family == AF_INET &&
                         (network_interface[0] != '\0' || strncmp((const char*)&((struct sockaddr_in *)i->ifa_addr)->sin_addr.s_addr, loopback, 4) != 0))
                     {
                         ret = (uint32_t)ntohl(((struct sockaddr_in *)i->ifa_addr)->sin_addr.s_addr);
@@ -157,7 +156,7 @@ DSN_API uint32_t dsn_ipv4_local(const char* network_interface)
                     {
                         int fd = socket(AF_INET, SOCK_DGRAM, 0);
                         struct ifreq ifr;
-                        
+
                         ifr.ifr_addr.sa_family = AF_INET;
                         strncpy(ifr.ifr_name, i->ifa_name, IFNAMSIZ - 1);
 
@@ -176,7 +175,7 @@ DSN_API uint32_t dsn_ipv4_local(const char* network_interface)
 
         if (i == nullptr)
         {
-            derror("get local ip from network interfaces failed, network_interface = %s", network_interface);
+            dinfo ("get local ip from network interfaces failed, network_interface = %s", network_interface);
         }
 
         if (ifa != nullptr)
@@ -214,14 +213,8 @@ DSN_API const char*   dsn_address_to_string(dsn_address_t addr)
         snprintf_p(p + ip_len, sz - ip_len, ":%hu", (uint16_t)addr.u.v4.port);
 # endif
         break;
-    case HOST_TYPE_URI:
-        p = (char*)(uintptr_t)addr.u.uri.uri;
-        break;
-    case HOST_TYPE_GROUP:
-        p = (char*)(((dsn::rpc_group_address*)(uintptr_t)(addr.u.group.group))->name());
-        break;
     default:
-        p = (char*)"invalid address";
+        p = (char*)"invalid";
         break;
     }
 
@@ -244,109 +237,4 @@ DSN_API dsn_address_t dsn_address_build_ipv4(
 {
     dsn::rpc_address addr(ipv4, port);
     return addr.c_addr();
-}
-
-DSN_API dsn_address_t dsn_address_build_group(
-    dsn_group_t g
-    )
-{
-    dsn::rpc_address addr;
-    addr.assign_group(g);
-    return addr.c_addr();
-}
-
-DSN_API dsn_address_t dsn_address_build_uri(
-    dsn_uri_t uri
-    )
-{
-    dsn::rpc_address addr;
-    addr.assign_uri(uri);
-    return addr.c_addr();
-}
-
-DSN_API dsn_group_t dsn_group_build(const char* name) // must be paired with release later
-{
-    auto g = new ::dsn::rpc_group_address(name);
-    return g;
-}
-
-DSN_API int dsn_group_count(dsn_group_t g)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    return grp->count();
-}
-
-DSN_API bool dsn_group_add(dsn_group_t g, dsn_address_t ep)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    ::dsn::rpc_address addr(ep);
-    return grp->add(addr);
-}
-
-DSN_API void dsn_group_set_leader(dsn_group_t g, dsn_address_t ep)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    ::dsn::rpc_address addr(ep);
-    grp->set_leader(addr);
-}
-
-DSN_API dsn_address_t dsn_group_get_leader(dsn_group_t g)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    return grp->leader().c_addr();
-}
-
-DSN_API bool dsn_group_is_leader(dsn_group_t g, dsn_address_t ep)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    return grp->leader() == ep;
-}
-
-DSN_API bool dsn_group_is_update_leader_automatically(dsn_group_t g)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    return grp->is_update_leader_automatically();
-}
-
-DSN_API void dsn_group_set_update_leader_automatically(dsn_group_t g, bool v)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    grp->set_update_leader_automatically(v);
-}
-
-DSN_API dsn_address_t dsn_group_next(dsn_group_t g, dsn_address_t ep)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    ::dsn::rpc_address addr(ep);
-    return grp->next(addr).c_addr();
-}
-
-DSN_API dsn_address_t dsn_group_forward_leader(dsn_group_t g)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    grp->leader_forward();
-    return grp->leader().c_addr();
-}
-
-DSN_API bool dsn_group_remove(dsn_group_t g, dsn_address_t ep)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    ::dsn::rpc_address addr(ep);
-    return grp->remove(addr);
-}
-
-DSN_API void dsn_group_destroy(dsn_group_t g)
-{
-    auto grp = (::dsn::rpc_group_address*)(g);
-    delete grp;
-}
-
-DSN_API dsn_uri_t dsn_uri_build(const char* url) // must be paired with destroy later
-{
-    return (dsn_uri_t)new ::dsn::rpc_uri_address(url);
-}
-
-DSN_API void dsn_uri_destroy(dsn_uri_t uri)
-{
-    delete (::dsn::rpc_uri_address*)(uri);
 }

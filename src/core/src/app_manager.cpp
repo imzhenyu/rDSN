@@ -41,7 +41,8 @@ DSN_API bool dsn_register_app(dsn_app* app_type)
 {
     dsn_app* app;
     auto& store = ::dsn::utils::singleton_store<std::string, dsn_app*>::instance();
-    if (store.get(app_type->type_name, app))
+    std::string tname(app_type->type_name);
+    if (store.get(tname, app))
     {
         dassert(false, "app type %s is already registered", app_type->type_name);
         return false;
@@ -49,7 +50,7 @@ DSN_API bool dsn_register_app(dsn_app* app_type)
 
     app = new dsn_app();
     *app = *app_type;
-    auto r = store.put(app_type->type_name, app);
+    auto r = store.put(std::move(tname), std::move(app));
     dassert(r, "app type %s is already registered", app_type->type_name);
     return r;
 }
@@ -58,7 +59,8 @@ DSN_API bool dsn_get_app_callbacks(const char* name, /* out */ dsn_app_callbacks
 {
     dsn_app* lapp;
     auto& store = ::dsn::utils::singleton_store<std::string, dsn_app*>::instance();
-    if (store.get(name, lapp))
+    std::string aname(name);
+    if (store.get(aname, lapp))
     {
         *callbacks = lapp->layer2.apps;
         return true;
@@ -129,9 +131,9 @@ namespace dsn
     {
         app_internal* app = nullptr;
         dsn_app* app_model = nullptr;
-
+        std::string atype(type);
         auto& store = ::dsn::utils::singleton_store<std::string, dsn_app*>::instance();
-        if (!store.get(type, app_model))
+        if (!store.get(atype, app_model))
         {
             derror("app model '%s' is not registered yet", type);
             return ERR_OBJECT_NOT_FOUND;
@@ -232,7 +234,7 @@ namespace dsn
         return app->server_dispatcher.register_rpc_handler(handler);
     }
 
-    rpc_handler_info* app_manager::rpc_unregister_handler(dsn_gpid gpid, dsn_task_code_t rpc_code)
+    rpc_handler_info* app_manager::rpc_unregister_handler(dsn_gpid gpid, dsn_task_code_t rpc_code, const char* service_name)
     {
         app_internal* app;
         {
@@ -246,7 +248,7 @@ namespace dsn
                 return nullptr;
         }
 
-        return app->server_dispatcher.unregister_rpc_handler(rpc_code);
+        return app->server_dispatcher.unregister_rpc_handler(rpc_code, service_name);
     }
 
     dsn_app_info* app_manager::get_app_info(dsn_gpid gpid)

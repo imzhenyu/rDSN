@@ -41,7 +41,7 @@
 
 namespace dsn {
 
-DEFINE_CUSTOMIZED_ID(network_header_format, NET_HDR_RAW)
+DEFINE_NET_PROTOCOL(NET_HDR_RAW)
 
 class rpc_session;
 class raw_message_parser: public message_parser
@@ -50,7 +50,7 @@ private:
     static void notify_rpc_session_disconnected(rpc_session* sp);
 
 public:
-    raw_message_parser();
+    raw_message_parser(bool is_client);
     virtual ~raw_message_parser() {}
     virtual void reset() override;
     virtual message_ex* get_message_on_receive(message_reader *reader, /*out*/int &read_next) override;

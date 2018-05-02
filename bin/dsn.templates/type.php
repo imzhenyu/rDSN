@@ -697,15 +697,34 @@ class t_function
     function get_rpc_code()
     {
         return "RPC"
-            ."_". strtoupper($this->service->program->name)
+            //."_". strtoupper($this->service->program->name)
             ."_". strtoupper($this->service->name) 
             ."_". strtoupper($this->name)
             ;
     }
+
+    function get_rpc_name()
+    {
+        return $this->name;
+            /*"/".$this->service->program->name
+            .".".$this->service->name
+            ."/".$this->name
+            ;*/
+    }
+
+    function beginsWith( $str, $sub ) 
+    {
+        return ( substr( $str, 0, strlen( $sub ) ) === $sub );
+    }
+
+    function endsWith( $str, $sub ) 
+    {
+        return ( substr( $str, strlen( $str ) - strlen( $sub ) ) === $sub );
+    }
     
     function is_one_way()
     {
-        return $this->ret == "void" || $this->ret == "VOID";
+        return $this->endsWith($this->ret, ".void") || $this->endsWith($this->ret, ".VOID");
     }
     
     function on_annotations()

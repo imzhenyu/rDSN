@@ -13,10 +13,7 @@ var vm = new Vue({
         var self = this;
         var client = new cliApp("http://"+localStorage['target_server']);
         result = client.call({
-                args: new command({
-                cmd: "config-dump",
-                arguments: []
-            }),
+            args: "config-dump",
             async: true,
             on_success: function (data){
                 var myCodeMirror = CodeMirror(document.body,{

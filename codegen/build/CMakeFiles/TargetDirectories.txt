@@ -1,0 +1,16 @@
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/CMakeFiles/edit_cache.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/CMakeFiles/rebuild_cache.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/CMakeFiles/list_install_components.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/CMakeFiles/install.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/CMakeFiles/install/strip.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/CMakeFiles/install/local.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/edit_cache.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/rebuild_cache.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/list_install_components.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/install.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/install/strip.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/install/local.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/protoc.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/libprotoc.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/libprotobuf.dir
+/Users/winux/Projects/ray/ext/rdsn/codegen/build/protobuf/cmake/CMakeFiles/libprotobuf-lite.dir

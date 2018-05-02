@@ -35,11 +35,15 @@
 
 # pragma once
 
-# if defined(_WIN32)
+# if defined(_WIN32) && !defined(DSN_STATIC)
 # if defined(DSN_IN_CORE)
 # define DSN_API __declspec(dllexport)
 # else
+# if defined(DSN_IN_PLUGINS)
+# define DSN_API
+# else
 # define DSN_API __declspec(dllimport)
+# endif
 # endif
 # endif // end _WIN32
 

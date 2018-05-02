@@ -198,28 +198,25 @@ var viewChart = Vue.extend({
         }
 
         var self = this;
-        var query_cmd, query_arguments;
+        var query_str;
         if(self.counterInfo[counter].index == 0)
         {
-            query_cmd = "counter." + ((self.graphtype=='bar')?'value':self.graphtype)
-            query_arguments = [self.counterInfo[counter].name];
+            var query_cmd = "counter." + ((self.graphtype=='bar')?'value':self.graphtype)
+            query_str = query_cmd + " " + self.counterInfo[counter].name;
         }
         else
         {
-            query_cmd = "counter." + ((self.graphtype=='bar')?'value':self.graphtype) + "i";
-            query_arguments = [self.counterInfo[counter].index];
+            var query_cmd = "counter." + ((self.graphtype=='bar')?'value':self.graphtype) + "i";
+            query_str = query_cmd + " " + self.counterInfo[counter].index;
         }
 
         var client = new cliApp("http://" + machine);
         result = client.call({
-                args: new command({
-                cmd: query_cmd,
-                arguments: query_arguments
-            }),
+            args: query_str,
             async: true,
             on_success: function (data){
                 try {
-                    data = JSON.parse(data);
+                    data = JSON.parse(data.substring(0,data.length-1));
                 }
                 catch(err) {
                     data = {'val':'Invalid Data','time':'Invalid Data'};

@@ -22,13 +22,10 @@ var vm = new Vue({
         var self = this;
         var client = new cliApp("http://"+localStorage['target_server']);
         result = client.call({
-                args: new command({
-                cmd: "pq",
-                arguments: ['table']
-            }),
+            args: 'pq table',
             async: true,
             on_success: function (data){
-                self.tableData = JSON.parse(data);
+                self.tableData = JSON.parse(data.substring(0,data.length-1));
                 $('#table').DataTable({
                     data: self.tableData,
                 });

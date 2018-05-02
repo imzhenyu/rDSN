@@ -47,6 +47,7 @@ __pragma(warning(disable:4127))
 # elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
 
 # include <unistd.h>
+# include <alloca.h>
 
 # define __selectany __attribute__((weak)) extern 
 
@@ -63,15 +64,13 @@ __pragma(warning(disable:4127))
 # include <string>
 # include <memory>
 # include <map>
-# include <unordered_map>
 # include <set>
-# include <unordered_set>
 # include <vector>
 # include <list>
 # include <algorithm>
 
+# define __STDC_FORMAT_MACROS
 // common c headers
-# include <cinttypes>
 # include <cassert>
 # include <cstring>
 # include <cstdlib>
@@ -79,11 +78,50 @@ __pragma(warning(disable:4127))
 # include <cstdio>
 # include <climits>
 # include <cerrno>
+# include <cstdint>
+# include <inttypes.h>
 
 // common utilities
 # include <atomic>
 
+# define DSN_MAX(x, y)  ((x) >= (y) ? (x) : (y))
+
+# define DSN_MIN(x, y)  ((x) <= (y) ? (x) : (y))
+
+inline uint16_t DSN_SWAP16(uint16_t x)
+{
+    uint8_t* ptr = (uint8_t*)&x;
+    auto m = ptr[1];
+    ptr[1] = ptr[0];
+    ptr[0] = m;
+    return x;
+}
+
+inline uint32_t DSN_SWAP32(uint32_t x)
+{
+    uint8_t* ptr = (uint8_t*)&x;
+    auto m = ptr[3];
+    ptr[3] = ptr[0];
+    ptr[0] = m;
+    m = ptr[2];
+    ptr[2] = ptr[1];
+    ptr[1] = m;
+    return x;
+}
+
+
+inline uint32_t DSN_SWAP24(uint32_t x)
+{
+    uint8_t* ptr = (uint8_t*)&x;
+    auto m = ptr[2];
+    ptr[2] = ptr[0];
+    ptr[0] = m;
+    return x;
+}
+
 // common macros and data structures
+# define TIME_MS_MAX                       0xffffffff
+
 # ifndef FIELD_OFFSET
 # define FIELD_OFFSET(s, field)  (((size_t)&((s *)(10))->field) - 10)
 # endif
@@ -110,7 +148,7 @@ __pragma(warning(disable:4127))
 # endif
 # endif
 
-# ifdef _WIN32
+# if defined(_WIN32)
 
 // make sure to include <Winsock2.h> before the usage
 
@@ -137,5 +175,26 @@ static_assert (sizeof(int32_t) == sizeof(long),
 # define be64toh(x) ( (be32toh((x)>>32)&0xffffffff) | ( be32toh( (x)&0xffffffff ) << 32 ) )
 # endif
 
+# endif
+
+# if defined(__APPLE__)
+
+
+#include <libkern/OSByteOrder.h>
+
+#define htobe16(x) OSSwapHostToBigInt16(x)
+#define htole16(x) OSSwapHostToLittleInt16(x)
+#define be16toh(x) OSSwapBigToHostInt16(x)
+#define le16toh(x) OSSwapLittleToHostInt16(x)
+
+#define htobe32(x) OSSwapHostToBigInt32(x)
+#define htole32(x) OSSwapHostToLittleInt32(x)
+#define be32toh(x) OSSwapBigToHostInt32(x)
+#define le32toh(x) OSSwapLittleToHostInt32(x)
+
+#define htobe64(x) OSSwapHostToBigInt64(x)
+#define htole64(x) OSSwapHostToLittleInt64(x)
+#define be64toh(x) OSSwapBigToHostInt64(x)
+#define le64toh(x) OSSwapLittleToHostInt64(x)
 
 # endif

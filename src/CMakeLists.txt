@@ -1,9 +1,10 @@
-add_subdirectory(core)
-add_subdirectory(dev)
-add_subdirectory(tools)
-add_subdirectory(tests)
-add_subdirectory(plugins)
 
-if(DEFINED BUILD_PLUGINS AND BUILD_PLUGINS STREQUAL "TRUE")
-    add_subdirectory(plugins_ext)
-endif()
+if (DSN_STATIC)
+    add_definitions(-DDSN_STATIC)
+endif ()
+
+add_subdirectory(core)
+add_subdirectory(utility)
+add_subdirectory(tools)
+add_subdirectory(plugins)
+add_subdirectory(examples)

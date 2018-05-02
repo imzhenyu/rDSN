@@ -41,67 +41,10 @@
 # include <memory>
 # include <atomic>
 
-#ifdef DSN_USE_THRIFT_SERIALIZATION
-# include <thrift/protocol/TProtocol.h>
-#endif
-
 # define TRACK_ERROR_CODE 1 
 
 namespace dsn 
 {
-    typedef void(*safe_handle_release)(void*);
-
-    template<safe_handle_release releaser>
-    class safe_handle : public ::dsn::ref_counter
-    {
-    public:
-        safe_handle(void* handle, bool is_owner)
-        {
-            _handle = handle;
-            _is_owner = is_owner;
-        }
-
-        safe_handle()
-        {
-            _handle = nullptr;
-            _is_owner = false;
-        }
-
-        void assign(void* handle, bool is_owner)
-        {
-            clear();
-
-            _handle = handle;
-            _is_owner = is_owner;
-        }
-
-        void set_owner(bool owner = true)
-        {
-            _is_owner = owner;
-        }
-
-        ~safe_handle()
-        {
-            clear();
-        }
-
-        void* native_handle() const { return _handle; }
-
-    private:
-        void clear()
-        {
-            if (_is_owner && nullptr != _handle)
-            {
-                releaser(_handle);
-                _handle = nullptr;
-            }
-        }
-
-    private:
-        void* _handle;
-        bool  _is_owner;
-    };
-
     class gpid
     {
     private:
@@ -160,11 +103,6 @@ namespace dsn
         void set_app_id(int32_t v) { _value.u.app_id = v; }
         void set_partition_index(int32_t v) { _value.u.partition_index = v; }
         dsn_gpid& raw() { return _value; }
-        
-#ifdef DSN_USE_THRIFT_SERIALIZATION
-        uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-        uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-#endif
     };
 
     /*! 
@@ -219,25 +157,20 @@ namespace dsn
         {
             return _internal_code;
         }
-
-#ifdef DSN_USE_THRIFT_SERIALIZATION
-        uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-        uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-#endif
     private:
         dsn_task_code_t _internal_code;
     };
 
-    #define DEFINE_NAMED_TASK_CODE(x, name, pri, pool) __selectany const ::dsn::task_code x(#name, TASK_TYPE_COMPUTE, pri, pool);
-    #define DEFINE_NAMED_TASK_CODE_AIO(x, name, pri, pool) __selectany const ::dsn::task_code x(#name, TASK_TYPE_AIO, pri, pool);
+    #define DEFINE_NAMED_TASK_CODE(x, name, pri, pool) __selectany const ::dsn::task_code x(name, TASK_TYPE_COMPUTE, pri, pool);
+    #define DEFINE_NAMED_TASK_CODE_AIO(x, name, pri, pool) __selectany const ::dsn::task_code x(name, TASK_TYPE_AIO, pri, pool);
     #define DEFINE_NAMED_TASK_CODE_RPC(x, name, pri, pool) \
-        __selectany const ::dsn::task_code x(#name, TASK_TYPE_RPC_REQUEST, pri, pool); \
-        __selectany const ::dsn::task_code x##_ACK(#name"_ACK", TASK_TYPE_RPC_RESPONSE, pri, pool);
+        __selectany const ::dsn::task_code x(name, TASK_TYPE_RPC_REQUEST, pri, pool); \
+        __selectany const ::dsn::task_code x##_ACK(name"_ACK", TASK_TYPE_RPC_RESPONSE, pri, pool);
 
     /*! define a new task code with TASK_TYPE_COMPUTATION */
-    #define DEFINE_TASK_CODE(x, pri, pool) DEFINE_NAMED_TASK_CODE(x, x, pri, pool)
-    #define DEFINE_TASK_CODE_AIO(x, pri, pool) DEFINE_NAMED_TASK_CODE_AIO(x, x, pri, pool)
-    #define DEFINE_TASK_CODE_RPC(x, pri, pool) DEFINE_NAMED_TASK_CODE_RPC(x, x, pri, pool)
+    #define DEFINE_TASK_CODE(x, pri, pool) DEFINE_NAMED_TASK_CODE(x, #x, pri, pool)
+    #define DEFINE_TASK_CODE_AIO(x, pri, pool) DEFINE_NAMED_TASK_CODE_AIO(x, #x, pri, pool)
+    #define DEFINE_TASK_CODE_RPC(x, pri, pool) DEFINE_NAMED_TASK_CODE_RPC(x, #x, pri, pool)
 
     class threadpool_code
     {
@@ -291,6 +224,7 @@ namespace dsn
     #define DEFINE_THREAD_POOL_CODE(x) __selectany const ::dsn::threadpool_code x(#x);
     
     DEFINE_THREAD_POOL_CODE(THREAD_POOL_INVALID)
+    DEFINE_THREAD_POOL_CODE(THREAD_POOL_IO) // network, aio, timer, etc.
     DEFINE_THREAD_POOL_CODE(THREAD_POOL_DEFAULT)
     // define default task code
     DEFINE_TASK_CODE(TASK_CODE_INVALID, TASK_PRIORITY_COMMON, THREAD_POOL_DEFAULT)
@@ -312,6 +246,8 @@ namespace dsn
             _used = true;
     # endif
         }
+
+        error_code(dsn_rpc_error_t err);
 
         error_code()
         {
@@ -411,11 +347,6 @@ namespace dsn
             _used = true;
     # endif
         }
-
-#ifdef DSN_USE_THRIFT_SERIALIZATION
-        uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-        uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-#endif
     private:
     # ifdef TRACK_ERROR_CODE
         mutable bool _used;
@@ -435,7 +366,7 @@ namespace dsn
     DEFINE_ERR_CODE(ERR_SERVICE_NOT_ACTIVE)
     DEFINE_ERR_CODE(ERR_BUSY)
     DEFINE_ERR_CODE(ERR_NETWORK_INIT_FAILED)
-    DEFINE_ERR_CODE(ERR_FORWARD_TO_OTHERS)
+    DEFINE_ERR_CODE(ERR_NOT_SUPPORTED)
     DEFINE_ERR_CODE(ERR_OBJECT_NOT_FOUND)
 
     DEFINE_ERR_CODE(ERR_HANDLER_NOT_FOUND)
@@ -481,5 +412,21 @@ namespace dsn
     DEFINE_ERR_CODE(ERR_BUSY_DROPPING)
     DEFINE_ERR_CODE(ERR_NETWORK_FAILURE)
 /*@}*/
+
+    // --------------- inline implementation -------------------------
+    inline error_code::error_code(dsn_rpc_error_t err)
+    {
+        static const error_code errs[RPC_ERR_COUNT] = {
+            ERR_OK,
+            ERR_TIMEOUT,
+            ERR_HANDLER_NOT_FOUND,
+            ERR_BUSY,
+            ERR_UNKNOWN
+        };
+        _internal_code =  errs[err];
+# ifdef TRACK_ERROR_CODE
+        _used = false;
+# endif
+    }
 } // end namespace
 

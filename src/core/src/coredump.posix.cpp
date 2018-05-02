@@ -40,6 +40,7 @@
 # include <dsn/tool_api.h>
 # include <sys/types.h>
 # include <signal.h>
+# include <execinfo.h>
 
 # ifdef __TITLE__
 # undef __TITLE__
@@ -57,22 +58,41 @@ namespace dsn {
         {
             s_dump_dir = dump_dir;
 
-            signal(SIGSEGV, handle_core_dump);
-            signal(SIGTERM, handle_term);
+            if (dsn_config_get_value_bool("core", "catch_signal", true, 
+                    "whether to catch SEGSEGV and SIGtERM signals")) 
+            {
+                signal(SIGSEGV, handle_core_dump);
+                signal(SIGTERM, handle_term);
+            }
         }
 
         void coredump::write()
         {
-            // TODO: not implemented
-            //
-
             ::dsn::tools::sys_exit.execute(SYS_EXIT_EXCEPTION);
+            abort();
         }
 
         static void handle_core_dump(int signal_id)
         {
-            printf("got signal id: %d\n", signal_id);
-            fflush(stdout);
+            fprintf(stderr, "got signal id: %d\n", signal_id);
+            fflush(stderr);
+
+            void *buffer[255];
+            const int calls = backtrace(buffer, sizeof(buffer) / sizeof(void *));
+            backtrace_symbols_fd(buffer, calls, 1);
+
+            if (dsn_config_get_value_bool("core", "wait_debugger_on_catch_signal", false, 
+                    "whether to wait debugger on catching SEGSEGV signals")) 
+            {
+#if defined(_WIN32)
+                fprintf(stderr, "\nPause for debugging on fault (pid = %d)...\n", static_cast<int>(::GetCurrentProcessId()));
+#else
+                fprintf(stderr, "\nPause for debugging on fault (pid = %d)...\n", static_cast<int>(getpid()));
+#endif
+                fflush(stderr);
+                std::this_thread::sleep_for(std::chrono::seconds(3600000)); 
+            }
+
             /*
              * firstly we must set the sig_handler to default,
              * to prevent the possible inifinite loop
@@ -87,7 +107,7 @@ namespace dsn {
 
         static void handle_term(int signal_id)
         {
-            printf("got signal id: %d\n", signal_id);
+            //printf("got signal id: %d\n", signal_id);
             fflush(stdout);
             dsn_exit(0);
         }

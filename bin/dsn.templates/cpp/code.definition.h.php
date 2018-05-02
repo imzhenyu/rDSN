@@ -16,7 +16,8 @@ foreach ($_PROG->services as $svc)
     echo "    // define RPC task code for service '". $svc->name ."'". PHP_EOL;
     foreach ($svc->functions as $f)
     {
-        echo "    DEFINE_TASK_CODE_RPC(". $f->get_rpc_code() 
+        echo "    DEFINE_NAMED_TASK_CODE_RPC(". $f->get_rpc_code() 
+            . ", \"". $f->get_rpc_name() ."\""
             . ", TASK_PRIORITY_COMMON, ::dsn::THREAD_POOL_DEFAULT)".PHP_EOL;
     }
 }

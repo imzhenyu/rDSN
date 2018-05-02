@@ -34,7 +34,7 @@
  */
 
 # include <dsn/tool-api/task_spec.h>
-# include <dsn/utility/singleton.h>
+# include <dsn/utility/singleton_store.h>
 # include <dsn/tool-api/perf_counter.h>
 # include <dsn/tool-api/command.h>
 # include <sstream>
@@ -48,6 +48,17 @@
 
 namespace dsn {
 
+class c_string_cmp
+{
+public:
+    bool operator () (const char* l, const char* r) const
+    {
+        return strcmp(l, r) < 0;
+    }
+};
+
+typedef dsn::utils::singleton_store < const char*, task_spec*, c_string_cmp > rpc_request_specs;
+
 void task_spec::register_task_code(dsn_task_code_t code, dsn_task_type_t type, dsn_task_priority_t pri, dsn_threadpool_code_t pool)
 {
     dassert(pool != THREAD_POOL_INVALID, 
@@ -55,7 +66,7 @@ void task_spec::register_task_code(dsn_task_code_t code, dsn_task_type_t type, d
         "make sure it is registered AFTER the pool is registered",
         dsn_task_code_to_string(code)
         );
-
+    
     if (!dsn::utils::singleton_vector_store<task_spec*, nullptr>::instance().contains(code))
     {
         task_spec* spec = new task_spec(code, dsn_task_code_to_string(code), type, pri, pool);
@@ -67,6 +78,8 @@ void task_spec::register_task_code(dsn_task_code_t code, dsn_task_type_t type, d
             auto ack_code = dsn_task_code_register(ack_name.c_str(), TASK_TYPE_RPC_RESPONSE, pri, pool);
             spec->rpc_paired_code = ack_code;
             task_spec::get(ack_code)->rpc_paired_code = code;
+
+            rpc_request_specs::instance().put(strdup(spec->name.c_str()), std::forward<task_spec*>(spec));
         }
     }
     else
@@ -104,6 +117,21 @@ void task_spec::register_task_code(dsn_task_code_t code, dsn_task_type_t type, d
     }
 }
 
+
+task_spec* task_spec::rpc_get(const char* code)
+{
+    task_spec* val;
+    if (rpc_request_specs::fast_instance().get(code, val))
+    {
+        return val;
+    }
+    else
+    {
+        dwarn("invalid rpc request code parsed: '%s'", code);
+        return task_spec::get(TASK_CODE_INVALID);
+    }
+}
+
 task_spec* task_spec::get(int code)
 {
     return dsn::utils::singleton_vector_store<task_spec*, nullptr>::instance().get(code);
@@ -111,9 +139,6 @@ task_spec* task_spec::get(int code)
 
 task_spec::task_spec(int code, const char* name, dsn_task_type_t type, dsn_task_priority_t pri, dsn_threadpool_code_t pool)
     : code(code), type(type), name(name), rpc_paired_code(TASK_CODE_INVALID), priority(pri), pool_code(pool),
-    rpc_call_header_format(NET_HDR_DSN),
-    rpc_call_channel(RPC_CHANNEL_TCP),
-    rpc_message_crc_required(false),
     on_task_create((std::string(name) + std::string(".create")).c_str()),
     on_task_enqueue((std::string(name) + std::string(".enqueue")).c_str()),
     on_task_begin((std::string(name) + std::string(".begin")).c_str()), 
@@ -134,14 +159,8 @@ task_spec::task_spec(int code, const char* name, dsn_task_type_t type, dsn_task_
     on_rpc_response_enqueue((std::string(name) + std::string(".rpc.response.enqueue")).c_str()),
     on_rpc_create_response((std::string(name) + std::string("rpc.create.response")).c_str())
 {
-    dassert (
-        strlen(name) < DSN_MAX_TASK_CODE_NAME_LENGTH, 
-        "task code name '%s' is too long: length must be smaller than DSN_MAX_TASK_CODE_NAME_LENGTH (%u)", 
-        name, DSN_MAX_TASK_CODE_NAME_LENGTH
-        );
-
     rejection_handler = nullptr;
-    rpc_call_channel = RPC_CHANNEL_TCP;
+    ;
     rpc_timeout_milliseconds = 5 * 1000; // 5 seconds
 }
 

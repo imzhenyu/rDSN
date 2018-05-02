@@ -33,10 +33,14 @@
  *     xxxx-xx-xx, author, fix bug about xxx
  */
 
-
-# include <boost/asio.hpp>
+# ifndef _WIN32
+# include <unistd.h>
+# else
+# include <WinSock2.h>
+# endif
 # include <dsn/service_api_c.h>
 # include <dsn/utility/singleton_store.h>
+# include <dsn/tool-api/thread_profiler.h>
 # include <dsn/tool-api/node_scoper.h>
 # include "network.sim.h" 
 
@@ -49,123 +53,211 @@ namespace dsn { namespace tools {
 
     // switch[channel][header_format]
     // multiple machines connect to the same switch
-    // 10 should be >= than rpc_channel::max_value() + 1
-    // 10 should be >= than network_header_format::max_value() + 1
+    // 10 should be >= than net_channel::max_value() + 1
+    // 10 should be >= than net_header_format::max_value() + 1
     static utils::safe_singleton_store< ::dsn::rpc_address, sim_network_provider*> s_switch[10][10];
 
     sim_client_session::sim_client_session(
-        sim_network_provider& net, 
+        sim_network_provider& net,
+        rpc_client_matcher* matcher,
         ::dsn::rpc_address remote_addr, 
-        message_parser_ptr& parser
+        net_header_format hdr_format
         )
-        : rpc_session(net, remote_addr, parser, true)
-    {}
-
-    void sim_client_session::connect() 
+        : rpc_session(net, matcher, remote_addr, hdr_format, true, true)
     {
-        if (try_connecting())
-           set_connected();
-    }
-
-    static message_ex* virtual_send_message(message_ex* msg)
-    {
-        std::shared_ptr<char> buffer(dsn::make_shared_array<char>(msg->header->body_length + sizeof(message_header)));
-        char* tmp = buffer.get();
-
-        for (auto& buf : msg->buffers)
+        sim_network_provider* rnet = nullptr;
+        _sync_resp_msg = nullptr;
+        auto raddr = remote_address();
+        if (s_switch[net.channel_type()][parser()->format()].get(raddr, rnet))
         {
-            memcpy((void*)tmp, (const void*)buf.data(), (size_t)buf.length());
-            tmp += buf.length();
-        }
-
-        blob bb(buffer, 0, msg->header->body_length + sizeof(message_header));
-        message_ex* recv_msg = message_ex::create_receive_message(bb);
-        recv_msg->to_address = msg->to_address;
-
-        msg->copy_to(*recv_msg); // extensible object state move
-
-        return recv_msg;
-    }
-
-    void sim_client_session::send(uint64_t sig)
-    {
-        for (auto& msg : _sending_msgs)
-        {
-            sim_network_provider* rnet = nullptr;
-            if (!s_switch[task_spec::get(msg->local_rpc_code)->rpc_call_channel][msg->hdr_format].get(remote_address(), rnet))
+            _server_s = rnet->get_server_session(net.address());
+            if (nullptr == _server_s)
             {
-                derror("cannot find destination node %s in emulator",
-                    remote_address().to_string()
-                    );
-                //on_disconnected();  // disable this to avoid endless resending
-            }
-            else
-            {
-                auto server_session = rnet->get_server_session(_net.address());
-                if (nullptr == server_session)
-                {
-                    rpc_session_ptr cptr = this;
-                    message_parser_ptr parser(_net.new_message_parser(msg->hdr_format));
-                    server_session = new sim_server_session(*rnet, _net.address(), 
-                        cptr, parser);
-                    rnet->on_server_session_accepted(server_session);
-                }
-
-                message_ex* recv_msg = virtual_send_message(msg);
-
-                {
-                    node_scoper ns(rnet->node());
-
-                    bool ret = server_session->on_recv_message(recv_msg,
-                        recv_msg->to_address == recv_msg->header->from_address ?
-                        0 : rnet->net_delay_milliseconds()
-                        );
-                    dassert(ret, "");
-                }
+                _server_s = new sim_server_session(*rnet, nullptr,
+                    net.address(),
+                    this, parser()->format());
             }
         }
+    }
 
-        on_send_completed(sig);
+    static message_ex* virtual_send_message(
+        message_ex* msg, 
+        message_parser* parser)
+    {
+        TPF_MARK("virtual_send_message.begin"); 
+
+        parser->prepare_on_send(msg);
+
+        TPF_MARK("virtual_send_message.1");
+
+        std::vector<send_buf> buffers;
+        msg->get_buffers(parser, buffers);
+
+        TPF_MARK("virtual_send_message.2");
+
+        int bytes = 0;
+        for (size_t i = 0; i < buffers.size(); i++)
+        {
+            bytes += buffers[i].sz;
+        }
+
+        ::dsn::message_reader reader(bytes);
+        char* target = reader.read_buffer_ptr(bytes);
+        for (size_t i = 0; i < buffers.size(); i++)
+        {
+            memcpy(target, buffers[i].buf, buffers[i].sz);
+            target += buffers[i].sz;
+        }
+        reader.mark_read(bytes);
+
+        TPF_MARK("virtual_send_message.3");
+
+        int read_next = 10;
+        auto rmsg = parser->get_message_on_receive(&reader, read_next);
+
+        TPF_MARK("virtual_send_message.end");
+        return rmsg;
+    }
+
+    void sim_client_session::disconnect_and_release()
+    {
+        if (_server_s)
+        {
+            auto s = _server_s;
+            _server_s = nullptr;
+            s->on_disconnected();
+        }
+
+        on_disconnected();
+        release_ref();
+    }
+
+    void sim_client_session::send_message(message_ex* msg)
+    {
+        if (this->is_async())
+        {
+            if (msg->header->context.u.is_request &&
+                msg->u.client.call)
+            {
+                _matcher->on_call(msg, msg->u.client.call);
+                msg->u.client.call = nullptr;
+            }
+        }
+        
+        message_ex* recv_msg;
+        if (_server_s)
+        {
+            node_scoper ns(_server_s->net().node());
+            recv_msg = virtual_send_message(msg, _server_s->parser());
+            recv_msg->from_address = net().address();
+            recv_msg->to_address = _server_s->net().address();
+
+            _server_s->on_recv_request(recv_msg,
+                msg->to_address == msg->from_address ?
+                0 : ((sim_network_provider&)_server_s->net()).net_delay_milliseconds()
+            );
+        }
+        else
+        {
+            dwarn("client session %s is disconnected, msg %s with trace_id = %16" PRIx64 " will be dropped",
+                remote_address().to_string(),
+                msg->dheader.rpc_name,
+                msg->header->trace_id
+                );
+        }
+
+        delete msg;
+    }
+
+    message_ex* sim_client_session::recv_message()
+    {
+        auto r = _sync_resp_msg;
+        _sync_resp_msg = nullptr;
+        return r;
+    }
+
+    void sim_client_session::set_response_msg(message_ex* resp)
+    {
+        dassert (_sync_resp_msg == nullptr, "response message must be null for sync client");
+        _sync_resp_msg = resp;
     }
 
     sim_server_session::sim_server_session(
-        sim_network_provider& net, 
+        sim_network_provider& net,
+        rpc_client_matcher* matcher, 
         ::dsn::rpc_address remote_addr,
-        rpc_session_ptr& client,
-        message_parser_ptr& parser
+        rpc_session* client,
+        net_header_format hdr_format
         )
-        : rpc_session(net, remote_addr, parser, false)
+        : rpc_session(net, matcher, remote_addr, hdr_format, false, true)
     {
-        _client = client;
+        _client = (sim_client_session*)client;
+        if (!parser())
+        {
+            _parser = message_parser::new_message_parser(hdr_format, false);
+        }
     }
 
-    void sim_server_session::send(uint64_t sig)
+    void sim_server_session::disconnect_and_release()
     {
-        for (auto& msg : _sending_msgs)
+        if (_client)
         {
-            message_ex* recv_msg = virtual_send_message(msg);
+            auto s = _client;
+            _client = nullptr;
+            s->on_disconnected();
+        }
+
+        on_disconnected();
+        release_ref();
+    }
+
+    void sim_server_session::send_message(message_ex* msg)
+    {
+        if (_client)
+        {
+            message_ex* recv_msg;
+            {
+                node_scoper ns(_client->net().node());
+                recv_msg = virtual_send_message(msg, _client->parser());
+            }
+
+            recv_msg->header->context.u.is_request = false;
+            recv_msg->from_address = net().address();
+            recv_msg->to_address = _client->net().address();
 
             {
                 node_scoper ns(_client->net().node());
 
-                bool ret = _client->on_recv_message(recv_msg,
-                    recv_msg->to_address == recv_msg->header->from_address ?
-                    0 : (static_cast<sim_network_provider*>(&_net))->net_delay_milliseconds()
+                if (_client->is_async())
+                    _client->on_recv_response(
+                        recv_msg->header->id,
+                        recv_msg,
+                        msg->to_address == msg->from_address ?
+                        0 : (static_cast<sim_network_provider*>(&net()))->net_delay_milliseconds()
                     );
-                dassert(ret, "");
+                else
+                    _client->set_response_msg(recv_msg);
             }
-        }        
+        }
+        else
+        {
+            dwarn("server session %s is disconnected, msg %s with trace_id = %16" PRIx64 " will be dropped",
+                remote_address().to_string(),
+                msg->dheader.rpc_name,
+                msg->header->trace_id
+            );
+        }
 
-        on_send_completed(sig);
+        delete msg;
     }
 
     sim_network_provider::sim_network_provider(rpc_engine* rpc, network* inner_provider)
-        : connection_oriented_network(rpc, inner_provider)
+        : network(rpc, inner_provider)
     {
         _address.assign_ipv4("localhost", 1);
 
-        _min_message_delay_microseconds = 1;
-        _max_message_delay_microseconds = 100000;
+        _min_message_delay_microseconds = 0;
+        _max_message_delay_microseconds = 0;
 
         _min_message_delay_microseconds = (uint32_t)dsn_config_get_value_uint64("tools.emulator",
             "min_message_delay_microseconds", _min_message_delay_microseconds,
@@ -175,20 +267,27 @@ namespace dsn { namespace tools {
             "max message delay (us)");
     }
 
-    error_code sim_network_provider::start(rpc_channel channel, int port, bool client_only, io_modifer& ctx)
-    { 
-        dassert(channel == RPC_CHANNEL_TCP || channel == RPC_CHANNEL_UDP, "invalid given channel %s", channel.to_string());
-
+    error_code sim_network_provider::start(net_channel channel, int port, bool client_only)
+    {
         _address = ::dsn::rpc_address("localhost", port);
-        auto hostname = boost::asio::ip::host_name();
+        char hostname[256];
+        auto err = gethostname(hostname, sizeof(hostname));
+# ifndef _WIN32
+        dassert(0 == err, "gethostname failed, err = %d", errno);
+# else
+        dassert(0 == err, "gethostname failed, err = %d", ::GetLastError());
+# endif
+
         if (!client_only)
         {
-            for (int i = NET_HDR_INVALID + 1; i <= network_header_format::max_value(); i++)
+            for (int i = NET_HDR_INVALID + 1; i <= net_header_format::max_value(); i++)
             {
-                if (s_switch[channel][i].put(_address, this))
+                auto addr = _address;
+                auto this_ = this;
+                if (s_switch[channel][i].put(std::move(addr), std::forward<sim_network_provider*>(this_)))
                 {
-                    auto ep2 = ::dsn::rpc_address(hostname.c_str(), port);
-                    s_switch[channel][i].put(ep2, this);
+                    auto ep2 = ::dsn::rpc_address(hostname, port);
+                    s_switch[channel][i].put(std::move(ep2), std::forward<sim_network_provider*>(this_));
                 }
                 else
                 {
@@ -207,4 +306,23 @@ namespace dsn { namespace tools {
     {
         return static_cast<uint32_t>(dsn_random32(_min_message_delay_microseconds, _max_message_delay_microseconds)) / 1000;
     }    
+
+    rpc_session* sim_network_provider::get_server_session(::dsn::rpc_address ep)
+    {
+        utils::auto_read_lock l(_servers_lock);
+        for (auto& s : _servers)
+        {
+            if (s->remote_address() == ep)
+                return s;
+        }
+        return nullptr;
+    }
+
+    void sim_network_provider::send_reply_message(message_ex* msg)
+    {
+        auto s = get_server_session(msg->to_address);
+        if (s)
+            s->send_message(msg);
+    }
+
 }} // end namespace

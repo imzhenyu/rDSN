@@ -15,6 +15,7 @@ meta_sApp.prototype.unmarshall = function(buf, value, type) {
 meta_sApp.prototype.internal_create_app = function(args,  hash) {
     var self = this;
     var ret = null;
+    //TODO all dsn_call will not work for upgrade of http1 url format, if we need replication module, should fix this file
     dsn_call(
         this.url,
         "RPC_CM_CREATE_APP",

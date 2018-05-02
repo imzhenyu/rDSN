@@ -36,13 +36,14 @@
 #pragma once
 
 #include <dsn/tool_api.h>
-#if defined(_WIN32)
-#define NATIVE_AIO_PROVIDER native_win_aio_provider
-#include "native_aio_provider.win.h"
-#else
-#define NATIVE_AIO_PROVIDER native_posix_aio_provider
-#include "native_aio_provider.posix.h"
-#endif
+
+# ifdef _WIN32
+# define NATIVE_AIO_PROVIDER native_win_aio_provider
+# include "native_aio_provider.win.h"
+# else
+# define NATIVE_AIO_PROVIDER native_posix_aio_provider
+# include "native_aio_provider.posix.h"
+# endif 
 
 namespace dsn { namespace tools {
 

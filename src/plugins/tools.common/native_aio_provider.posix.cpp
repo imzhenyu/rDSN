@@ -119,12 +119,12 @@ namespace dsn {
             aio_internal(aio_tsk, true);
         }
 
-        void aio_completed(sigval sigval)
+        void native_aio_completed(sigval sigval)
         {
             auto ctx = (posix_disk_aio_context *)sigval.sival_ptr;
 
             if (dsn::tls_dsn.magic != 0xdeadbeef)
-                task::set_tls_dsn_context(ctx->tsk->node(), nullptr, nullptr);
+                task::set_tls_dsn_context(ctx->tsk->node(), nullptr);
 
             int err = aio_error(&ctx->cb);
             if (err != EINPROGRESS)
@@ -171,7 +171,7 @@ namespace dsn {
 
             // set up callback
             aio->cb.aio_sigevent.sigev_notify = SIGEV_THREAD;
-            aio->cb.aio_sigevent.sigev_notify_function = aio_completed;
+            aio->cb.aio_sigevent.sigev_notify_function = native_aio_completed;
             aio->cb.aio_sigevent.sigev_notify_attributes = nullptr;
             aio->cb.aio_sigevent.sigev_value.sival_ptr = aio;
 
@@ -197,8 +197,8 @@ namespace dsn {
 
             if (r != 0)
             {
-                derror("file op failed, err = %d (%s). On FreeBSD, you may need to load"
-                       " aio kernel module by running 'sudo kldload aio'.", errno, strerror(errno));
+                derror("file op failed, err = %d (%s), return = %d. On FreeBSD, you may need to load"
+                       " aio kernel module by running 'sudo kldload aio'.", errno, strerror(errno), r);
 
                 if (async)
                 {

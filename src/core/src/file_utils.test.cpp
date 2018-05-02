@@ -35,7 +35,7 @@
 
 
 # include <gtest/gtest.h>
-# include <dsn/cpp/utils.h>
+# include <dsn/utility/misc.h>
 # include <fstream>
 
 static void file_utils_test_setup()
@@ -60,7 +60,6 @@ static void file_utils_test_get_process_image_path()
 {
     std::string path;
     std::string imagepath;
-    dsn::error_code ret;
     //int pid;
 
     if (!dsn::utils::filesystem::get_current_directory(imagepath))
@@ -68,13 +67,13 @@ static void file_utils_test_get_process_image_path()
         EXPECT_TRUE(false);
     }
 #ifdef WIN32
-    imagepath = dsn::utils::filesystem::path_combine(imagepath, "dsn.core.tests.exe");
+    imagepath = dsn::utils::filesystem::path_combine(imagepath, "dsn.tests.exe");
 #else
-    imagepath = dsn::utils::filesystem::path_combine(imagepath, "dsn.core.tests");
+    imagepath = dsn::utils::filesystem::path_combine(imagepath, "dsn.tests");
 #endif
 
-    ret = dsn::utils::filesystem::get_current_process_image_path(path);
-    EXPECT_TRUE(ret == dsn::ERR_OK);
+    bool r = dsn::utils::filesystem::get_current_process_image_path(path);
+    EXPECT_TRUE(r);
     // TODO: not always true when running dir is not where the test resides
     //EXPECT_TRUE(path == imagepath); // e: vs E:
 }

@@ -47,7 +47,8 @@
 
 namespace dsn {
 
-task_queue::task_queue(task_worker_pool* pool, int index, task_queue* inner_provider) : _pool(pool), _controller(nullptr), _queue_length(0)
+task_queue::task_queue(task_worker_pool* pool, int index, task_queue* inner_provider) 
+    : _pool(pool), _controller(nullptr), _queue_length(0)
 {
     char num[30];
     sprintf(num, "%u", index);
@@ -56,14 +57,12 @@ task_queue::task_queue(task_worker_pool* pool, int index, task_queue* inner_prov
     _name.append(num);
     _owner_worker = nullptr;
     _worker_count = _pool->spec().partitioned ? 1 : _pool->spec().worker_count;
-    _queue_length_counter = perf_counter::get_counter(_pool->node()->name(), "engine", (_name + ".queue.length").c_str(), COUNTER_TYPE_NUMBER, "task queue length", true);
     _virtual_queue_length = 0;
     _spec = (threadpool_spec*)&pool->spec();
 }
 
 task_queue::~task_queue()
 {
-    perf_counter::remove_counter(_queue_length_counter->full_name());
 }
 
 void task_queue::enqueue_internal(task* task)
@@ -88,11 +87,11 @@ void task_queue::enqueue_internal(task* task)
             if (delay_ms > 0)
             {
                 auto rtask = static_cast<rpc_request_task*>(task);
-                rtask->get_request()->io_session->delay_recv(delay_ms);
+                rtask->get_request()->u.server.s->delay_recv(delay_ms);
 
                 dwarn("too many pending tasks (%d), delay traffic from %s for %d milliseconds",
                     ac_value,
-                    rtask->get_request()->header->from_address.to_string(),
+                    rtask->get_request()->from_address.to_string(),
                     delay_ms
                     );
             }
@@ -105,15 +104,15 @@ void task_queue::enqueue_internal(task* task)
             {
                 auto rtask = static_cast<rpc_request_task*>(task);
                 auto resp = rtask->get_request()->create_response();
-                task::get_current_rpc()->reply(resp, ERR_BUSY);
+                task::get_current_rpc()->reply(resp, RPC_ERR_SERVER_BUSY);
 
                 dwarn("too many pending tasks (%d), reject message from %s with trace_id = %016" PRIx64,
                     ac_value,
-                    rtask->get_request()->header->from_address.to_string(),
+                    rtask->get_request()->from_address.to_string(),
                     rtask->get_request()->header->trace_id
                     );
 
-                task->release_ref(); // added in task::enqueue(pool)
+                delete rtask;
                 return;
             }
         }

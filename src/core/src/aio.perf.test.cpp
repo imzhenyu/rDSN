@@ -36,7 +36,6 @@
 #include <gtest/gtest.h>
 #include <dsn/service_api_cpp.h>
 #include <dsn/cpp/test_utils.h>
-#include <boost/lexical_cast.hpp>
 
 void aio_testcase(uint64_t block_size, size_t concurrency, bool is_write, bool shared)
 {
@@ -117,7 +116,7 @@ void aio_testcase(uint64_t block_size, size_t concurrency, bool is_write, bool s
             if (is_write)
             {
                 file::write(files[index], buffer.get(), (int)block_size, offset,
-                    LPC_AIO_TEST, nullptr, [idx = index, &cb, &cb_flying_count](::dsn::error_code code, size_t sz) 
+                    LPC_AIO_TEST, [idx = index, &cb, &cb_flying_count](::dsn::error_code code, size_t sz) 
                     {                        
                         if (ERR_OK == code)
                             cb(idx);
@@ -127,7 +126,7 @@ void aio_testcase(uint64_t block_size, size_t concurrency, bool is_write, bool s
             else
             {
                 file::read(files[index], buffer.get(), (int)block_size, offset,
-                    LPC_AIO_TEST, nullptr, [idx = index, &cb, &cb_flying_count](::dsn::error_code code, size_t sz)
+                    LPC_AIO_TEST, [idx = index, &cb, &cb_flying_count](::dsn::error_code code, size_t sz)
                     {                        
                         if (ERR_OK == code)
                             cb(idx);
@@ -185,6 +184,7 @@ void aio_testcase(uint64_t block_size, size_t concurrency, bool is_write, bool s
     }
 }
 
+# if !defined(__APPLE__)
 TEST(perf_core, aio)
 {
     for (auto is_write : { true, false })
@@ -193,3 +193,4 @@ TEST(perf_core, aio)
                 for (auto concurrency : { 1, 2, 4})
                     aio_testcase(blk_size_bytes, concurrency, is_write, shared);
 }
+# endif

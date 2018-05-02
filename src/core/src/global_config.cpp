@@ -70,20 +70,19 @@ static bool build_client_network_confs(
             continue;
 
         auto k2 = k.substr(strlen("network.client."));
-        if (rpc_channel::is_exist(k2.c_str()))
+        if (net_channel::is_exist(k2.c_str()))
         {
             /*
             ;channel = network_provider_name,buffer_block_size
-            network.client.RPC_CHANNEL_TCP = dsn::tools::asio_network_provider,65536
-            network.client.RPC_CHANNEL_UDP = dsn::tools::asio_network_provider,65536
+            network.client.NET_CHANNEL_TCP = dsn::tools::hpc_network_provider,65536
             */
 
-            rpc_channel ch = rpc_channel::from_string(k2.c_str(), RPC_CHANNEL_TCP);
+            net_channel ch = net_channel::from_string(k2.c_str(), NET_CHANNEL_TCP);
 
-            // dsn::tools::asio_network_provider,65536
+            // dsn::tools::hpc_network_provider,65536
             std::list<std::string> vs;
             std::string v = dsn_config_get_value_string(section, k.c_str(), "", 
-                "network channel configuration, e.g., dsn::tools::asio_network_provider,65536");
+                "network channel configuration, e.g., dsn::tools::hpc_network_provider,65536");
             utils::split_args(v.c_str(), vs, ',');
 
             if (vs.size() != 2)
@@ -156,7 +155,7 @@ static bool build_server_network_confs(
         utils::split_args(k2.c_str(), ks, '.');
         if (ks.size() != 2)
         {
-            printf("invalid network server config '%s', should be like 'network.server.12345.RPC_CHANNEL_TCP' instead\n", k.c_str());
+            printf("invalid network server config '%s', should be like 'network.server.12345.NET_CHANNEL_TCP' instead\n", k.c_str());
             return false;
         }
 
@@ -169,7 +168,7 @@ static bool build_server_network_confs(
             {
                 printf("invalid network server configuration '%s'\n", k.c_str());
                 printf("port must be zero in [apps..default]\n");
-                printf(" e.g., network.server.0.RPC_CHANNEL_TCP = NET_HDR_DSN, dsn::tools::asio_network_provider,65536\n");
+                printf(" e.g., network.server.0.NET_CHANNEL_TCP = NET_HDR_DSN, dsn::tools::hpc_network_provider,65536\n");
                 return false;
             }
         }
@@ -181,21 +180,20 @@ static bool build_server_network_confs(
             }
         }
 
-        if (rpc_channel::is_exist(k3.c_str()))
+        if (net_channel::is_exist(k3.c_str()))
         {
             /*            
             port = 0 for default setting in [apps..default]
             port.channel = network_provider_name,buffer_block_size
-            network.server.port().RPC_CHANNEL_TCP = dsn::tools::asio_network_provider,65536
-            network.server.port().RPC_CHANNEL_UDP = dsn::tools::asio_network_provider,65536
+            network.server.port().NET_CHANNEL_TCP = dsn::tools::hpc_network_provider,65536
             */
 
-            rpc_channel ch = rpc_channel::from_string(k3.c_str(), RPC_CHANNEL_TCP);
+            net_channel ch = net_channel::from_string(k3.c_str(), NET_CHANNEL_TCP);
 
-            // dsn::tools::asio_network_provider,65536
+            // dsn::tools::hpc_network_provider,65536
             std::list<std::string> vs;
             std::string v = dsn_config_get_value_string(section, k.c_str(), "",
-                "network channel configuration, e.g., dsn::tools::asio_network_provider,65536");
+                "network channel configuration, e.g., dsn::tools::hpc_network_provider,65536");
             utils::split_args(v.c_str(), vs, ',');
 
             if (vs.size() != 2)
@@ -317,21 +315,21 @@ bool service_app_spec::init(
 
 network_client_config::network_client_config()
 {
-    factory_name = "dsn::tools::asio_network_provider";
+    factory_name = "dsn::tools::hpc_network_provider";
     message_buffer_block_size = 65536;
 }
 
 network_server_config::network_server_config()
-    : port(0), channel(RPC_CHANNEL_TCP)
+    : port(0), channel(NET_CHANNEL_TCP)
 {
-    factory_name = "dsn::tools::asio_network_provider";
+    factory_name = "dsn::tools::hpc_network_provider";
     message_buffer_block_size = 65536;
 }
 
-network_server_config::network_server_config(int p, rpc_channel c)
+network_server_config::network_server_config(int p, net_channel c)
     : port(p), channel(c)
 {
-    factory_name = "dsn::tools::asio_network_provider";
+    factory_name = "dsn::tools::hpc_network_provider";
     message_buffer_block_size = 65536;
 }
 
@@ -412,17 +410,23 @@ bool service_spec::init_app_specs()
             == all_section_names.end())
         {
             get_main_config()->set("apps.mimic", "type", mimic_app_role_name, "must be " mimic_app_role_name);
-            get_main_config()->set("apps.mimic", "pools", "THREAD_POOL_DEFAULT", "");
+            get_main_config()->set("apps.mimic", "pools", "THREAD_POOL_IO, THREAD_POOL_DEFAULT", "");
             all_section_names.push_back("apps.mimic");
         }
         else
         {
-            auto type = dsn_config_get_value_string("apps.mimic", "type", "", "app type, must be " mimic_app_role_name);
+            auto type = dsn_config_get_value_string("apps.mimic", "type", mimic_app_role_name, "app type, must be " mimic_app_role_name);
             if (strcmp(type, mimic_app_role_name) != 0)
             {
-                printf("invalid config value '%s' for [apps.mimic] type", type);
+                printf("invalid config value '%s' for [apps.mimic] type, must be " mimic_app_role_name, type);
                 return false;
             }
+            else
+            {
+                if (!get_main_config()->has_key("apps.mimic", "pools"))
+                    get_main_config()->set("apps.mimic", "pools", "THREAD_POOL_IO, THREAD_POOL_DEFAULT", "");
+                get_main_config()->set("apps.mimic", "type", mimic_app_role_name, "must be " mimic_app_role_name);
+            }   
         }
     }
 
@@ -438,30 +442,10 @@ bool service_spec::init_app_specs()
 
             // fix ports_gap when necessary
             int ports_gap = app.ports_gap;
-            switch (rpc_io_mode)
-            {
-            case IOE_PER_NODE:
-                ports_gap *= 1;
-                break;
-            case IOE_PER_QUEUE:
-                {
-                    int number_of_ioes = 0;
-                    for (auto& pl : app.pools)
-                    {
-                        number_of_ioes += (this->threadpool_specs[pl].partitioned 
-                            ? this->threadpool_specs[pl].worker_count : 1);
-                    }
-                    ports_gap *= number_of_ioes;
-                }
-                break;
-            default:
-                dassert(false, "unsupport io mode");
-                break;
-            }
-
             auto& store = ::dsn::utils::singleton_store<std::string, dsn_app*>::instance();
             dsn_app* role;
-            if (!store.get(app.type.c_str(), role))
+            std::string type(app.type.c_str());
+            if (!store.get(type, role))
             {
                 printf("service type '%s' not registered\n", app.type.c_str());
                 return false;
@@ -471,11 +455,16 @@ bool service_spec::init_app_specs()
 
             auto ports = app.ports;   
             auto nsc = app.network_server_confs;
+            auto pname = app.pname;
             for (int i = 1; i <= app.count; i++)
             {
                 char buf[16];
                 sprintf(buf, "%u", i);
                 app.name = (app.count > 1 ? (app.role_name + buf) : app.role_name);
+                if (pname.size() > 0)
+                    app.pname = (app.count > 1 ? (pname + buf) : pname);
+                else
+                    app.pname = app.name;
                 app.id = ++app_id;
                 app.index = i;
                 app.data_dir = utils::filesystem::path_combine(data_dir.c_str(), app.name.c_str()).c_str();
@@ -503,32 +492,5 @@ bool service_spec::init_app_specs()
 
     return true;
 }
-
-int service_spec::get_ports_delta(int app_id, dsn_threadpool_code_t pool, int queue_index) const
-{
-    dassert(rpc_io_mode == IOE_PER_QUEUE, "only used for IOE_PER_QUEUE mode");
-
-    auto& aps = app_specs[app_id - 1];
-    int number_of_ioes = 0;
-    for (auto& pl : aps.pools)
-    {
-        if (pl != pool)
-        {
-            number_of_ioes += (this->threadpool_specs[pl].partitioned
-                ? this->threadpool_specs[pl].worker_count : 1);
-        }
-        else
-        {
-            number_of_ioes += (this->threadpool_specs[pl].partitioned
-                ? (queue_index + 1) : 1);
-            break;
-        }
-    }
-
-    dassert(number_of_ioes >= 1, "given pool not started");
-
-    return aps.ports_gap * (number_of_ioes - 1);
-}
-
 
 } // end namespace dsn

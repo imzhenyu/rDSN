@@ -60,28 +60,43 @@ typedef enum dsn_task_type_t
     TASK_TYPE_INVALID
 } dsn_task_type_t;
 
+typedef enum dsn_rpc_error_t
+{
+    RPC_ERR_OK,
+    RPC_ERR_TIMEOUT,
+    RPC_ERR_HANDLER_NOT_FOUND,
+    RPC_ERR_SERVER_BUSY,
+    RPC_ERR_UNKNOWN,
+    RPC_ERR_COUNT
+} dsn_rpc_error_t;
+
 /*! callback prototype for \ref TASK_TYPE_COMPUTE */
 typedef void(*dsn_task_handler_t)(
     void* ///< void* context
     );
 
-/*! callback prototype for \ref TASK_TYPE_RPC_REQUEST */
-typedef void(*dsn_rpc_request_handler_t)(
-    dsn_message_t,  ///< incoming request
+/*! callback prototype for \ref TASK_TYPE_RPC_REQUEST, return false when
+    request is used asynchronously and developers need to destroy it 
+    explicitly using dsn_msg_destroy.
+*/
+typedef bool (*dsn_rpc_request_handler_t)(
+    dsn_message_t, ///< incoming request
     void*           ///< handler context registered
     );
 
-/*! callback prototype for \ref TASK_TYPE_RPC_RESPONSE */
-typedef void(*dsn_rpc_response_handler_t)(
-    dsn_error_t,    ///< usually, it is ok, or timeout, or busy
-    dsn_message_t,  ///< sent rpc request
-    dsn_message_t,  ///< incoming rpc response
-    void*           ///< context when rpc is called
+/*! callback prototype for \ref TASK_TYPE_RPC_RESPONSE, return false when
+    request/response are used asynchronously and developers need to destroy them 
+    explicitly using dsn_msg_destroy or resend them via dsn_rpc_xxx
+*/
+typedef bool (*dsn_rpc_response_handler_t)(
+    dsn_rpc_error_t, ///< rpc error
+    dsn_message_t,   ///< incoming rpc response
+    void*             ///< context when rpc is called
     );
 
 /*! callback prototype for \ref TASK_TYPE_AIO */
 typedef void(*dsn_aio_handler_t)(
-    dsn_error_t,    ///< error code for the io operation
+    dsn_error_t,   ///< error code for the io operation
     size_t,         ///< transferred io size
     void*           ///< context when rd/wt is called
     );
@@ -96,34 +111,18 @@ typedef enum dsn_task_priority_t
     TASK_PRIORITY_INVALID
 } dsn_task_priority_t;
 
-/*!
- callback prototype for task cancellation (called on task-being-cancelled)
- 
- in rDSN, tasks can be cancelled. For languages such as C++, when there are explicit resource
- release operations (e.g., ::free, release_ref()) in the task handlers, cancellation will
- cause resource leak due to not-executed task handleers. in order to support such scenario,
- rDSN provides dsn_task_cancelled_handler_t which is executed when a task is cancelled. Note
- this callback does not have thread affinity similar to task handlers above (which are
- configured to be executed in certain thread pools or even a fixed thread). Therefore, it is
- developers' resposibility to ensure this cancallation callback only does thread-insensitive
- operations (e.g., release_ref()).
- */
-typedef void(*dsn_task_cancelled_handler_t)(
-    void* ///< shared with the task handler callbacks, e.g., in \ref dsn_task_handler_t
-    );
-
 /*! define a new thread pool with a given name */
-extern DSN_API dsn_threadpool_code_t dsn_threadpool_code_register(const char* name);
-extern DSN_API const char*           dsn_threadpool_code_to_string(dsn_threadpool_code_t pool_code);
-extern DSN_API dsn_threadpool_code_t dsn_threadpool_code_from_string(
+extern DSN_API dsn_threadpool_code_t  dsn_threadpool_code_register(const char* name);
+extern DSN_API const char*            dsn_threadpool_code_to_string(dsn_threadpool_code_t pool_code);
+extern DSN_API dsn_threadpool_code_t  dsn_threadpool_code_from_string(
                                         const char* s, 
                                         dsn_threadpool_code_t default_code // when s is not registered
                                         );
-extern DSN_API int                   dsn_threadpool_code_max();
-extern DSN_API int                   dsn_threadpool_get_current_tid();
+extern DSN_API int                    dsn_threadpool_code_max();
+extern DSN_API int                    dsn_threadpool_get_current_tid();
 
 /*! register a new task code */
-extern DSN_API dsn_task_code_t       dsn_task_code_register(
+extern DSN_API dsn_task_code_t        dsn_task_code_register(
                                         const char* name,          // task code name
                                         dsn_task_type_t type,
                                         dsn_task_priority_t, 

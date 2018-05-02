@@ -34,7 +34,7 @@
  */
 
 
-# include <dsn/cpp/utils.h>
+# include <dsn/utility/misc.h>
 # include <dsn/cpp/blob.h>
 # include <dsn/utility/link.h>
 # include <dsn/utility/autoref_ptr.h>
@@ -216,7 +216,7 @@ TEST(core, ref_ptr)
 
     foo_ptr z = new foo(count);
     EXPECT_TRUE(count == 1);
-    z = std::move(foo_ptr());
+    z = foo_ptr();
     EXPECT_TRUE(count == 0);
 }
 

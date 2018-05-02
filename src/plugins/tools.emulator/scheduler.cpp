@@ -303,8 +303,6 @@ void scheduler::schedule()
                         node_scoper ns(t->node());
                         t->enqueue();
                     }
-
-                    t->release_ref(); // added by previous t->enqueue from app
                 }
                 else
                 {

@@ -41,6 +41,10 @@
 # include "task_engine.sim.h"
 # include "network.sim.h"
 
+# ifdef _WIN32
+# pragma comment(lib, "ws2_32.lib")
+# endif
+
 MODULE_INIT_BEGIN(tools_emulator)
     ::dsn::tools::register_component_provider< ::dsn::tools::sim_aio_provider>("dsn::tools::sim_aio_provider");
     ::dsn::tools::register_component_provider< ::dsn::tools::sim_network_provider>("dsn::tools::sim_network_provider");

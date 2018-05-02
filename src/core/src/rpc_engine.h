@@ -37,72 +37,19 @@
 
 # include <dsn/tool-api/task.h>
 # include <dsn/tool-api/network.h>
-# include <dsn/utility/synchronize.h>
+# include <dsn/tool-api/rpc_client_matcher.h>
 # include <dsn/tool-api/global_config.h>
 # include <dsn/utility/configuration.h>
+# include <unordered_map>
 
 namespace dsn {
+
+
+#define MAX_CLIENT_PORT 1023
 
 class service_node;
 class rpc_engine;
 class uri_resolver_manager;
-
-#define MAX_CLIENT_PORT 1023
-
-//
-// client matcher for matching RPC request and RPC response, and handling timeout
-// (1) the whole network may share a single client matcher,
-// (2) or we usually prefere each <src, dst> pair use a client matcher to have better inquery performance
-// (3) or we have certain cases we want RPC responses from node which is not the initial target node
-//     the RPC request message is sent to. In this case, a shared rpc_engine level matcher is used.
-//
-// WE NOW USE option (3) so as to enable more features and the performance should not be degraded (due to 
-// less std::shared_ptr<rpc_client_matcher> operations in rpc_timeout_task
-//
-#define MATCHER_BUCKET_NR 13
-class rpc_client_matcher : public ref_counter
-{
-public:
-    rpc_client_matcher(rpc_engine* engine)
-        :_engine(engine)
-    {
-
-    }
-
-    ~rpc_client_matcher();
-
-    //
-    // when a two-way RPC call is made, register the requst id and the callback
-    // which also registers a timer for timeout tracking
-    //
-    void on_call(message_ex* request, rpc_response_task* call);
-
-    //
-    // when a RPC response is received, call this function to trigger calback
-    //  key - message.header.id
-    //  reply - rpc response message
-    //  delay_ms - sometimes we want to delay the delivery of the message for certain purposes
-    //
-    // we may receive an empty reply to early terminate the rpc
-    //
-    bool on_recv_reply(network* net, uint64_t key, message_ex* reply, int delay_ms);
-
-private:
-    friend class rpc_timeout_task;
-    void on_rpc_timeout(uint64_t key);
-
-private:
-    rpc_engine*               _engine;
-    struct match_entry
-    {
-        rpc_response_task*    resp_task;
-        task*                 timeout_task;
-        uint64_t              timeout_ts_ms; // > 0 for auto-resent msgs
-    };
-    typedef std::unordered_map<uint64_t, match_entry> rpc_requests;
-    rpc_requests                  _requests[MATCHER_BUCKET_NR];
-    ::dsn::utils::ex_lock_nr_spin _requests_lock[MATCHER_BUCKET_NR];
-};
 
 class rpc_server_dispatcher
 {
@@ -110,22 +57,22 @@ public:
     rpc_server_dispatcher();
     ~rpc_server_dispatcher();
 
-    bool  register_rpc_handler(rpc_handler_info* handler);
-    rpc_handler_info* unregister_rpc_handler(dsn_task_code_t rpc_code);
+    bool              register_rpc_handler(rpc_handler_info* handler);
+    rpc_handler_info* unregister_rpc_handler(dsn_task_code_t rpc_code, const char* service_name);
     rpc_request_task* on_request(message_ex* msg, service_node* node);
     void              on_request_with_inline_execution(message_ex* msg, service_node* node);
-    int handler_count() const 
-    {
-        utils::auto_read_lock l(_handlers_lock); 
-        return static_cast<int>(_handlers.size()); 
-    }
+    
+private:
+    bool get_rpc_handler(message_ex* msg, dsn_rpc_request_handler_t& handler, void*& param);
 
 private:
-    typedef std::unordered_map<std::string, rpc_handler_info*> rpc_handlers;
-    rpc_handlers                  _handlers;
-    mutable utils::rw_lock_nr     _handlers_lock;
-
-    std::vector<std::pair<rpc_handler_info*, utils::rw_lock_nr>*  > _vhandlers;
+    typedef std::unordered_map<safe_string, rpc_handler_info*> service_handlers;
+    struct per_code_handlers 
+    {
+        service_handlers services; // <service_name, handlers>
+        utils::rw_lock_nr l; // TODO: optimize it into readonly map
+    };
+    std::vector<per_code_handlers*  > _vhandlers;
 };
 
 class rpc_engine
@@ -137,8 +84,7 @@ public:
     // management routines
     //
     ::dsn::error_code start(
-        const service_app_spec& spec, 
-        io_modifer& ctx
+        const service_app_spec& spec
         );
     void start_serving() { _is_serving = true; }
 
@@ -146,83 +92,44 @@ public:
     // rpc registrations
     //
     bool  register_rpc_handler(rpc_handler_info* handler);
-    rpc_handler_info* unregister_rpc_handler(dsn_task_code_t rpc_code);
+    rpc_handler_info* unregister_rpc_handler(dsn_task_code_t rpc_code, const char* service_name);
 
     //
     // rpc routines
     //
-    void call(message_ex* request, rpc_response_task* call);    
     void on_recv_request(network* net, message_ex* msg, int delay_ms);
-    void reply(message_ex* response, error_code err = ERR_OK);
-    void forward(message_ex* request, rpc_address address);
-
+    void reply(message_ex* response, dsn_rpc_error_t err = RPC_ERR_OK);
+   
     //
     // information inquery
     //
     service_node* node() const { return _node; }
     ::dsn::rpc_address primary_address() const { return _local_primary_address; }
-    rpc_client_matcher* matcher() { return &_rpc_matcher; }
-    uri_resolver_manager* uri_resolver_mgr() { return _uri_resolver_mgr.get(); }
     void get_runtime_info(const safe_string& indent, const safe_vector<safe_string>& args, /*out*/ safe_sstream& ss);
-
-    // call with URI address only
-    void call_uri(rpc_address addr, message_ex* request, rpc_response_task* call);
-
-    // call with group address only
-    void call_group(rpc_address addr, message_ex* request, rpc_response_task* call);
-
-    // call with ip address only
-    void call_ip(rpc_address addr, message_ex* request, rpc_response_task* call, bool reset_request_id = false, bool set_forwarded = false);
-
-    // call with explicit address
-    void call_address(rpc_address addr, message_ex* request, rpc_response_task* call);
+    network* get_client_network(net_channel channel);
     
 private:
     network* create_network(
         const network_server_config& netcs, 
-        bool client_only,
-        network_header_format client_hdr_format,
-        io_modifer& ctx
+        bool client_only
         );
 
 private:
     configuration_ptr                                _config;    
     service_node                                     *_node;
-    std::vector<std::vector<network*>>               _client_nets; // <format, <CHANNEL, network*>>
+    std::vector<network*>                            _client_nets; // <CHANNEL, network*>
     std::unordered_map<int, std::vector<network*>>   _server_nets; // <port, <CHANNEL, network*>>
     ::dsn::rpc_address                               _local_primary_address;
-    rpc_client_matcher                               _rpc_matcher;
     rpc_server_dispatcher                            _rpc_dispatcher;   
 
-    std::unique_ptr<uri_resolver_manager>            _uri_resolver_mgr;
-    
     volatile bool                                    _is_running;
     volatile bool                                    _is_serving;
 };
 
 // ------------------------ inline implementations --------------------
-
-inline void rpc_engine::call_address(
-    rpc_address addr, 
-    message_ex* request, 
-    rpc_response_task* call
-    )
+inline network* rpc_engine::get_client_network(net_channel channel)
 {
-    switch (addr.type())
-    {
-    case HOST_TYPE_IPV4:
-        call_ip(addr, request, call);
-        break;
-    case HOST_TYPE_URI:
-        call_uri(addr, request, call);
-        break;
-    case HOST_TYPE_GROUP:
-        call_group(addr, request, call);
-        break;
-    default:
-        dassert(false, "invalid target address type %d", (int)request->server_address.type());
-        break;
-    }
+    return _client_nets[channel];
 }
 
 } // end namespace

@@ -35,16 +35,32 @@
 
 # pragma once
 
+// the C++ (cpp) service API is based atop of C API
 # include <dsn/service_api_c.h>
-//# include <dsn/utility/ports.h>
+
+// task, thread, error code C++ wrappers
 # include <dsn/cpp/auto_codes.h>
-# include <dsn/cpp/config_helper.h>
-# include <dsn/cpp/serialization.h>
-# include <dsn/cpp/serialization_helper/dsn.layer2.types.h>
-# include <dsn/cpp/rpc_stream.h>
-# include <dsn/cpp/zlocks.h>
-# include <dsn/cpp/clientlet.h>
-# include <dsn/cpp/serverlet.h>
-# include <dsn/cpp/service_app.h>
+
+// rpc address C++ wrappers
 # include <dsn/cpp/address.h>
+
+// rpc stream reader and writer C++ wrappers
+# include <dsn/cpp/rpc_stream.h>
+
+// task, timer, rpc, aio, C++ wrappers
+# include <dsn/cpp/service_api.h>
+
+// rpc server C++ wrappers
+# include <dsn/cpp/rpc_service.h>
+
+// lock, wrlock, semaphore, event, etc., C++ wrappers
+# include <dsn/cpp/zlocks.h>
+
+// app model C++ wrappers
+# include <dsn/cpp/service_app.h>
+
+// configuration macro wrappers
+# include <dsn/cpp/config_helper.h>
+
+// performance test C++ wrappers
 # include <dsn/cpp/perf_test_helper.h>

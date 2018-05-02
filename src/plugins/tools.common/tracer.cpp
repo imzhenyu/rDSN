@@ -55,19 +55,18 @@ namespace dsn {
                     callee->spec().name.c_str(),
                     callee->id(),
                     dsn_task_type_to_string(type),
-                    tsk->get_request()->header->rpc_name,
+                    tsk->get_request()->dheader.rpc_name,
                     tsk->get_request()->header->trace_id
                     );
             }
             else if (TASK_TYPE_RPC_RESPONSE == type)
             {
                 rpc_response_task* tsk = (rpc_response_task*)callee;
-                ddebug("%s CREATE, task_id = %016" PRIx64 ", type = %s, rpc_name = %s, trace_id = %016" PRIx64 "",
+                ddebug("%s CREATE, task_id = %016" PRIx64 ", type = %s, trace_id = %016" PRIx64 "",
                     callee->spec().name.c_str(),
                     callee->id(),
                     dsn_task_type_to_string(type),
-                    tsk->get_request()->header->rpc_name,
-                    tsk->get_request()->header->trace_id
+                    tsk->trace_id()
                     );
             }
             else
@@ -107,7 +106,7 @@ namespace dsn {
                 ddebug("%s EXEC BEGIN, task_id = %016" PRIx64 ", %s => %s, trace_id = %016" PRIx64 "",
                     this_->spec().name.c_str(),
                     this_->id(),
-                    tsk->get_request()->header->from_address.to_string(),
+                    tsk->get_request()->from_address.to_string(),
                     tsk->get_request()->to_address.to_string(),
                     tsk->get_request()->header->trace_id
                     );
@@ -116,12 +115,10 @@ namespace dsn {
             case dsn_task_type_t::TASK_TYPE_RPC_RESPONSE:
             {
                 rpc_response_task* tsk = (rpc_response_task*)this_;
-                ddebug("%s EXEC BEGIN, task_id = %016" PRIx64 ", %s => %s, trace_id = %016" PRIx64 "",
+                ddebug("%s EXEC BEGIN, task_id = %016" PRIx64 ", trace_id = %016" PRIx64 "",
                     this_->spec().name.c_str(),
                     this_->id(),
-                    tsk->get_request()->to_address.to_string(),
-                    tsk->get_request()->header->from_address.to_string(),
-                    tsk->get_request()->header->trace_id
+                    tsk->trace_id()
                     );
             }
                 break;
@@ -188,8 +185,8 @@ namespace dsn {
             message_header& hdr = *req->header;
             ddebug(
                 "%s RPC.CALL: %s => %s, trace_id = %016" PRIx64 ", callback_task = %016" PRIx64 ", timeout = %d ms",
-                hdr.rpc_name,
-                req->header->from_address.to_string(),
+                req->dheader.rpc_name,
+                req->from_address.to_string(),
                 req->to_address.to_string(),
                 hdr.trace_id,
                 callee ? callee->id() : 0,
@@ -203,7 +200,7 @@ namespace dsn {
                 callee->spec().name.c_str(),
                 callee,
                 callee->id(),
-                callee->get_request()->header->from_address.to_string(),
+                callee->get_request()->from_address.to_string(),
                 callee->get_request()->to_address.to_string(),
                 callee->get_request()->header->trace_id,
                 task::get_current_queue_length()
@@ -217,8 +214,8 @@ namespace dsn {
 
             ddebug(
                 "%s RPC.REPLY: %s => %s, trace_id = %016" PRIx64 "",
-                hdr.rpc_name,
-                msg->header->from_address.to_string(),
+                msg->dheader.rpc_name,
+                msg->from_address.to_string(),
                 msg->to_address.to_string(),
                 hdr.trace_id
                 );
@@ -226,12 +223,10 @@ namespace dsn {
 
         static void tracer_on_rpc_response_enqueue(rpc_response_task* resp)
         {
-            ddebug("%s RPC.RESPONSE.ENQUEUE, task_id = %016" PRIx64 ", %s => %s, trace_id = %016" PRIx64 ", queue size = %d",
+            ddebug("%s RPC.RESPONSE.ENQUEUE, task_id = %016" PRIx64 ", trace_id = %016" PRIx64 ", queue size = %d",
                 resp->spec().name.c_str(),
                 resp->id(),
-                resp->get_request()->to_address.to_string(),
-                resp->get_request()->header->from_address.to_string(),
-                resp->get_request()->header->trace_id,
+                resp->trace_id(),
                 task::get_current_queue_length()
                 );
         }
@@ -239,7 +234,7 @@ namespace dsn {
         static void tracer_on_rpc_create_response(message_ex* req, message_ex* resp)
         {
             ddebug("%s RPC.CREATE.RESPONSE, trace_id = %016" PRIx64 "",
-                resp->header->rpc_name,
+                resp->dheader.rpc_name,
                 resp->header->trace_id
                 );
         }

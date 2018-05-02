@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/c++    -std=c++1y -std=c++1y -std=c++1y -std=c++1y -std=c++1y -std=c++1y -std=c++0x -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/protoc.dir/__/src/google/protobuf/compiler/main.cc.o  -o protoc  libprotobuf.a libprotoc.a libprotobuf.a /usr/lib/libz.dylib 

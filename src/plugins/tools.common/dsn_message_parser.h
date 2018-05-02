@@ -26,10 +26,10 @@
 
 /*
 * Description:
-*     message parser for browser-generated http request
+*     message parser for dsn native request
 *
 * Revision history:
-*     Jun. 2016, Zuoyan Qin, first version
+*     Jun. 2015, Zhenyu Guo, first version
 *     xxxx-xx-xx, author, fix bug about xxx
 */
 
@@ -44,7 +44,7 @@ namespace dsn
     class dsn_message_parser : public message_parser
     {
     public:
-        dsn_message_parser() : _header_checked(false) {}
+        dsn_message_parser(bool is_client) : message_parser(is_client), _header_checked(false) {}
         virtual ~dsn_message_parser() {}
 
         virtual void reset() override;
@@ -59,8 +59,6 @@ namespace dsn
 
     private:
         static bool is_right_header(char* hdr);
-
-        static bool is_right_body(message_ex* msg);
 
     private:
         bool _header_checked;

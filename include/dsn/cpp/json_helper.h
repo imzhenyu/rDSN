@@ -45,8 +45,8 @@
 #include <cctype>
 #include <dsn/utility/autoref_ptr.h>
 #include <dsn/cpp/auto_codes.h>
-#include <dsn/cpp/utils.h>
-#include <dsn/cpp/serialization_helper/dsn.layer2.types.h>
+#include <dsn/utility/misc.h>
+//#include <dsn/cpp/serialization_helper/dsn.layer2.types.h>
 
 #define JsonSplitter "{}[]:,\""
 
@@ -111,6 +111,37 @@ void decode_json_state(dsn::json::string_tokenizer& in) \
 {\
     JSON_DECODE_ENTRIES(in, *this, __VA_ARGS__);\
 }
+
+#define DEFINE_JSON_GLOBAL_SERIALIZATION(T) \
+    inline void marshall( ::dsn::binary_writer& writer, const T &value) \
+    { \
+        std::stringstream out; \
+        value.encode_json_state(out);\
+        writer.write(out.str()); \
+    } \
+    inline void unmarshall( ::dsn::binary_reader& reader, T &value) \
+    { \
+        std::string str; \
+        reader.read(str); \
+        ::dsn::json::string_tokenizer tokenizer(str); \
+        value.decode_json_state(tokenizer); \
+    }
+
+#define DEFINE_JSON_GLOBAL_SERIALIZATION_WITHOUT_LENGTH(T) \
+    inline void marshall( ::dsn::binary_writer& writer, const T &value) \
+    { \
+        std::stringstream out; \
+        value.encode_json_state(out);\
+        auto s = out.str(); \
+        writer.write(s.c_str(), s.length()); \
+    } \
+    inline void unmarshall( ::dsn::binary_reader& reader, T &value) \
+    { \
+        auto bb = reader.get_remaining_buffer(); \
+        std::string str(bb.data(), bb.length()); \
+        ::dsn::json::string_tokenizer tokenizer(str); \
+        value.decode_json_state(tokenizer); \
+    }
 
 #define ENUM_TYPE_SERIALIZATION(EnumType, InvalidEnum) \
 inline void json_encode(std::stringstream& out, const EnumType& enum_variable)\
@@ -219,7 +250,7 @@ inline void json_decode(string_tokenizer& in, TName& t)\
     is >> t;\
 }
 
-DSN_BASE_TYPE_JSON_STATE(bool)
+//DSN_BASE_TYPE_JSON_STATE(bool)
 DSN_BASE_TYPE_JSON_STATE(float)
 DSN_BASE_TYPE_JSON_STATE(double)
 DSN_BASE_TYPE_JSON_STATE(int8_t)
@@ -250,6 +281,22 @@ inline void json_decode(string_tokenizer& in, std::string& t)
     in.forward();
 }
 
+inline void json_encode(std::stringstream& out, const bool t)
+{
+    out << t;
+}
+
+inline void json_decode(string_tokenizer& in, bool& t)
+{
+    int start_pos = in.tell();
+    in.walk_until_json_splitter();
+    std::string string_data;
+    in.assign(start_pos, in.tell(), string_data);
+    std::istringstream is(string_data);
+    is >> std::boolalpha >> t;
+}
+
+/*
 ENUM_TYPE_SERIALIZATION(dsn::app_status::type, dsn::app_status::AS_INVALID)
 
 inline void json_encode(std::stringstream& out, const dsn::gpid& pid)
@@ -264,7 +311,7 @@ inline void json_decode(dsn::json::string_tokenizer& in, dsn::gpid& pid)
     sscanf(gpid_message.c_str(), "%d.%d", &c_gpid.u.app_id, &c_gpid.u.partition_index);
     pid = dsn::gpid(c_gpid);
 }
-
+*/
 inline void json_encode(std::stringstream& out, const dsn::rpc_address& address)
 {
     out << "\"" << address.to_string() << "\"";
@@ -275,11 +322,12 @@ inline void json_decode(dsn::json::string_tokenizer& in, dsn::rpc_address& addre
     json_decode(in, rpc_address_string);
     address.from_string_ipv4(rpc_address_string.c_str());
 }
-
+/*
 inline void json_encode(std::stringstream& out, const dsn::partition_configuration& config);
 inline void json_decode(string_tokenizer& in, dsn::partition_configuration& config);
 inline void json_encode(std::stringstream& out, const dsn::app_info& info);
 inline void json_decode(string_tokenizer& in, dsn::app_info& info);
+*/
 
 template<typename T> inline void json_encode_iterable(std::stringstream& out, const T& t)
 {
@@ -510,7 +558,7 @@ public:
         return true;
     }
 };
-
+/*
 inline void json_encode(std::stringstream& out, const dsn::partition_configuration& config)
 {
     JSON_ENCODE_ENTRIES(out, config, pid, ballot, max_replica_count, primary, secondaries, last_drops, last_committed_decree);
@@ -527,4 +575,5 @@ inline void json_decode(dsn::json::string_tokenizer& in, dsn::app_info& info)
 {
     JSON_DECODE_ENTRIES(in, info, status, app_type, app_name, app_id, partition_count, envs, is_stateful, max_replica_count);
 }
+*/
 }}

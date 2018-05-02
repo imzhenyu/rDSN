@@ -38,14 +38,14 @@
 #include <dsn/utility/priority_queue.h>
 #include "group_address.h"
 #include <dsn/cpp/test_utils.h>
-#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <string>
 #include <queue>
 
 typedef std::function<void(error_code, dsn_message_t, dsn_message_t)> rpc_reply_handler;
-
-static ::dsn::rpc_address build_group() {
+/*
+static ::dsn::rpc_address build_group() 
+{
     ::dsn::rpc_address server_group;
     server_group.assign_group(dsn_group_build("server_group.test"));
     for (uint16_t p = TEST_PORT_BEGIN; p<=TEST_PORT_END; ++p) {
@@ -59,14 +59,14 @@ static ::dsn::rpc_address build_group() {
 static void destroy_group(::dsn::rpc_address group) {
     dsn_group_destroy(group.group_handle());
 }
-
+*/
 static ::dsn::rpc_address dsn_address_from_string(const std::string& str) 
 {
     size_t pos = str.find(":");
     if (pos != std::string::npos)
     {
         std::string host = str.substr(0, pos);
-        uint16_t port = boost::lexical_cast<uint16_t>(str.substr(pos + 1));
+        uint16_t port = (uint16_t)atoi(str.substr(pos + 1).c_str());
         return ::dsn::rpc_address(host.c_str(), port);
     }
     else
@@ -76,23 +76,189 @@ static ::dsn::rpc_address dsn_address_from_string(const std::string& str)
     }
 }
 
-TEST(core, rpc)
-{
-    std::string req = "";
-    ::dsn::rpc_address server("localhost", 20101);
 
+class test_channel3
+{
+public:
+    test_channel3(const char* host, uint16_t port, net_header_format fmt, bool is_async = true)
+    {
+        rpc_address addr(host, port);
+        _ch = dsn_rpc_channel_open(addr.to_string(), "NET_CHANNEL_TCP", fmt.to_string(), is_async);
+    }
+
+    ~test_channel3()
+    {
+        if (_ch != nullptr)
+        {
+            dsn_rpc_channel_close(_ch);
+        }
+    }
+
+    dsn_channel_t get() { return _ch; }
+
+private:
+    dsn_channel_t _ch;
+};
+
+DEFINE_NET_PROTOCOL(NET_HDR_RAW)
+TEST(core, rpc_async)
+{
+    for (int i = 0; i <= net_header_format::max_value(); i++)
+    {
+        std::string req = "xxx";
+        auto fmt = net_header_format(net_header_format::to_string(i));
+        if (fmt == NET_HDR_INVALID || fmt == NET_HDR_RAW)
+            continue;
+
+        printf("test protocol %s\n", fmt.to_string());
+        test_channel3 server("localhost", 20101, fmt, true);
+
+        auto result = ::dsn::rpc::call_wait<std::string>(
+            server.get(),
+            RPC_TEST_HASH,
+            req,
+            std::chrono::milliseconds(0),
+            1
+            );
+        EXPECT_TRUE(result.first == ERR_OK);
+
+        EXPECT_TRUE(result.second == "server");
+    }
+}
+
+TEST(core, rpc_sync)
+{
+    for (int i = 0; i <= net_header_format::max_value(); i++)
+    {
+        std::string req = "xxx";
+        auto fmt = net_header_format(net_header_format::to_string(i));
+        if (fmt == NET_HDR_INVALID || fmt == NET_HDR_RAW)
+            continue;
+
+        printf("test protocol %s\n", fmt.to_string());
+        test_channel3 server("localhost", 20101, fmt, false);
+
+        auto result = ::dsn::rpc::call_wait<std::string>(
+            server.get(),
+            RPC_TEST_HASH,
+            req,
+            std::chrono::milliseconds(0),
+            1
+            );
+        EXPECT_TRUE(result.first == ERR_OK);
+
+        EXPECT_TRUE(result.second == "server");
+    }
+}
+
+TEST(core, rpc_close_channel_fast)
+{
+    std::atomic<int> total(0);
+    {
+        test_channel3 server("localhost", 20101, NET_HDR_DSN);
+
+        for (int i = 0; i < 10; i++)
+        {
+            std::string req = "xxx";
+        
+            ::dsn::rpc::call(server.get(), 
+                RPC_TEST_HASH, 
+                req, 
+                [j=i,&total](error_code err, std::string&& resp) {
+                    printf("callback for rpc %d, total = %d\n", j, ++total);
+                },
+                std::chrono::milliseconds(5000)
+            );
+        }
+    }
+
+    while (total.load() != 10)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+TEST(core, rpc_big_payload)
+{
+    auto fmt = NET_HDR_DSN;
+    test_channel3 server("localhost", 20101, fmt);
+
+    int meta_info_big_payload_size = strlen(big_payload);
+    auto req = dsn_msg_create_request(RPC_TEST_BIG_PAYLOAD);
+    ::dsn::marshall(req, meta_info_big_payload_size);
+    dsn_msg_append(req,
+        (void*)big_payload,
+        (size_t)meta_info_big_payload_size,
+        (void*)0xdeadbeef, 
+        [](void* context, void* buf)
+        {
+            dassert((void*)0xdeadbeef == context, "");
+            dassert(buf == (void*)big_payload, "");
+        }
+        );
+
+    auto resp = dsn_rpc_call_wait(server.get(), req);
+    EXPECT_TRUE(resp != nullptr);
+
+    bool succ;
+    ::dsn::unmarshall(resp, succ);
+
+    dsn_msg_destroy(resp);
+
+    EXPECT_TRUE(succ);
+}
+
+
+TEST(core, rpc_multi_thread)
+{
+    auto fmt = NET_HDR_DSN;
+    test_channel3 server("localhost", 20101, fmt);
+
+    int total = dsn_config_get_value_uint64("test", "rpc_total", 100, 
+        "# of concurrent rpc calls issued by unit test core.rpc_multi_thread");
+    std::atomic<int> count(total);
+
+    for (int i = 0; i < total; i++)
+    {
+        ::dsn::tasking::enqueue(
+            LPC_TEST_HASH,
+            [&count, &server]()
+        {
+            std::string req = "xxx";
+            ::dsn::rpc::call(
+                server.get(),
+                RPC_TEST_HASH,
+                req,
+                [&count](::dsn::error_code err, std::string&& resp)
+                {
+                    EXPECT_EQ(err, ERR_OK);
+                    --count;
+                },
+                std::chrono::milliseconds(5000)
+            );
+        }
+        );
+    }
+
+    while (count.load() != 0)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    std::string req = "xxx";
     auto result = ::dsn::rpc::call_wait<std::string>(
-        server,
+        server.get(),
         RPC_TEST_HASH,
         req,
         std::chrono::milliseconds(0),
         1
         );
-    EXPECT_TRUE(result.first == ERR_OK);
 
-    EXPECT_TRUE(result.second == "server");
+    EXPECT_EQ(result.first, ERR_OK);
 }
 
+
+/*
 TEST(core, group_address_talk_to_others)
 {
     ::dsn::rpc_address addr = build_group();
@@ -105,22 +271,23 @@ TEST(core, group_address_talk_to_others)
         EXPECT_TRUE(addr_got.from_string_ipv4(result.c_str()));
         EXPECT_EQ(TEST_PORT_END, addr_got.port());
     };
-/*
-    std::vector<task_ptr> resp_tasks;
-    for (unsigned int i=0; i<10; ++i) {
-         ::dsn::task_ptr resp_task = ::dsn::rpc::call(addr, dsn_task_code_t(RPC_TEST_STRING_COMMAND), std::string("expect_talk_to_others"),
-                                          nullptr, typed_callback);
-         resp_tasks.push_back(resp_task);
-    }
+///
+//    std::vector<task_ptr> resp_tasks;
+//    for (unsigned int i=0; i<10; ++i) {
+//         ::dsn::task_ptr resp_task = ::dsn::rpc::call(addr, dsn_task_code_t(RPC_TEST_STRING_COMMAND), std::string("expect_talk_to_others"),
+//                                          nullptr, typed_callback);
+//         resp_tasks.push_back(resp_task);
+//    }
 
-    for (unsigned int i=0; i<10; ++i)
-        resp_tasks[i]->wait();
-*/
+//    for (unsigned int i=0; i<10; ++i)
+ //       resp_tasks[i]->wait();
+
     ::dsn::task_ptr resp = ::dsn::rpc::call(addr, dsn_task_code_t(RPC_TEST_STRING_COMMAND), std::string("expect_talk_to_others"),
                                               nullptr, typed_callback);
     resp->wait();
     destroy_group(addr);
 }
+
 
 TEST(core, group_address_change_leader)
 {
@@ -247,7 +414,7 @@ TEST(core, group_address_no_response_2)
 TEST(core, send_to_invalid_address)
 {
     ::dsn::rpc_address group = build_group();
-    /* here we assume 10.255.254.253:32766 is not assigned */
+    // here we assume 10.255.254.253:32766 is not assigned 
     dsn_group_set_leader(group.group_handle(), ::dsn::rpc_address("10.255.254.253", 32766).c_addr());
 
     rpc_reply_handler action_on_succeed = [](error_code err, dsn_message_t, dsn_message_t resp) {
@@ -263,3 +430,5 @@ TEST(core, send_to_invalid_address)
     send_message(group, std::string("echo hehehe"), 1, action_on_succeed, action_on_failure);
     destroy_group(group);
 }
+
+*/

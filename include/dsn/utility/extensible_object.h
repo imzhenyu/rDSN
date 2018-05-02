@@ -35,7 +35,8 @@
 
 # pragma once
 
-# include <dsn/cpp/utils.h>
+# include <dsn/utility/dlib.h>
+# include <dsn/utility/misc.h>
 # include <vector>
 # include <atomic>
 # include <cassert>

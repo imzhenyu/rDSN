@@ -50,7 +50,7 @@ namespace dsn {
 
         dsn_handle_t register_command(const safe_vector<const char*>& commands, const char* help_one_line, const char* help_long, command_handler handler);
         void deregister_command(dsn_handle_t handle);
-        bool run_command(const safe_string& cmdline, /*out*/ safe_string& output);
+        bool run_command(const char* cmdline, /*out*/ safe_string& output);
         void run_console();
         void start_local_cli();
         void start_remote_cli();

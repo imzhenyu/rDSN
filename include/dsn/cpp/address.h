@@ -45,19 +45,12 @@
 # include <string>
 # include <cstdlib>
 
-#ifdef DSN_USE_THRIFT_SERIALIZATION
-# include <thrift/protocol/TProtocol.h>
-#endif
-
 namespace dsn
 {
     /*!
     @addtogroup rpc-addr
     @{
     */
-    class rpc_group_address;
-    class rpc_uri_address;
-    
     class rpc_address
     {
     public:
@@ -65,12 +58,11 @@ namespace dsn
 
         rpc_address(uint32_t ip, uint16_t port);
         rpc_address(const char* host, uint16_t port);
+        rpc_address(const char* host_and_port);
 
         void assign_ipv4(uint32_t ip, uint16_t port);
         void assign_ipv4(const char* host, uint16_t port);
         void assign_ipv4_local_address(const char* card_interface, uint16_t port);
-        void assign_uri(dsn_uri_t uri);
-        void assign_group(dsn_group_t g);        
 
         rpc_address();
         rpc_address(const rpc_address& addr);
@@ -85,21 +77,12 @@ namespace dsn
         dsn_address_t* c_addr_ptr() { return &_addr; }
         uint32_t ip() const { return (uint32_t)_addr.u.v4.ip; }
         uint16_t port() const { return (uint16_t)_addr.u.v4.port; }
-        rpc_group_address* group_address() const { return (rpc_group_address*)(uintptr_t)_addr.u.group.group; }
-        dsn_group_t group_handle() const { return (dsn_group_t)(uintptr_t)_addr.u.group.group; }
-        rpc_uri_address* uri_address() const { return (rpc_uri_address*)(uintptr_t)_addr.u.uri.uri; }
-        dsn_uri_t uri_handle() const { return (dsn_group_t)(uintptr_t)_addr.u.uri.uri; }
         bool is_invalid() const { return _addr.u.v4.type == HOST_TYPE_INVALID; }
         void set_invalid() { clear(); }
 
         bool operator == (::dsn::rpc_address r) const;
         bool operator != (::dsn::rpc_address r) const;
         bool operator <  (::dsn::rpc_address r) const;
-
-#ifdef DSN_USE_THRIFT_SERIALIZATION
-        uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-        uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-#endif
     private:
         void clear();
 
@@ -107,17 +90,6 @@ namespace dsn
         dsn_address_t       _addr;
     };
 
-    class url_host_address : public rpc_address
-    {
-    public:
-        // dsn://mycluster/myapp, or host-name:port
-        url_host_address(const char* url_or_host_port);
-        url_host_address() {}
-
-    private:
-        std::string _url_host; //< make sure the buffer is valid
-    };
-    
     // ------------- inline implementation -------------------
     inline rpc_address::rpc_address(uint32_t ip, uint16_t port)
     {
@@ -130,6 +102,18 @@ namespace dsn
     inline rpc_address::rpc_address(const char* host, uint16_t port)
     {
         assign_ipv4(host, port);
+    }
+
+    inline rpc_address::rpc_address(const char* host_and_port)
+    {
+        std::string s(host_and_port);
+        auto sp = s.find(':');
+        if (sp != std::string::npos)
+        {
+            uint16_t port = (uint16_t)atoi(s.substr(sp + 1).c_str());
+            s = s.substr(0, sp);
+            assign_ipv4(s.c_str(), port);
+        }
     }
 
     inline void rpc_address::assign_ipv4(uint32_t ip, uint16_t port)
@@ -156,20 +140,6 @@ namespace dsn
         _addr.u.v4.port = port;
     }
 
-    inline void rpc_address::assign_uri(dsn_uri_t uri)
-    {
-        clear();
-        _addr.u.v4.type = HOST_TYPE_URI;
-        _addr.u.uri.uri = (uint64_t)uri;
-    }
-
-    inline void rpc_address::assign_group(dsn_group_t g)
-    {
-        clear();
-        _addr.u.v4.type = HOST_TYPE_GROUP;
-        _addr.u.group.group = (uint64_t)g;
-    }
-
     inline rpc_address::rpc_address()
     {
         _addr.u.value = 0;
@@ -194,20 +164,7 @@ namespace dsn
 
     inline bool rpc_address::operator == (::dsn::rpc_address r) const
     {
-        if (_addr.u.v4.type != r.type())
-            return false;
-
-        switch (_addr.u.v4.type)
-        {
-        case HOST_TYPE_IPV4:
-            return _addr.u.v4.ip == r.ip() && _addr.u.v4.port == r.port();
-        case HOST_TYPE_URI:
-            return strcmp(to_string(), r.to_string()) == 0;
-        case HOST_TYPE_GROUP:
-            return _addr.u.group.group == r.c_addr().u.group.group;
-        default:
-            return true;
-        }
+        return _addr.u.value == r._addr.u.value;
     }
 
     inline bool rpc_address::operator != (::dsn::rpc_address r) const
@@ -224,10 +181,6 @@ namespace dsn
         {
         case HOST_TYPE_IPV4:
             return _addr.u.v4.ip < r.ip() || (_addr.u.v4.ip == r.ip() && _addr.u.v4.port < r.port());
-        case HOST_TYPE_URI:
-            return strcmp(to_string(), r.to_string()) < 0;
-        case HOST_TYPE_GROUP:
-            return _addr.u.group.group < r.c_addr().u.group.group;
         default:
             return true;
         }
@@ -262,26 +215,6 @@ namespace dsn
             return true;
         }
     }
-
-    inline url_host_address::url_host_address(const char* url_or_host_port)
-    {
-        std::string s(url_or_host_port);
-        auto sp = s.find(':');
-        if (sp != std::string::npos)
-        {
-            uint16_t port = (uint16_t)atoi(s.substr(sp + 1).c_str());
-            if (port == 0)
-            {
-                _url_host = std::string(url_or_host_port);
-                assign_uri(dsn_uri_build(_url_host.c_str()));
-            }
-            else
-            {
-                s = s.substr(0, sp);
-                assign_ipv4(s.c_str(), port);
-            }
-        }
-    }
     /*@}*/
 }
 
@@ -296,10 +229,6 @@ namespace std
             {
             case HOST_TYPE_IPV4:
                 return std::hash<uint32_t>()(ep.ip()) ^ std::hash<uint16_t>()(ep.port());
-            case HOST_TYPE_URI:
-                return std::hash<std::string>()(std::string(ep.to_string()));
-            case HOST_TYPE_GROUP:
-                return std::hash<void*>()(ep.group_address());
             default:
                 return 0;
             }

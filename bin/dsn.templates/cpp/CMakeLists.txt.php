@@ -2,72 +2,58 @@
 require_once($argv[1]); // type.php
 require_once($argv[2]); // program.php
 $file_prefix = $argv[3];
-$idl_format = $argv[4];
-
-$my_serialization = "";
-if ($idl_format == "thrift")
+$top_dir = __DIR__."/../../..";
+$libprotobuf = "protobuf";
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') 
 {
-    $my_serialization = "thrift";
-} else if ($idl_format == "proto")
-{
-    $my_serialization = "protobuf";
+    $top_dir = str_replace("\\", "/", $top_dir);
+    $libprotobuf = "lib".$libprotobuf;
 }
 ?>
-set(MY_PROJ_NAME "<?=$_PROG->name?>")
 
-if (DEFINED DSN_CMAKE_INCLUDED)
-else()
-    project(${MY_PROJ_NAME} C CXX)
-    set(DSN_ROOT "$ENV{DSN_ROOT}")
-    if(NOT EXISTS "${DSN_ROOT}/")
-        message(FATAL_ERROR "Please make sure that ${DSN_ROOT} exists.")
-    endif()
+cmake_minimum_required(VERSION 2.8.1)
 
-    include("${DSN_ROOT}/bin/dsn.cmake")
-endif()
+project("<?=$_PROG->name?>" C CXX)
 
-# Source files under CURRENT project directory will be automatically included.
-# You can manually set MY_PROJ_SRC to include source files under other directories.
+include("<?=$top_dir?>/bin/dsn.cmake")
+ms_check_cxx11_support()
+dsn_setup_compiler_flags()
+
+include_directories(<?=$top_dir?>/include)
+link_directories(<?=$top_dir?>/lib)
+
+set(PROJ_SRC "")
 file(GLOB
-    MY_PROJ_SRC
-<?php if ($idl_format == "thrift") { ?>
-   "${CMAKE_CURRENT_SOURCE_DIR}/thrift/*.cpp"
-   "${CMAKE_CURRENT_SOURCE_DIR}/thrift/*.h"
-<?php } else { ?>
-    ""
-<?php } ?>
-)
-
-# Search mode for source files under CURRENT project directory?
-# "GLOB_RECURSE" for recursive search
-# "GLOB" for non-recursive search
-set(MY_SRC_SEARCH_MODE "GLOB")
-
-set(MY_PROJ_INC_PATH "")
-
-set(MY_PROJ_LIBS "")
-
-set(MY_PROJ_LIB_PATH "")
-
-set(INI_FILES "")
-
-set(MY_SERIALIZATION_TYPE "<?=$my_serialization?>")
-
-file(GLOB
-    RES_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/*.ini"
-    "${CMAKE_CURRENT_SOURCE_DIR}/*.sh"
-    "${CMAKE_CURRENT_SOURCE_DIR}/*.cmd"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Dockerfile"
+    PROJ_SRC
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.pb.*"
     )
 
-# Extra files that will be installed
-set(MY_BINPLACES ${RES_FILES})
+set(PROJ_LIBS "")
+if (UNIX)
+    if((NOT APPLE))
+        set(PROJ_LIBS ${PROJ_LIBS} rt)
+    endif ()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        set(PROJ_LIBS ${PROJ_LIBS} aio dl)
+    endif()
+    if((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD"))
+        set(PROJ_LIBS ${PROJ_LIBS} util)
+    endif()
+    find_package (Threads)
+    set(PROJ_LIBS ${PROJ_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+endif ()
 
-set(MY_BOOST_PACKAGES "")
+add_executable(<?=$_PROG->name?>.multiapp ${PROJ_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/<?=$_PROG->name?>.multiapp.cpp)
+target_link_libraries(<?=$_PROG->name?>.multiapp dsn <?=$libprotobuf?> ${PROJ_LIBS})
 
-dsn_add_shared_library()
+add_executable(<?=$_PROG->name?>.server ${PROJ_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/<?=$_PROG->name?>.server.cpp)
+target_link_libraries(<?=$_PROG->name?>.server dsn <?=$libprotobuf?> ${PROJ_LIBS})
 
-#add_custom_target( docker 
-#   COMMAND docker build -t "${MY_PROJ_NAME}-image" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MY_PROJ_NAME}")
-#add_dependencies( docker "${MY_PROJ_NAME}")
+add_executable(<?=$_PROG->name?>.client ${PROJ_SRC} ${CMAKE_CURRENT_SOURCE_DIR}/<?=$_PROG->name?>.client.cpp)
+target_link_libraries(<?=$_PROG->name?>.client dsn <?=$libprotobuf?> ${PROJ_LIBS})
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/<?=$_PROG->name?>.client.config.ini" DESTINATION "${CMAKE_BINARY_DIR}/bin")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/<?=$_PROG->name?>.server.config.ini" DESTINATION "${CMAKE_BINARY_DIR}/bin")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/<?=$_PROG->name?>.multiapp.config.ini" DESTINATION "${CMAKE_BINARY_DIR}/bin")

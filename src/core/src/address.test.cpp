@@ -58,10 +58,6 @@ static inline bool operator == (dsn_address_t l, dsn_address_t r)
     {
         case HOST_TYPE_IPV4:
             return l.u.v4.ip == r.u.v4.ip && l.u.v4.port == r.u.v4.port;
-        case HOST_TYPE_URI:
-            return strcmp((const char*)(uintptr_t)l.u.uri.uri, (const char*)(uintptr_t)r.u.uri.uri) == 0;
-        case HOST_TYPE_GROUP:
-            return l.u.group.group == r.u.group.group;
         default:
             return true;
     }
@@ -79,7 +75,11 @@ TEST(core, dsn_ipv4_from_host)
 TEST(core, dsn_ipv4_local)
 {
 #ifndef _WIN32
+#if defined(__APPLE__)
+    ASSERT_EQ(host_ipv4(127, 0, 0, 1), dsn_ipv4_local("lo0"));
+#else
     ASSERT_EQ(host_ipv4(127, 0, 0, 1), dsn_ipv4_local("lo"));
+#endif
     ASSERT_EQ(host_ipv4(0, 0, 0, 0), dsn_ipv4_local("not_exist_interface"));
 #endif
 }
@@ -95,27 +95,9 @@ TEST(core, dsn_address_to_string)
     }
 
     {
-        const char* uri = "http://localhost:8080/";
         dsn_address_t addr;
-        addr.u.uri.type = HOST_TYPE_URI;
-        addr.u.uri.uri = (uintptr_t)uri;
-        ASSERT_EQ(std::string(uri), dsn_address_to_string(addr));
-    }
-
-    {
-        const char* name = "test_group";
-        dsn_group_t g = dsn_group_build(name);
-        dsn_address_t addr;
-        addr.u.group.type = HOST_TYPE_GROUP;
-        addr.u.group.group = (uint64_t)g;
-        ASSERT_EQ(std::string(name), dsn_address_to_string(addr));
-        dsn_group_destroy(g);
-    }
-
-    {
-        dsn_address_t addr;
-        addr.u.uri.type = HOST_TYPE_INVALID;
-        ASSERT_EQ(std::string("invalid address"), dsn_address_to_string(addr));
+        addr.u.v4.type = HOST_TYPE_INVALID;
+        ASSERT_EQ(std::string("invalid"), dsn_address_to_string(addr));
     }
 }
 
@@ -131,31 +113,8 @@ TEST(core, dsn_address_build)
         ASSERT_EQ(addr, dsn_address_build("127.0.0.1", 8080));
         ASSERT_EQ(addr, dsn_address_build_ipv4(host_ipv4(127, 0, 0, 1), 8080));
     }
-
-    {
-        const char* uri = "http://localhost:8080/";
-        dsn_uri_t u = dsn_uri_build(uri);
-
-        dsn_address_t addr;
-        addr.u.uri.type = HOST_TYPE_URI;
-        addr.u.uri.uri = (uintptr_t)u;
-
-        
-        ASSERT_EQ(addr, dsn_address_build_uri(u));
-        dsn_uri_destroy(u);
-    }
-
-    {
-        const char* name = "test_group";
-        dsn_group_t g = dsn_group_build(name);
-        dsn_address_t addr;
-        addr.u.group.type = HOST_TYPE_GROUP;
-        addr.u.group.group = (uint64_t)g;
-        ASSERT_EQ(addr, dsn_address_build_group(g));
-        dsn_group_destroy(g);
-    }
 }
-
+/*
 TEST(core, rpc_group_address)
 {
     rpc_group_address g("test_group");
@@ -279,3 +238,4 @@ TEST(core, dsn_group)
 
     dsn_group_destroy(g);
 }
+*/

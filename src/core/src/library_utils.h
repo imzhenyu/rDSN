@@ -47,12 +47,13 @@
 namespace dsn {
     namespace utils {
         
-        extern dsn_handle_t load_dynamic_library(const char* module, const std::vector<std::string>& search_dirs);
+        extern void* load_dynamic_library(const char* module, const std::vector<std::string>& search_dirs);
 
-        extern dsn_handle_t load_symbol(dsn_handle_t hmodule, const char* symbol);
+        extern void* load_symbol(void* hmodule, const char* symbol);
 
-        extern void unload_dynamic_library(dsn_handle_t hmodule);
+        extern void unload_dynamic_library(void* hmodule);
 
+        extern const char* get_module_name(void* addr);
     }
 } // end namespace dsn::utils
 

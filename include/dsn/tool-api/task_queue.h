@@ -74,8 +74,8 @@ public:
     virtual task*    dequeue(/*inout*/int& batch_size) = 0;
     
     int               count() const { return _queue_length.load(std::memory_order_relaxed); }
-    int               decrease_count(int count = 1) { _queue_length_counter->add((uint64_t)(-count));  return _queue_length.fetch_sub(count, std::memory_order_relaxed) - count;}
-    int               increase_count(int count = 1) { _queue_length_counter->add(count);  return _queue_length.fetch_add(count, std::memory_order_relaxed) + count;}
+    int               decrease_count(int count = 1) { return _queue_length.fetch_sub(count, std::memory_order_relaxed) - count;}
+    int               increase_count(int count = 1) { return _queue_length.fetch_add(count, std::memory_order_relaxed) + count;}
     const safe_string & get_name() { return _name; }    
     task_worker_pool* pool() const { return _pool; }
     bool              is_shared() const { return _worker_count > 1; }
@@ -100,7 +100,6 @@ private:
     admission_controller*  _controller;
     int                    _worker_count;
     std::atomic<int>       _queue_length;
-    mutable perf_counter_ptr  _queue_length_counter;
     threadpool_spec*       _spec;
     volatile int           _virtual_queue_length;
 };

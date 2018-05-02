@@ -38,6 +38,7 @@
 # include <dsn/tool-api/perf_counter.h>
 # include <dsn/utility/singleton.h>
 # include <dsn/utility/synchronize.h>
+# include <dsn/cpp/safe_string.h>
 # include <map>
 # include <sstream>
 # include <queue>
@@ -72,11 +73,12 @@ public:
     static safe_string get_counter_value_i(const safe_vector<safe_string>& args);
     static safe_string get_counter_sample_i(const safe_vector<safe_string>& args);
     static safe_string get_counter_index(const safe_vector<safe_string>& args);
-
+    static safe_string get_all_counter_value(const safe_vector<safe_string>& args);
     typedef std::map<std::string, perf_counter_ptr > all_counters;
 
 private:
     safe_string list_counter_internal(const safe_vector<safe_string>& args);
+    safe_string all_counter_value_internal(const safe_vector<safe_string>& args);
     mutable utils::rw_lock_nr  _lock;
     all_counters               _counters;
     perf_counter::factory      _factory;

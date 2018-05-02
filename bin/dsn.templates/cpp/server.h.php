@@ -12,17 +12,17 @@ $_IDL_FORMAT = $argv[4];
 
 <?php foreach ($_PROG->services as $svc) { ?>
 class <?=$svc->name?>_service 
-    : public ::dsn::serverlet< <?=$svc->name?>_service>
+    : public ::dsn::rpc_service< <?=$svc->name?>_service>
 {
 public:
-    <?=$svc->name?>_service() : ::dsn::serverlet< <?=$svc->name?>_service>("<?=$svc->name?>") {}
+    <?=$svc->name?>_service(const char* name = "") : ::dsn::rpc_service< <?=$svc->name?>_service>(name) {}
     virtual ~<?=$svc->name?>_service() {}
 
 protected:
     // all service handlers to be implemented further
 <?php foreach ($svc->functions as $f) { ?>
     // <?=$f->get_rpc_code()?> 
-<?php     if ($f->is_one_way()) {?>
+<?php if ($f->is_one_way()) {?>
     virtual void on_<?=$f->name?>(const <?=$f->get_cpp_request_type_name()?>& args)
     {
         std::cout << "... exec <?=$f->get_rpc_code()?> ... (not implemented) " << std::endl;
@@ -38,18 +38,18 @@ protected:
 <?php } ?>
     
 public:
-    void open_service(dsn_gpid gpid)
+    void open_service(dsn_gpid gpid = dsn_gpid { .value = 0})
     {
 <?php foreach ($svc->functions as $f) { ?>
 <?php     if ($f->is_one_way()) {?>
-        this->register_rpc_handler(<?=$f->get_rpc_code()?>, "<?=$f->name?>", &<?=$svc->name?>_service::on_<?=$f->name?>, gpid);
+        this->register_rpc_handler(<?=$f->get_rpc_code()?>, "<?=$f->get_rpc_name()?>", &<?=$svc->name?>_service::on_<?=$f->name?>, gpid);
 <?php     } else {?>
-        this->register_async_rpc_handler(<?=$f->get_rpc_code()?>, "<?=$f->name?>", &<?=$svc->name?>_service::on_<?=$f->name?>, gpid);
+        this->register_async_rpc_handler(<?=$f->get_rpc_code()?>, "<?=$f->get_rpc_name()?>", &<?=$svc->name?>_service::on_<?=$f->name?>, gpid);
 <?php     } ?>
 <?php } ?>
     }
 
-    void close_service(dsn_gpid gpid)
+    void close_service(dsn_gpid gpid = dsn_gpid { .value = 0})
     {
 <?php foreach ($svc->functions as $f) { ?>
         this->unregister_rpc_handler(<?=$f->get_rpc_code()?>, gpid);

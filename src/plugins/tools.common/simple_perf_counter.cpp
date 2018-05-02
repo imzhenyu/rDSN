@@ -41,7 +41,6 @@
  */
 
 # include "simple_perf_counter.h"
-# include "shared_io_service.h"
 
 namespace dsn {
     namespace tools {
@@ -55,13 +54,13 @@ namespace dsn {
                 : perf_counter(app, section, name, type, dsptr), _val(0){}
             ~perf_counter_number(void) {}
 
-            virtual void   increment() { _val.fetch_add(1, std::memory_order_relaxed); }
-            virtual void   decrement() { _val.fetch_sub(1, std::memory_order_relaxed); }
-            virtual void   add(uint64_t val) { _val.fetch_add(val, std::memory_order_relaxed); }
-            virtual void   set(uint64_t val) { _val.store(val, std::memory_order_relaxed); }
-            virtual double get_value() { return static_cast<double>(_val.load(std::memory_order_relaxed)); }
-            virtual uint64_t get_integer_value() { return _val.load(std::memory_order_relaxed); }            
-            virtual double get_percentile(dsn_perf_counter_percentile_type_t type) { dassert(false, "invalid execution flow"); return 0.0; }
+            virtual void   increment() override { _val.fetch_add(1, std::memory_order_relaxed); }
+            virtual void   decrement() override { _val.fetch_sub(1, std::memory_order_relaxed); }
+            virtual void   add(uint64_t val) override { _val.fetch_add(val, std::memory_order_relaxed); }
+            virtual void   set(uint64_t val) override { _val.store(val, std::memory_order_relaxed); }
+            virtual double get_value() override { return static_cast<double>(_val.load(std::memory_order_relaxed)); }
+            virtual uint64_t get_integer_value() override { return _val.load(std::memory_order_relaxed); }            
+            virtual double get_percentile(dsn_perf_counter_percentile_type_t type) override { dassert(false, "invalid execution flow"); return 0.0; }
 
         private:
             std::atomic<uint64_t> _val;
@@ -79,11 +78,11 @@ namespace dsn {
             }
             ~perf_counter_rate(void) {}
 
-            virtual void   increment() { _val.fetch_add(1, std::memory_order_relaxed); }
-            virtual void   decrement() { _val.fetch_sub(1, std::memory_order_relaxed); }
-            virtual void   add(uint64_t val) { _val.fetch_add(val, std::memory_order_relaxed); }
-            virtual void   set(uint64_t val) { dassert(false, "invalid execution flow"); }
-            virtual double get_value()
+            virtual void   increment() override { _val.fetch_add(1, std::memory_order_relaxed); }
+            virtual void   decrement() override { _val.fetch_sub(1, std::memory_order_relaxed); }
+            virtual void   add(uint64_t val) override { _val.fetch_add(val, std::memory_order_relaxed); }
+            virtual void   set(uint64_t val) override { dassert(false, "invalid execution flow"); }
+            virtual double get_value() override 
             {
                 uint64_t now = dsn_now_ns();
                 uint64_t interval = now - qts;
@@ -92,8 +91,8 @@ namespace dsn {
                 _val = 0;
                 return val / interval * 1000 * 1000 * 1000;
             }
-            virtual uint64_t get_integer_value() { return (uint64_t)get_value(); }
-            virtual double get_percentile(dsn_perf_counter_percentile_type_t type) { dassert(false, "invalid execution flow"); return 0.0; }
+            virtual uint64_t get_integer_value() override { return (uint64_t)get_value(); }
+            virtual double get_percentile(dsn_perf_counter_percentile_type_t type) override { dassert(false, "invalid execution flow"); return 0.0; }
 
         private:
             std::atomic<uint64_t> _val;
@@ -102,7 +101,7 @@ namespace dsn {
 
         // -----------   NUMBER_PERCENTILE perf counter ---------------------------------
 
-        # define MAX_QUEUE_LENGTH 50000
+        # define MAX_QUEUE_LENGTH 1000
         # define _LEFT 0
         # define _RIGHT 1
         # define _QLEFT 2
@@ -119,33 +118,27 @@ namespace dsn {
                     "counter_computation_interval_seconds",
                     30,
                     "period (seconds) the system computes the percentiles of the counters");
-
-                _timer.reset(new boost::asio::deadline_timer(shared_io_service::instance().ios));
-                _timer->expires_from_now(boost::posix_time::seconds(rand() % _counter_computation_interval_seconds + 1));
-
-                this->add_ref();
-                _timer->async_wait(std::bind(&perf_counter_number_percentile::on_timer, this, _timer, std::placeholders::_1));
-
                 memset(_samples, 0, sizeof(_samples));
+                _last_calc_time_ms = 0;
             }
             
             ~perf_counter_number_percentile(void) 
             {
             }
 
-            virtual void   increment() { dassert(false, "invalid execution flow"); }
-            virtual void   decrement() { dassert(false, "invalid execution flow"); }
-            virtual void   add(uint64_t val) { dassert(false, "invalid execution flow"); }
-            virtual void   set(uint64_t val)
+            virtual void   increment() override { dassert(false, "invalid execution flow"); }
+            virtual void   decrement() override { dassert(false, "invalid execution flow"); }
+            virtual void   add(uint64_t val) override { dassert(false, "invalid execution flow"); }
+            virtual void   set(uint64_t val) override 
             {
                 auto idx = _tail.fetch_add(1, std::memory_order_relaxed);
                 _samples[idx % MAX_QUEUE_LENGTH] = val;
             }
 
-            virtual double get_value() { dassert(false, "invalid execution flow");  return 0.0; }
-            virtual uint64_t get_integer_value() { return (uint64_t)get_value(); }
+            virtual double get_value() override { dassert(false, "invalid execution flow");  return 0.0; }
+            virtual uint64_t get_integer_value() override { return (uint64_t)get_value(); }
 
-            virtual double get_percentile(dsn_perf_counter_percentile_type_t type)
+            virtual double get_percentile(dsn_perf_counter_percentile_type_t type) override 
             {
                 if (_tail == 0)
                     return -1.0;
@@ -154,6 +147,14 @@ namespace dsn {
                     dassert(false, "send a wrong counter percentile type");
                     return -1;
                 }
+                
+                uint64_t now_ms = ::dsn::utils::get_current_physical_time_ns() / 1000000;
+                if (_last_calc_time_ms + _counter_computation_interval_seconds * 1000 < now_ms) {
+                    _last_calc_time_ms = now_ms;
+                    std::unique_ptr<compute_context> ctx(new compute_context());
+                    calc(ctx);
+                }
+
                 return (double)_results[type];
             }
 
@@ -197,7 +198,7 @@ namespace dsn {
             };
 
         private:
-            inline void insert_calc_queue(boost::shared_ptr<compute_context>& ctx, int left, int right, int qleft, int qright, int &calc_tail)
+            inline void insert_calc_queue(std::unique_ptr<compute_context>& ctx, int left, int right, int qleft, int qright, int &calc_tail)
             {
                 calc_tail++;
                 ctx->calc_queue[calc_tail][_LEFT] = left;
@@ -207,7 +208,7 @@ namespace dsn {
                 return;
             }
 
-            uint64_t find_mid(boost::shared_ptr<compute_context>& ctx, int left, int right)
+            uint64_t find_mid(std::unique_ptr<compute_context>& ctx, int left, int right)
             {
                 if (left == right)
                     return ctx->mid_tmp[left];
@@ -230,7 +231,7 @@ namespace dsn {
                 return find_mid(ctx, 0, (right - left - 1) / 5);
             }
 
-            inline void select(boost::shared_ptr<compute_context>& ctx, int left, int right, int qleft, int qright, int &calc_tail)
+            inline void select(std::unique_ptr<compute_context>& ctx, int left, int right, int qleft, int qright, int &calc_tail)
             {
                 int i, j, index, now;
                 uint64_t mid;
@@ -277,7 +278,7 @@ namespace dsn {
                 return;
             }
 
-            void   calc(boost::shared_ptr<compute_context>& ctx)
+            void   calc(std::unique_ptr<compute_context>& ctx)
             {
                 if (_tail == 0)
                     return;
@@ -303,37 +304,8 @@ namespace dsn {
                 return;
             }
 
-            void on_timer(std::shared_ptr<boost::asio::deadline_timer> timer, const boost::system::error_code& ec)
-            {
-                //as the callback is not in tls context, so the log system calls like ddebug, dassert will cause a lock
-                if (!ec)
-                {
-                    // only when others also hold the reference
-                    if (this->get_count() > 1)
-                    {
-                        boost::shared_ptr<compute_context> ctx(new compute_context());
-                        calc(ctx);
-
-                        timer->expires_from_now(boost::posix_time::seconds(_counter_computation_interval_seconds));
-
-                        this->add_ref();
-                        timer->async_wait(std::bind(&perf_counter_number_percentile::on_timer, this, timer, std::placeholders::_1));
-                    }                    
-                }
-                else if (boost::system::errc::operation_canceled == ec)
-                {
-                    // ignore it if the timer is cancelled
-                }
-                else
-                {
-                    dassert(false, "on_timer error!!!");
-                }
-
-                this->release_ref();
-            }
-
-            std::shared_ptr<boost::asio::deadline_timer> _timer;
-            std::atomic<int> _tail;
+            std::atomic<uint64_t> _last_calc_time_ms;
+            std::atomic<unsigned int> _tail;
             uint64_t _samples[MAX_QUEUE_LENGTH];
             uint64_t _results[COUNTER_PERCENTILE_COUNT];
             int      _counter_computation_interval_seconds;

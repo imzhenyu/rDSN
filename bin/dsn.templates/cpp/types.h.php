@@ -13,34 +13,32 @@ foreach ($_PROG->enums as $e)
 {
     array_push($dsf_object, $e->name);
 }
-$idl_name = "";
-if ($idl_type == "thrift")
-{
-    $idl_name = "THRIFT";
-} else if ($idl_type == "proto")
-{
-    $idl_name = "PROTOBUF";
-}
 ?>
-#pragma once
-#include <dsn/service_api_cpp.h>
-#include <dsn/cpp/serialization.h>
-
-<?php if ($idl_type == "thrift") { ?>
-
-#include "<?=$_PROG->name?>_types.h"
-
-<?php } else if ($idl_type == "proto") {?>
-
-#include "<?=$_PROG->name?>.pb.h"
-
-<?php } ?>
+# pragma once
+# include <dsn/service_api_cpp.h>
+# include <dsn/cpp/serialization.h>
+# include <dsn/cpp/protobuf_helper.h>
+# include "<?=$_PROG->name?>.pb.h"
 
 <?=$_PROG->get_cpp_namespace_begin()?>
 
 <?php
-foreach ($_PROG->structs as $s){
-    Echo "    GENERATED_TYPE_SERIALIZATION(".$s->name.", ".$idl_name.")".PHP_EOL;
-} ?>
+foreach ($_PROG->structs as $s)
+{
+?>
+    // <?=$s->name?> 
+    inline void marshall(::dsn::binary_writer& writer, const <?=$s->name?>& value)
+    {
+        marshall_protobuf_binary(writer, value);
+    }
+
+    inline void unmarshall(::dsn::binary_reader& reader, /*out*/ <?=$s->name?>& value)
+    {
+        unmarshall_protobuf_binary(reader, value);
+    }
+
+<?php
+} 
+?>
 
 <?=$_PROG->get_cpp_namespace_end()?>

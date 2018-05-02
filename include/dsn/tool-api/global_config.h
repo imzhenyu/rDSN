@@ -37,6 +37,7 @@
 
 # include <dsn/service_api_c.h>
 # include <dsn/tool-api/task_spec.h>
+# include <dsn/tool-api/network_ids.h>
 # include <dsn/utility/dlib.h>
 # include <string>
 # include <map>
@@ -55,20 +56,20 @@ struct network_client_config
     DSN_API network_client_config();
 };
 
-typedef std::map<rpc_channel, network_client_config> network_client_configs;
+typedef std::map<net_channel, network_client_config> network_client_configs;
 
 struct network_server_config
 {
     // [ key
     int         port;
-    rpc_channel channel;
+    net_channel channel;
     // ]
 
     safe_string           factory_name;
     int                   message_buffer_block_size;
 
     DSN_API network_server_config();
-    DSN_API network_server_config(int p, rpc_channel c);
+    DSN_API network_server_config(int p, net_channel c);
     DSN_API network_server_config(const network_server_config& r);
     DSN_API bool operator < (const network_server_config& r) const;
 };
@@ -94,13 +95,14 @@ struct service_app_spec
                                 // specially, if role count is 1, then app_full_name equals to role_name
                                 // it is usually used for printing log
     safe_string          type;  // registered type name, alse named as "app_type"
+    safe_string          pname; // similar to name, but used for print
     safe_string          arguments;
     safe_vector<int>     ports;
     safe_list<dsn_threadpool_code_t> pools;
     int                  delay_seconds;
     bool                 run;
     int                  count; // index = 1,2,...,count
-    int                  ports_gap; // when count > 1 or service_spec.io_mode != IOE_PER_NODE
+    int                  ports_gap; // when count > 1
     safe_string          dmodule; // when the service is a dynamcially loaded module
 
     //
@@ -129,6 +131,7 @@ struct service_app_spec
 CONFIG_BEGIN(service_app_spec)
     CONFIG_FLD_STRING(type, "", "app type name, as given when registering by dsn_register_app")
     CONFIG_FLD_STRING(arguments, "", "arguments for the app instances")    
+    CONFIG_FLD_STRING(pname, "", "printing name for the app instances")    
     CONFIG_FLD_STRING(dmodule, "", "path of a dynamic library which implement this app role, and register itself upon loaded")
     CONFIG_FLD_STRING(dmodule_bridge_arguments, "",
         "\n; when the service cannot automatically register its app types into rdsn \n"
@@ -163,6 +166,7 @@ struct service_spec
     // when they write certain codes, esp. client side code.
     //
     bool                         enable_default_app_mimic;
+    safe_string                  main_thread_mapped_target;
     
     safe_string                  timer_factory_name;
     safe_string                  aio_factory_name;
@@ -188,12 +192,6 @@ struct service_spec
     safe_list<safe_string>       nfs_aspects;
     safe_list<safe_string>       logging_aspects;
 
-    ioe_mode                     disk_io_mode; // whether disk is per node or per queue
-    ioe_mode                     rpc_io_mode; // whether rpc is per node or per queue
-    ioe_mode                     nfs_io_mode; // whether nfs is per node or per queue
-    ioe_mode                     timer_io_mode; // whether timer is per node or per queue
-    int                          io_worker_count; // for disk and rpc when per node
-        
     network_client_configs        network_default_client_cfs; // default network configed by tools
     network_server_configs        network_default_server_cfs; // default network configed by tools
     safe_vector<threadpool_spec>  threadpool_specs;
@@ -201,12 +199,11 @@ struct service_spec
 
     // auto-set
     safe_string                   dir_coredump;
-    safe_string                   dir_log;
+    safe_string                   dir_log; 
 
     service_spec() {}
     bool init();
     bool init_app_specs();
-    int get_ports_delta(int app_id, dsn_threadpool_code_t pool, int queue_index) const;
 };
 
 CONFIG_BEGIN(service_spec)
@@ -214,12 +211,16 @@ CONFIG_BEGIN(service_spec)
     CONFIG_FLD_STRING_LIST(toollets, "use what toollets, e.g., tracer, profiler, fault_injector")
     CONFIG_FLD_STRING(data_dir, "./data", "where to put the all the data/log/coredump, etc..")
     CONFIG_FLD(bool, bool, start_nfs, false, "whether to start nfs")
-    CONFIG_FLD(bool, bool, enable_default_app_mimic, false,
+    CONFIG_FLD(bool, bool, enable_default_app_mimic, true,
         "whether to start a default service app for serving the rDSN calls made in\n"
         "; non-rDSN threads, so that developers do not need to write dsn_mimic_app call before them\n"
         "; in this case, a [apps.mimic] section must be defined in config files"
-        );   
-
+        )
+    CONFIG_FLD_STRING(main_thread_mapped_target, "",
+        "use main thread to replace a particular thread in a rDSN thread pool, "
+        "in the format of $app_type/$app_index(1,2,...)/$thread_pool_id/$thread_index(0,1,...), e.g., dsn.app.mimic/1/THREAD_POOL_IO/0, "
+        "meaning that main thread will replace the first thread in thread pool THREAD_POOL_IO in the first app with type = dsn.app.mimic"
+    )
     CONFIG_FLD_STRING(timer_factory_name, "", "timer service provider")
     CONFIG_FLD_STRING(aio_factory_name, "", "asynchonous file system provider")
     CONFIG_FLD_STRING(env_factory_name, "", "environment provider")
@@ -243,17 +244,6 @@ CONFIG_BEGIN(service_spec)
     CONFIG_FLD_STRING_LIST(semaphore_aspects, "semaphore aspect providers, usually for tooling purpose")
     CONFIG_FLD_STRING_LIST(nfs_aspects, "nfs aspect providers, usually for tooling purpose")
     CONFIG_FLD_STRING_LIST(logging_aspects, "logging aspect providers, usually for tooling purpose")
-
-    CONFIG_FLD_ENUM(ioe_mode, disk_io_mode, IOE_PER_NODE, IOE_INVALID, false,
-        "how many disk engines? IOE_PER_NODE, or IOE_PER_QUEUE")
-    CONFIG_FLD_ENUM(ioe_mode, rpc_io_mode, IOE_PER_NODE, IOE_INVALID, false,
-        "how many rpc engines? IOE_PER_NODE, or IOE_PER_QUEUE")
-    CONFIG_FLD_ENUM(ioe_mode, nfs_io_mode, IOE_PER_NODE, IOE_INVALID, false,
-        "how many nfs engines? IOE_PER_NODE, or IOE_PER_QUEUE")
-    CONFIG_FLD_ENUM(ioe_mode, timer_io_mode, IOE_PER_NODE, IOE_INVALID, false,
-        "how many disk timer services? IOE_PER_NODE, or IOE_PER_QUEUE")
-    CONFIG_FLD(int, uint64, io_worker_count, 2, "io thread count, only for IOE_PER_NODE; "
-        "for IOE_PER_QUEUE, task workers are served as io threads")
 CONFIG_END
 
 enum sys_exit_type

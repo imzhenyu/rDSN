@@ -76,13 +76,14 @@
 # include <dsn/c/api_common.h>
 
 // rDSN uses event-driven programming model, and
-// this file defines the task(i.e., event) abstraction and related
+// this file defines the task(i.e., event) abstraction
+// as well as task/thread mapping facilities 
 # include <dsn/c/api_task.h>
 
 // service API for app/framework development, 
 // including threading/tasking, thread synchronization,
 // RPC, asynchronous file IO, environment, etc.
-# include <dsn/c/api_layer1.h>
+# include <dsn/c/api_service.h>
 
 // application/framework model in rDSN
 # include <dsn/c/app_model.h>
@@ -98,6 +99,3 @@
 // command line interface registration and invocation,
 // etc.
 # include <dsn/c/api_utilities.h>
-
-
-# include <dsn/c/api_layer2.h>

@@ -38,7 +38,6 @@
 
 #pragma once
 #include <iomanip>
-#include "shared_io_service.h"
 
 namespace dsn {
     namespace tools {

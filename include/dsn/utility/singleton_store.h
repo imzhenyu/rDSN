@@ -46,19 +46,19 @@ template<typename TKey, typename TValue, typename TCompare = std::less<TKey>>
 class singleton_store : public dsn::utils::singleton<singleton_store<TKey, TValue, TCompare>>
 {
 public:
-    bool put(TKey key, TValue val)
+    bool put(TKey&& key, TValue&& val)
     {
         auto it = _store.find(key);
         if (it != _store.end())
             return false;
         else
         {
-            _store.insert(std::make_pair(key, val));
+            _store.emplace(std::forward<TKey>(key), std::forward<TValue>(val));
             return true;
         }
     }
 
-    bool get(TKey key, /*out*/ TValue& val) const
+    bool get(TKey& key, /*out*/ TValue& val) const
     {
         auto it = _store.find(key);
         if (it != _store.end())
@@ -70,7 +70,7 @@ public:
             return false;
     }
 
-    bool remove(TKey key)
+    bool remove(TKey& key)
     {
         return _store.erase(key) > 0;
     }
@@ -79,7 +79,7 @@ public:
     {
         for (auto it = _store.begin(); it != _store.end(); ++it)
         {
-            keys.push_back(it->first);
+            keys.emplace_back(it->first);
         }
     }
 
@@ -91,7 +91,7 @@ template<typename TKey, typename TValue, typename TCompare = std::less<TKey>>
 class safe_singleton_store : public dsn::utils::singleton<safe_singleton_store<TKey, TValue, TCompare>>
 {
 public:
-    bool put(TKey key, TValue val)
+    bool put(TKey&& key, TValue&& val)
     {
         auto_write_lock l(_lock);
         auto it = _store.find(key);
@@ -99,12 +99,12 @@ public:
             return false;
         else
         {
-            _store.insert(std::make_pair(key, val));
+            _store.emplace(std::forward<TKey>(key), std::forward<TValue>(val));
             return true;
         }
     }
 
-    bool get(TKey key, /*out*/ TValue& val) const
+    bool get(TKey& key, /*out*/ TValue& val) const
     {
         auto_read_lock l(_lock);
         auto it = _store.find(key);
@@ -117,7 +117,7 @@ public:
             return false;
     }
 
-    bool remove(TKey key)
+    bool remove(TKey& key)
     {
         auto_write_lock l(_lock);
         return _store.erase(key) > 0;

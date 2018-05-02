@@ -37,11 +37,11 @@
 
 # include <dsn/utility/extensible_object.h>
 
-namespace dsn { namespace service {
+namespace dsn { 
 class zlock;
 class zrwlock_nr;
 class zsemaphore;
-}}
+}
 
 namespace dsn {
 

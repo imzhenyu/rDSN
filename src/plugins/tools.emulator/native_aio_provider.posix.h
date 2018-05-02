@@ -45,6 +45,8 @@
 
 namespace dsn {
     namespace tools {
+
+        struct posix_disk_aio_context;
         class native_posix_aio_provider : public aio_provider
         {
         public:
@@ -57,13 +59,14 @@ namespace dsn {
             virtual void    aio(aio_task* aio) override;
             virtual disk_aio* prepare_aio_context(aio_task* tsk) override;
             
-            virtual void start(io_modifer& ctx) override {}
+            virtual void start() override {}
 
         protected:
             error_code aio_internal(aio_task* aio, bool async, /*out*/ uint32_t* pbytes = nullptr);
 
         private:
-            friend void aio_completed(sigval sigval);
+            friend void native_aio_completed(sigval sigval);
+            friend void aio_ctx_completed(posix_disk_aio_context* ctx);
         };
     }
 }

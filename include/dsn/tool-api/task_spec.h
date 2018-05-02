@@ -36,7 +36,7 @@
 # pragma once
 
 # include <dsn/service_api_c.h>
-# include <dsn/cpp/utils.h>
+# include <dsn/cpp/auto_codes.h>
 # include <dsn/cpp/config_helper.h>
 # include <dsn/cpp/safe_string.h>
 # include <dsn/utility/enum_helper.h>
@@ -108,34 +108,6 @@ ENUM_BEGIN(task_state, TASK_STATE_INVALID)
     ENUM_REG(TASK_STATE_CANCELLED)
 ENUM_END(task_state)
 
-typedef enum ioe_mode
-{
-    IOE_PER_NODE,  // each node has shared io engine (rpc/disk/nfs/timer)
-    IOE_PER_QUEUE, // each queue has shared io engine (rpc/disk/nfs/timer)
-    IOE_COUNT,
-    IOE_INVALID
-} ioe_mode;
-
-ENUM_BEGIN(ioe_mode, IOE_INVALID)
-    ENUM_REG(IOE_PER_NODE)
-    ENUM_REG(IOE_PER_QUEUE)
-ENUM_END(ioe_mode)
-
-typedef enum grpc_mode_t
-{
-    GRPC_TO_LEADER,  // the rpc is sent to the leader (if exist)
-    GRPC_TO_ALL,     // the rpc is sent to all
-    GRPC_TO_ANY,     // the rpc is sent to one of the group member
-    GRPC_COUNT,
-    GRPC_INVALID
-} grpc_mode_t;
-
-ENUM_BEGIN(grpc_mode_t, GRPC_INVALID)
-    ENUM_REG(GRPC_TO_LEADER)
-    ENUM_REG(GRPC_TO_ALL)
-    ENUM_REG(GRPC_TO_ANY)
-ENUM_END(grpc_mode_t)
-
 typedef enum throttling_mode_t
 {
     TM_NONE,    // no throttling applied
@@ -152,22 +124,11 @@ ENUM_BEGIN(throttling_mode_t, TM_INVALID)
 ENUM_END(throttling_mode_t)
 
 ENUM_BEGIN(dsn_msg_serialize_format, DSF_INVALID)
-    ENUM_REG(DSF_THRIFT_BINARY)
-    ENUM_REG(DSF_THRIFT_COMPACT)
-    ENUM_REG(DSF_THRIFT_JSON)
+    ENUM_REG(DSF_RDSN)
     ENUM_REG(DSF_PROTOC_BINARY)
     ENUM_REG(DSF_PROTOC_JSON)
+    ENUM_REG(DSF_JSON)
 ENUM_END(dsn_msg_serialize_format)
-
-// define network header format for RPC
-DEFINE_CUSTOMIZED_ID_TYPE(network_header_format)
-DEFINE_CUSTOMIZED_ID(network_header_format, NET_HDR_INVALID)
-DEFINE_CUSTOMIZED_ID(network_header_format, NET_HDR_DSN)
-
-// define network channel types for RPC
-DEFINE_CUSTOMIZED_ID_TYPE(rpc_channel)
-DEFINE_CUSTOMIZED_ID(rpc_channel, RPC_CHANNEL_TCP)
-DEFINE_CUSTOMIZED_ID(rpc_channel, RPC_CHANNEL_UDP)
 
 // define thread pool code 
 DEFINE_CUSTOMIZED_ID_TYPE(threadpool_code2)
@@ -182,17 +143,11 @@ class admission_controller;
 typedef void (*task_rejection_handler)(task*, admission_controller*);
 struct rpc_handler_info;
 
-typedef struct __io_mode_modifier__
-{
-    ioe_mode    mode;     // see ioe_mode for details
-    task_queue* queue;    // when mode == IOE_PER_QUEUE
-    int port_shift_value; // port += port_shift_value
-} io_modifer;
-
 class task_spec : public extensible_object<task_spec, 4>
 {
 public:
     DSN_API static task_spec* get(int ec);
+    DSN_API static task_spec* rpc_get(const char* code);
     DSN_API static void register_task_code(dsn_task_code_t code, dsn_task_type_t type, dsn_task_priority_t pri, dsn_threadpool_code_t pool);
 
 public:
@@ -206,7 +161,6 @@ public:
 
     // configurable [
     dsn_task_priority_t    priority;
-    grpc_mode_t            grpc_mode; // used when a rpc request is sent to a group address
     dsn_threadpool_code_t  pool_code;
 
     // allow task executed in other thread pools or tasks    
@@ -214,10 +168,7 @@ public:
     // for other tasks - allow-inline allows a task being execution in io-thread
     bool                   allow_inline;
     bool                   randomize_timer_delay_if_zero; // to avoid many timers executing at the same time
-    network_header_format  rpc_call_header_format;
     dsn_msg_serialize_format rpc_msg_payload_serialize_default_format;
-    rpc_channel            rpc_call_channel;
-    bool                   rpc_message_crc_required;
 
     int32_t                rpc_timeout_milliseconds;
     int32_t                rpc_request_resend_timeout_milliseconds; // 0 for no auto-resend
@@ -226,7 +177,7 @@ public:
     bool                   rpc_request_dropped_before_execution_when_timeout;
 
     // layer 2 configurations
-    bool                   rpc_request_layer2_handler_required; // need layer 2 handler
+    bool                   rpc_request_framework_required; // need layer 2 handler
     bool                   rpc_request_is_write_operation;      // need stateful replication
     bool                   rpc_request_is_write_allow_batch;    // if write allow batch
     // ]
@@ -277,18 +228,14 @@ public:
 
 CONFIG_BEGIN(task_spec)
     CONFIG_FLD_ENUM(dsn_task_priority_t, priority, TASK_PRIORITY_COMMON, TASK_PRIORITY_INVALID, true, "task priority")
-    CONFIG_FLD_ENUM(grpc_mode_t, grpc_mode, GRPC_TO_LEADER, GRPC_INVALID, false, "group rpc mode: GRPC_TO_LEADER, GRPC_TO_ALL, GRPC_TO_ANY")
-    CONFIG_FLD_ID(threadpool_code2, pool_code, THREAD_POOL_DEFAULT, true, "thread pool to execute the task")
+    CONFIG_FLD_ID(threadpool_code2, pool_code, THREAD_POOL_DEFAULT, false, "thread pool to execute the task")
     CONFIG_FLD(bool, bool, allow_inline, false, 
         "allow task executed in other thread pools or tasks "
         "for TASK_TYPE_COMPUTE - allow-inline allows a task being executed in its caller site "
         "for other tasks - allow-inline allows a task being execution in io-thread "        
         )
     CONFIG_FLD(bool, bool, randomize_timer_delay_if_zero, false, "whether to randomize the timer delay to random(0, timer_interval), if the initial delay is zero, to avoid multiple timers executing at the same time (e.g., checkpointing)")
-    CONFIG_FLD_ID(network_header_format, rpc_call_header_format, NET_HDR_DSN, false, "what kind of header format for this kind of rpc calls")
-    CONFIG_FLD_ENUM(dsn_msg_serialize_format, rpc_msg_payload_serialize_default_format, DSF_THRIFT_BINARY, DSF_INVALID, false, "what kind of payload serialization format for this kind of msgs")
-    CONFIG_FLD_ID(rpc_channel, rpc_call_channel, RPC_CHANNEL_TCP, false, "what kind of network channel for this kind of rpc calls")
-    CONFIG_FLD(bool, bool, rpc_message_crc_required, false, "whether to calculate the crc checksum when send request/response")
+    CONFIG_FLD_ENUM(dsn_msg_serialize_format, rpc_msg_payload_serialize_default_format, DSF_RDSN, DSF_INVALID, false, "what kind of payload serialization format for this kind of msgs")
     CONFIG_FLD(int32_t, uint64, rpc_timeout_milliseconds, 5000, "what is the default timeout (ms) for this kind of rpc calls")    
     CONFIG_FLD(int32_t, uint64, rpc_request_resend_timeout_milliseconds, 0, "for how long (ms) the request will be resent if no response is received yet, 0 for disable this feature")
     CONFIG_FLD_ENUM(throttling_mode_t, rpc_request_throttling_mode, TM_NONE, TM_INVALID, false, "throttling mode for rpc requets: TM_NONE, TM_REJECT, TM_DELAY when queue length > pool.queue_length_throttling_threshold")
@@ -296,7 +243,7 @@ CONFIG_BEGIN(task_spec)
     CONFIG_FLD(bool, bool, rpc_request_dropped_before_execution_when_timeout, false, "whether to drop a request right before execution when its queueing time is already greater than its timeout value")    
 
     // layer 2 configurations
-    CONFIG_FLD(bool, bool, rpc_request_layer2_handler_required, false, "whether this request needs to be handled by a layer2 handler (e.g., replicated or partitioned)")
+    CONFIG_FLD(bool, bool, rpc_request_framework_required, false, "whether this request needs to be handled by a layer2 handler (e.g., replicated or partitioned)")
     CONFIG_FLD(bool, bool, rpc_request_is_write_operation, false, "whether this request updates app's state which needs to be replicated using a replication layer2 handler")
     CONFIG_FLD(bool, bool, rpc_request_is_write_allow_batch, true, "whether this write request allows updating app's state in batch mode")
 

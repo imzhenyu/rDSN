@@ -37,18 +37,61 @@
 
 # include <string>
 # include <sstream>
-# include <dsn/cpp/serialization_helper/dsn_types.h>
 # include <dsn/cpp/rpc_stream.h>
+# include <dsn/service_api_c.h>
 
-#ifdef DSN_USE_THRIFT_SERIALIZATION
-# include <dsn/cpp/serialization_helper/thrift_helper.h>
-#endif
-
-#ifdef DSN_USE_PROTOBUF_SERIALIZATION
-# include <dsn/cpp/serialization_helper/protobuf_helper.h>
-#endif
 namespace dsn
 {
+    template<typename T>
+    inline void marshall(::dsn::binary_writer& writer, const T& val)
+    {
+        dassert (false, "marshall for %s is not implemented", typeid(T).name());
+    }
+
+    template<typename T>
+    inline void unmarshall(::dsn::binary_reader& reader, /*out*/ T& val)
+    {
+        dassert (false, "unmarshall for %s is not implemented", typeid(T).name());
+    }
+
+    template<typename T>
+    inline void marshall(dsn_message_t msg, const T& val)
+    {
+        ::dsn::rpc_write_stream writer(msg);
+        marshall(writer, val);
+    }
+
+    template<typename T>
+    inline void unmarshall(dsn_message_t msg, /*out*/ T& val)
+    {
+        ::dsn::rpc_read_stream reader(msg);
+        unmarshall(reader, val);
+    }
+
+    //------------------ DSF_RDSN implementation ------------------------
+    # define DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(T) \
+    inline void marshall(::dsn::binary_writer& writer, const T& val) \
+    { \
+        writer.write(val); \
+    } \
+    inline void unmarshall(::dsn::binary_reader& reader, /*out*/ T& val) \
+    { \
+        reader.read(val); \
+    }
+
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(bool)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(int8_t)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(uint8_t)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(int16_t)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(uint16_t)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(int32_t)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(uint32_t)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(int64_t)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(uint64_t)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(float)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(double)
+    DEFINE_NATIVE_TYPE_SERIALIZATION_FUNCTIONS(std::string)
+
     namespace serialization
     {
         template<typename T>
@@ -64,43 +107,9 @@ namespace dsn
             return ss.str();
         }
     }
+}
 
-#ifdef DSN_USE_THRIFT_SERIALIZATION
-
-#define THRIFT_MARSHALLER \
-        case DSF_THRIFT_BINARY: marshall_thrift_binary(writer, value); break; \
-        case DSF_THRIFT_JSON: marshall_thrift_json(writer, value); break;
-
-#define THRIFT_UNMARSHALLER \
-        case DSF_THRIFT_BINARY: unmarshall_thrift_binary(reader, value); break; \
-        case DSF_THRIFT_JSON: unmarshall_thrift_json(reader, value); break;
-
-    //the following 2 functions is for thrift basic type serialization
-    template<typename T>
-    inline void marshall(binary_writer& writer, const T &value, dsn_msg_serialize_format fmt)
-    {
-        switch (fmt)
-        {
-            THRIFT_MARSHALLER
-        default: dassert(false, serialization::no_registered_function_error_notice(value, fmt).c_str());
-        }
-    }
-
-    template<typename T>
-    inline void unmarshall(binary_reader& reader, T &value, dsn_msg_serialize_format fmt)
-    {
-        switch (fmt)
-        {
-            THRIFT_UNMARSHALLER
-        default: dassert(false, serialization::no_registered_function_error_notice(value, fmt).c_str());
-        }
-    }
-#else
-#define THRIFT_MARSHALLER {}
-#define THRIFT_UNMARSHALLER {}
-#endif
-
-#ifdef DSN_USE_PROTOBUF_SERIALIZATION
+/*
 #define PROTOBUF_MARSHALLER \
     case DSF_PROTOC_BINARY: marshall_protobuf_binary(writer, value); break; \
     case DSF_PROTOC_JSON: marshall_protobuf_json(writer, value); break;
@@ -109,18 +118,13 @@ namespace dsn
     case DSF_PROTOC_BINARY: unmarshall_protobuf_binary(reader, value); break; \
     case DSF_PROTOC_JSON: unmarshall_protobuf_json(reader, value); break;
 
-#else
-#define PROTOBUF_MARSHALLER {}
-#define PROTOBUF_UNMARSHALLER {}
-#endif
-
-    #define GENERATED_TYPE_SERIALIZATION(GType, SerializationType) \
+#define GENERATED_TYPE_SERIALIZATION(GType, SerializationType) \
     inline void marshall(binary_writer& writer, const GType &value, dsn_msg_serialize_format fmt) \
     { \
         switch (fmt) \
         { \
             SerializationType##_MARSHALLER \
-            default: dassert(false, serialization::no_registered_function_error_notice(value, fmt).c_str()); \
+            default: dassert(false, ::dsn::serialization::no_registered_function_error_notice(value, fmt).c_str()); \
         } \
     } \
     inline void unmarshall(binary_reader& reader, GType &value, dsn_msg_serialize_format fmt) \
@@ -128,28 +132,7 @@ namespace dsn
         switch (fmt) \
         { \
             SerializationType##_UNMARSHALLER \
-            default: dassert(false, serialization::no_registered_function_error_notice(value, fmt).c_str()); \
+            default: dassert(false, ::dsn::serialization::no_registered_function_error_notice(value, fmt).c_str()); \
         } \
     }
-
-    template<typename T>
-    inline void marshall(dsn_message_t msg, const T& val)
-    {
-        ::dsn::rpc_write_stream writer(msg);
-        marshall(writer, val, dsn_msg_get_serialize_format(msg));
-    }
-
-    template<typename T>
-    inline void marshall(dsn_message_t msg, const T& val, dsn_msg_serialize_format fmt)
-    {
-        ::dsn::rpc_write_stream writer(msg);
-        marshall(writer, val, fmt);
-    }
-
-    template<typename T>
-    inline void unmarshall(dsn_message_t msg, /*out*/ T& val)
-    {
-        ::dsn::rpc_read_stream reader(msg);
-        unmarshall(reader, val, dsn_msg_get_serialize_format(msg));
-    }
-}
+*/

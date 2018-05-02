@@ -77,7 +77,7 @@ namespace dsn
 
         bool  rpc_register_handler(dsn_gpid gpid, rpc_handler_info* handler);
 
-        rpc_handler_info* rpc_unregister_handler(dsn_gpid gpid, dsn_task_code_t rpc_code);
+        rpc_handler_info* rpc_unregister_handler(dsn_gpid gpid, dsn_task_code_t rpc_code, const char* service_name);
 
         dsn_app_info* get_app_info(dsn_gpid gpid);
         

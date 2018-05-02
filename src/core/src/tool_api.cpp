@@ -47,7 +47,7 @@ namespace dsn {
     {
     public:
         service_control_task(service_node* node, bool start, bool cleanup = false)
-            : task(LPC_CONTROL_SERVICE_APP, nullptr, nullptr, 0, node), _node(node), _start(start), _cleanup(cleanup)
+            : task(LPC_CONTROL_SERVICE_APP, nullptr, 0, node), _node(node), _start(start), _cleanup(cleanup)
         {
         }
 
@@ -58,11 +58,7 @@ namespace dsn {
             if (_start)
             {
                 error_code err;
-                for (auto& io : _node->ios())
-                {
-                    _node->start_io_engine_in_node_start_task(io);
-                }
-                
+                _node->start_io_engine_in_node_start_task();
                 err = _node->start_app();
                 dassert(err == ERR_OK, "start app failed, err = %s", err.to_string());
             }
@@ -103,6 +99,8 @@ namespace dsn {
             {
                 task* t = new service_control_task(kv.second, true);
                 t->set_delay(1000 * kv.second->spec().delay_seconds);
+
+                t->spec().on_task_enqueue.execute(task::get_current_task(), t);
                 t->enqueue();
             }
         }
@@ -154,9 +152,9 @@ namespace dsn {
                 return dsn::utils::factory_store<timer_service>::register_factory(name, f, type);
             }
 
-            bool register_component_provider(const char* name, ::dsn::dist::partition_resolver::factory f, ::dsn::provider_type type)
+            bool register_component_provider(const char* name, ::dsn::channel::factory f, ::dsn::provider_type type)
             {
-                return dsn::utils::factory_store< ::dsn::dist::partition_resolver>::register_factory(name, f, type);
+                return dsn::utils::factory_store< ::dsn::channel>::register_factory(name, f, type);
             }
 
             bool register_component_provider(const char* name, task_queue::factory f, ::dsn::provider_type type)
@@ -229,7 +227,7 @@ namespace dsn {
                 return dsn::utils::factory_store<memory_provider>::register_factory(name, f, type);
             }
 
-            bool register_component_provider(network_header_format fmt, const std::vector<const char*>& signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz)
+            bool register_component_provider(net_header_format fmt, const std::vector<const char*>& signatures, message_parser::factory f, message_parser::factory2 f2, size_t sz)
             {
                 message_parser_manager::instance().register_factory(fmt, signatures, f, f2, sz);
                 return true;
@@ -238,12 +236,13 @@ namespace dsn {
             toollet* get_toollet(const char* name, ::dsn::provider_type type)
             {
                 toollet* tlt = nullptr;
-                if (utils::singleton_store<std::string, toollet*>::instance().get(name, tlt))
+                std::string aname(name);
+                if (utils::singleton_store<std::string, toollet*>::instance().get(aname, tlt))
                     return tlt;
                 else
                 {
                     tlt = utils::factory_store<toollet>::create(name, type, name);
-                    utils::singleton_store<std::string, toollet*>::instance().put(name, tlt);
+                    utils::singleton_store<std::string, toollet*>::instance().put(std::move(aname), std::move(tlt));
                     return tlt;
                 }
             }

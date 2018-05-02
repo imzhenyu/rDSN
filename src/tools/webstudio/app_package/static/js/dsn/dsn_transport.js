@@ -95,17 +95,15 @@ var DSN = {
         'struct' : Thrift.Type.STRUCT,
     }
 };
-
-function dsn_call(url, rpc_code, hash, method, send_data, payload_format, is_async, on_success, on_fail) {
+ 
+function dsn_call(url, service_name, rpc_code, method, send_data, is_async, on_success, on_fail) {
     if ((is_async && (!on_success || !on_fail)) || url === undefined || url === '') {
         return null;
-    }    
-    if (hash == undefined)
-        hash = 0;        
+    }          
     if (!method)
         method = "POST";
     
-    url = url + "/" + payload_format + "/" + hash + "/" + rpc_code;
+    url = url + "/" + service_name + "/" + rpc_code;
     $.ajax(
         {
             type: method,
@@ -117,9 +115,7 @@ function dsn_call(url, rpc_code, hash, method, send_data, payload_format, is_asy
             we therefore encode the url instead as shown above.
             
             headers : {
-                'rpc_name' : rpc_code,
-                'client_hash' : hash,
-                'serialize_format' : payload_format
+                'rpc_name' : rpc_code
             }, */
             data: send_data,
             async: is_async,

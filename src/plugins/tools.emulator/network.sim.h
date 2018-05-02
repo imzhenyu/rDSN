@@ -33,9 +33,10 @@
  *     xxxx-xx-xx, author, fix bug about xxx
  */
 
-#pragma once
+# pragma once
 
-#include <dsn/tool_api.h>
+# include <dsn/tool_api.h>
+# include <dsn/tool-api/rpc_client_matcher.h>
 
 namespace dsn { namespace tools {
 
@@ -45,17 +46,24 @@ namespace dsn { namespace tools {
     public:
         sim_client_session(
             sim_network_provider& net, 
+            rpc_client_matcher* matcher, 
             ::dsn::rpc_address remote_addr, 
-            message_parser_ptr& parser
+            net_header_format hdr_format
             );
 
-        virtual void connect();
+        virtual void send_message(message_ex* msg) override;
+        virtual message_ex* recv_message() override;
+        void set_response_msg(message_ex* resp);
         
-        virtual void send(uint64_t signature) override;
-
-        virtual void do_read(int sz) override {}
-
-        virtual void close_on_fault_injection() override {}
+        virtual void connect() override {}
+        virtual void disconnect_and_release() override;
+        virtual bool is_disconnected() const override { return false; }
+        virtual void delay_recv(int milliseconds) override {}
+        virtual uint64_t get_secret() const override { return (uint64_t)(uintptr_t)this; }
+        
+    private:
+        rpc_session* _server_s;
+        message_ex*  _sync_resp_msg; // use when is_async() == true 
     };
 
     class sim_server_session : public rpc_session
@@ -63,45 +71,53 @@ namespace dsn { namespace tools {
     public:
         sim_server_session(
             sim_network_provider& net, 
+            rpc_client_matcher* matcher, 
             ::dsn::rpc_address remote_addr, 
-            rpc_session_ptr& client, 
-            message_parser_ptr& parser
+            rpc_session* client, 
+            net_header_format hdr_format
             );
 
-        virtual void send(uint64_t signature) override;
+        virtual void send_message(message_ex* msg) override;
 
-        virtual void connect() {}
-
-        virtual void do_read(int sz) override {}
-
-        virtual void close_on_fault_injection() override {}
+        virtual void connect() override {}
+        virtual void disconnect_and_release() override;
+        virtual bool is_disconnected() const override { return false; }
+        virtual void delay_recv(int milliseconds) override {}
+        virtual uint64_t get_secret() const override { return 0; }
 
     private:
-        rpc_session_ptr _client;
+        sim_client_session* _client;
     };
 
-    class sim_network_provider : public connection_oriented_network
+    class sim_network_provider : public network
     {
     public:
         sim_network_provider(rpc_engine* rpc, network* inner_provider);
         ~sim_network_provider(void) {}
 
-        virtual error_code start(rpc_channel channel, int port, bool client_only, io_modifer& ctx);
+        virtual error_code start(net_channel channel, int port, bool client_only) override;
     
-        virtual ::dsn::rpc_address address() { return _address; }
+        virtual ::dsn::rpc_address address() override { return _address; }
 
-        virtual rpc_session_ptr create_client_session(::dsn::rpc_address server_addr)
+        virtual rpc_session* create_client_session(
+            net_header_format fmt, 
+            ::dsn::rpc_address server_addr,
+            bool is_async) override
         {
-            message_parser_ptr parser(new_message_parser(_client_hdr_format));
-            return rpc_session_ptr(new sim_client_session(*this, server_addr, parser));
+            return new sim_client_session(*this, &_client_matcher, server_addr, fmt);
         }
 
         uint32_t net_delay_milliseconds() const;
 
+        rpc_session* get_server_session(::dsn::rpc_address ep);
+
+        virtual void send_reply_message(message_ex* msg) override ;
+
     private:
         ::dsn::rpc_address    _address;
-        uint32_t     _min_message_delay_microseconds;
-        uint32_t     _max_message_delay_microseconds;
+        uint32_t               _min_message_delay_microseconds;
+        uint32_t               _max_message_delay_microseconds;
+        rpc_client_matcher     _client_matcher;
     };
         
     //------------- inline implementations -------------

@@ -36,8 +36,7 @@
 
 #pragma once
 
-# include <dsn/cpp/serverlet.h>
-# include "cli.client.h"
+# include <dsn/tool-api/cli.client.h>
 
 namespace dsn {
     namespace service {
@@ -50,9 +49,10 @@ namespace dsn {
             virtual ::dsn::error_code stop(bool cleanup = false);
 
         private:
-            cli_client     _client;
-            ::dsn::rpc_address  _target;
-            std::chrono::seconds            _timeout;
+            std::unique_ptr<cli_client>  _client;
+            dsn_channel_t  _target;
+            std::string    _target_addr;
+            std::chrono::seconds _timeout;
         };
     }
 }

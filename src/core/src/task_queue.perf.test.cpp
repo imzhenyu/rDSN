@@ -34,11 +34,12 @@
 
 #include <gtest/gtest.h>
 #include <dsn/service_api_cpp.h>
+#include <dsn/tool_api.h>
 #include <dsn/utility/priority_queue.h>
-#include <boost/lexical_cast.hpp>
 #include <dsn/cpp/test_utils.h>
 #include <mutex>
 #include <condition_variable>
+#include <sstream>
 
 //worker = 1
 DEFINE_THREAD_POOL_CODE(THREAD_POOL_TEST_TASK_QUEUE_1);
@@ -47,24 +48,43 @@ DEFINE_THREAD_POOL_CODE(THREAD_POOL_TEST_TASK_QUEUE_2);
 DEFINE_TASK_CODE(LPC_TEST_TASK_QUEUE_1, TASK_PRIORITY_HIGH, THREAD_POOL_TEST_TASK_QUEUE_1)
 DEFINE_TASK_CODE(LPC_TEST_TASK_QUEUE_2, TASK_PRIORITY_HIGH, THREAD_POOL_TEST_TASK_QUEUE_2)
 
-struct auto_timer {
+struct auto_timer 
+{
     std::string prefix;
     uint64_t delivery;
     decltype(std::chrono::steady_clock::now()) start_time;
-    std::vector<task_ptr> waited_task;
-    auto_timer(const std::string& prefix, uint64_t delivery) : prefix(prefix), delivery(delivery)
+    ::dsn::zsemaphore sema;
+    int waited_task_count;
+
+    auto_timer(const std::string& pre, ::dsn::task_code code, uint64_t delivery) 
+        : delivery(delivery)
+    {
+        waited_task_count = 0;
+        std::stringstream ss;
+        ss << pre << " (worker# = " << ::dsn::tools::spec().threadpool_specs[::dsn::task_spec::get(code)->pool_code].worker_count << ")";
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    void reset_start()
     {
         start_time = std::chrono::steady_clock::now();
     }
-    void wait_task(task_ptr ptask)
+
+    void add_task()
     {
-        waited_task.push_back(ptask);
+        waited_task_count++;
     }
+
+    void signal()
+    {
+        sema.signal();
+    }
+
     ~auto_timer()
     {
-        for (auto task : waited_task)
+        for (int i = 0; i < waited_task_count; i++)
         {
-            task->wait();
+            sema.wait();
         }
         auto end_time = std::chrono::steady_clock::now();
         std::cout << prefix << "throughput = " << delivery * 1000 * 1000 / std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count() << std::endl;
@@ -104,115 +124,90 @@ void iterate_over_preallocated_tasks(void* ctx)
 
 void external_flooding(const int enqueue_time)
 {
-    std::vector<task_c*> tsks;
+    auto_timer duration("inter-thread flooding test:", LPC_TEST_TASK_QUEUE_1, enqueue_time);
+
     for (int i = 0; i < enqueue_time; i++)
     {
-        auto tsk = new task_c(LPC_TEST_TASK_QUEUE_1, empty_cb, nullptr, nullptr);
-        tsks.push_back(tsk);
-    }
-    {
-        auto_timer t("inter-thread flooding test:", enqueue_time);
-        for (auto tsk : tsks)
-        {
-            if (tsk == tsks.back())
-            {
-                tsk->add_ref();
-            }
-            tsk->enqueue();
-        }
-        tsks.back()->wait();
-        tsks.back()->release_ref();
+        duration.add_task();
+        ::dsn::tasking::enqueue(LPC_TEST_TASK_QUEUE_1, [&] {duration.signal(); });
     }
 }
 
-void self_flooding(const int enqueue_time)
+void signal_cb(void* tm)
 {
-    std::vector<task_c*> tsks;
-    for (int i = 0; i < enqueue_time; i++)
-    {
-        auto tsk = new task_c(LPC_TEST_TASK_QUEUE_1, empty_cb, nullptr, nullptr);
-        tsks.push_back(tsk);
-    }
-    {
-        auto_timer t("self-flooding test:", enqueue_time);
-        tasking::enqueue(LPC_TEST_TASK_QUEUE_1, nullptr, [&]()
-        {
-            for (auto tsk : tsks)
-            {
-                if (tsk == tsks.back())
-                {
-                    tsk->add_ref();
-                }
-                tsk->enqueue();
-            }
-            t.start_time = std::chrono::steady_clock::now();
-        });
-        tsks.back()->wait();
-        tsks.back()->release_ref();
-    }
+    ((auto_timer*)tm)->signal();
 }
-void external_blocking(const int enqueue_time)
+
+void signal_cb2(void* tm)
 {
-    std::vector<task_c*> tsks;
+    ((zevent*)tm)->set();
+}
+
+void external_flooding2(const int enqueue_time)
+{
+    auto_timer timer("inter-thread blocking test(no task-create):", LPC_TEST_TASK_QUEUE_1, enqueue_time);
+
+    std::vector<task*> tasks;
     for (int i = 0; i < enqueue_time; i++)
     {
-        auto tsk = new task_c(LPC_TEST_TASK_QUEUE_1, empty_cb, nullptr, nullptr);
-        tsks.push_back(tsk);
+        timer.add_task();
+        tasks.push_back(new task_c(LPC_TEST_TASK_QUEUE_1, signal_cb, &timer, 0));
     }
+
+    timer.reset_start();
     {
-        auto_timer t("inter-thread blocking test:", enqueue_time);
-        for (auto tsk : tsks)
+        for (auto tsk : tasks)
         {
-            tsk->add_ref();
             tsk->enqueue();
-            tsk->wait();
-            tsk->release_ref();
         }
     }
-}
-void self_iterating(const int enqueue_time)
+ }
+
+void self_flooding(const int enqueue_time)
 {
-    self_iterate_context ctx;
+    auto_timer timer("self-flooding test:", LPC_TEST_TASK_QUEUE_1, enqueue_time);
+
+    std::vector<task*> tasks;
     for (int i = 0; i < enqueue_time; i++)
     {
-        auto tsk = new task_c(LPC_TEST_TASK_QUEUE_1, iterate_over_preallocated_tasks, &ctx, nullptr);
-        ctx.tsks.push_back(tsk);
+        timer.add_task();
+        tasks.push_back(new task_c(LPC_TEST_TASK_QUEUE_1, signal_cb, &timer, 0));
     }
-    ctx.it = ctx.tsks.begin();
+
+    tasking::enqueue(LPC_TEST_TASK_QUEUE_1, [&]()
     {
-        auto_timer t("self-iterating test:", enqueue_time);
-        iterate_over_preallocated_tasks(&ctx);
-        std::unique_lock<std::mutex> _lk(ctx.mut);
-        ctx.cv.wait(_lk, [&] {return ctx.done;});
-    }
+        for (auto tsk : tasks)
+        {
+            tsk->enqueue();
+        }
+
+        timer.reset_start();
+    });
 }
-void tic_tock_iterating(const int enqueue_time)
+
+void external_blocking(const int enqueue_time)
 {
-    self_iterate_context ctx;
+    auto_timer timer("inter-thread blocking test:", LPC_TEST_TASK_QUEUE_1, enqueue_time);
+    zevent evt;
+
+    std::vector<task*> tasks;
     for (int i = 0; i < enqueue_time; i++)
     {
-        auto tsk = new task_c(
-            i % 2 == 0 ? LPC_TEST_TASK_QUEUE_1 : LPC_TEST_TASK_QUEUE_2,
-            iterate_over_preallocated_tasks,
-            &ctx,
-            nullptr
-            );
-        ctx.tsks.push_back(tsk);
+        tasks.push_back(new task_c(LPC_TEST_TASK_QUEUE_1, signal_cb2, &evt, 0));
     }
-    ctx.it = ctx.tsks.begin();
+
+    for (auto tsk : tasks)
     {
-        auto_timer t("tick-tock test:", enqueue_time);
-        iterate_over_preallocated_tasks(&ctx);
-        std::unique_lock<std::mutex> _lk(ctx.mut);
-        ctx.cv.wait(_lk, [&] {return ctx.done;});
+        tsk->enqueue();
+        evt.wait();
     }
 }
+
 TEST(perf_core, task_queue)
 {
     const int enqueue_time = 10000000;
     external_flooding(enqueue_time);
+    external_flooding2(enqueue_time);
     self_flooding(enqueue_time);
     external_blocking(enqueue_time / 10);
-    self_iterating(enqueue_time);
-    tic_tock_iterating(enqueue_time / 10);
 }

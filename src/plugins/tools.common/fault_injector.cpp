@@ -220,8 +220,8 @@ namespace dsn {
             if (dsn_probability() < opt.rpc_request_drop_ratio)
             {
                 ddebug("fault inject %s at %s: %s => %s", 
-                    req->header->rpc_name, __FUNCTION__,
-                    req->header->from_address.to_string(),
+                    req->dheader.rpc_name, __FUNCTION__,
+                    req->from_address.to_string(),
                     req->to_address.to_string()
                     );
                 return false;
@@ -231,7 +231,7 @@ namespace dsn {
                 if (dsn_probability() < opt.rpc_request_data_corrupted_ratio)
                 {
                     ddebug("corrupt the rpc call message from: %s, type: %s",
-                           req->header->from_address.to_string(), opt.rpc_message_data_corrupted_type.c_str());
+                           req->from_address.to_string(), opt.rpc_message_data_corrupted_type.c_str());
                     corrupt_data(req, opt.rpc_message_data_corrupted_type);
                 }
                 return true;
@@ -259,8 +259,8 @@ namespace dsn {
             if (dsn_probability() < opt.rpc_response_drop_ratio)
             {
                 ddebug("fault inject %s at %s: %s => %s",
-                    msg->header->rpc_name, __FUNCTION__,
-                    msg->header->from_address.to_string(),
+                    msg->dheader.rpc_name, __FUNCTION__,
+                    msg->from_address.to_string(),
                     msg->to_address.to_string()
                     );
                 return false;
@@ -270,7 +270,7 @@ namespace dsn {
                 if (dsn_probability() < opt.rpc_response_data_corrupted_ratio)
                 {
                     ddebug("fault injector corrupt the rpc reply message from: %s, type: %s",
-                           msg->header->from_address.to_string(), opt.rpc_message_data_corrupted_type.c_str());
+                           msg->from_address.to_string(), opt.rpc_message_data_corrupted_type.c_str());
                     corrupt_data(msg, opt.rpc_message_data_corrupted_type);
                 }
                 return true;

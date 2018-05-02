@@ -37,24 +37,26 @@
 # include <iostream>
 # include <thread>
 # include <sstream>
-# include <dsn/cpp/utils.h>
+# include <dsn/utility/misc.h>
 # include <dsn/cpp/rpc_stream.h>
 # include "service_engine.h"
 # include <dsn/tool-api/task.h>
 # include <dsn/tool-api/rpc_message.h>
 # include "rpc_engine.h"
-# include <dsn/cpp/cli.h>
+# include <dsn/cpp/serialization.h>
 
 # ifdef __TITLE__
 # undef __TITLE__
 # endif
 # define __TITLE__ "command_manager"
 
+
+DEFINE_TASK_CODE_RPC(RPC_CLI_CLI_CALL, TASK_PRIORITY_COMMON, ::dsn::THREAD_POOL_DEFAULT)
+
 DSN_API const char* dsn_cli_run(const char* command_line) // return command output
 {
-    ::dsn::safe_string cmd = command_line;
     ::dsn::safe_string output;
-    dsn::command_manager::instance().run_command(cmd, output);
+    dsn::command_manager::instance().run_command(command_line, output);
 
     char* c_output = (char*)malloc(output.length() + 1);
     memcpy(c_output, &output[0], output.length());
@@ -115,7 +117,8 @@ DSN_API dsn_handle_t dsn_cli_app_register(
         cmd_handler,
         output_freer
         );
-    dsn::command_manager::instance().set_cli_target_address(handle, dsn::task::get_current_rpc()->primary_address());
+    dsn::command_manager::instance().set_cli_target_address(handle, 
+        dsn::task::get_current_rpc()->primary_address());
     return handle;
 }
 
@@ -209,7 +212,7 @@ namespace dsn {
 
     }
 
-    bool command_manager::run_command(const safe_string& cmdline, /*out*/ safe_string& output)
+    bool command_manager::run_command(const char* cmdline, /*out*/ safe_string& output)
     {
         auto cnode = ::dsn::task::get_current_node2();
         if (cnode == nullptr)
@@ -223,10 +226,9 @@ namespace dsn {
             dsn_mimic_app(all_nodes.begin()->second->spec().role_name.c_str(), 1);
         }
 
-        auto scmd = cmdline;
         safe_vector<safe_string> args;
         
-        utils::split_args(scmd.c_str(), args, ' ');
+        utils::split_args(cmdline, args, ' ');
 
         if (args.size() < 1)
             return false;
@@ -264,29 +266,8 @@ namespace dsn {
             }
             else
             {
-                ::dsn::rpc_read_stream response;
-                
-                dsn_message_t msg = dsn_msg_create_request(RPC_CLI_CLI_CALL);
-                ::dsn::command rcmd;
-                rcmd.cmd = cmd.c_str();
-                for (auto& e : args)
-                {
-                    rcmd.arguments.emplace_back(e.c_str());
-                }
-
-                ::dsn::marshall(msg, rcmd);
-                auto resp = dsn_rpc_call_wait(h->address.c_addr(), msg);
-                if (resp != nullptr)
-                {
-                    std::string o2 = output.c_str();
-                    ::dsn::unmarshall(resp, o2);
-                    return true;
-                }
-                else
-                {
-                    dwarn("cli run for %s is too long, timeout", cmd.c_str());
-                    return false;
-                }
+                output = safe_string("handler is not on remote node: %s", h->address.to_string());
+                return false;
             }
         }
     }
@@ -311,35 +292,41 @@ namespace dsn {
         new std::thread(std::bind(&command_manager::run_console, this));
     }
 
-    void remote_cli_handler(dsn_message_t req, void*)
+    bool remote_cli_handler(dsn_message_t req, void*)
     {
         command_manager::instance().on_remote_cli(req);
+        return true;
     }
 
     void command_manager::start_remote_cli()
     {
-        ::dsn::service_engine::fast_instance().register_system_rpc_handler(RPC_CLI_CLI_CALL, "dsn.cli", remote_cli_handler, nullptr);
+        ::dsn::service_engine::fast_instance().register_system_rpc_handler(
+                RPC_CLI_CLI_CALL,
+                "cli",
+                remote_cli_handler,
+                nullptr
+        );
     }
 
+    // note both request and response msgs
+    // are both c strings (no length is prefixed)
     void command_manager::on_remote_cli(dsn_message_t req)
     {
-        ::dsn::command cmd;
+        void* ptr;
+        size_t sz;
+        if (!dsn_msg_read_next(req, &ptr, &sz))
+            return;
+
+        // make sure the request is written as a c string
         safe_string result;
-
-        ::dsn::unmarshall(req, cmd);
-
-        safe_vector<safe_string> args;
-        for (auto& e : cmd.arguments)
-        {
-            args.emplace_back(e.c_str());
-        }
-
-        run_command(cmd.cmd.c_str(), args, result);
+        run_command((const char*)ptr, result);
 
         auto resp = dsn_msg_create_response(req);
-
-        std::string r2 = result.c_str();
-        ::dsn::marshall(resp, r2);
+        {
+            ::dsn::rpc_write_stream writer(resp);
+            writer.write(result.c_str(), (int)result.length());
+            writer.write((uint8_t)'\0');
+        }
         dsn_rpc_reply(resp);
     }
 

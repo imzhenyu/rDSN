@@ -146,9 +146,9 @@ TEST(core, configuration)
     ASSERT_STREQ("my_key", keys[0]);
 
     std::list<std::string> l = c->get_string_value_list("apps.client", "pools", ',', "thread pools");
-    ASSERT_EQ(2u, l.size());
-    ASSERT_STREQ("THREAD_POOL_DEFAULT", l.begin()->c_str());
-    ASSERT_STREQ("THREAD_POOL_TEST_SERVER", (++l.begin())->c_str());
+    ASSERT_EQ(3u, l.size());
+    ASSERT_STREQ("THREAD_POOL_IO", l.begin()->c_str());
+    ASSERT_STREQ("THREAD_POOL_DEFAULT", (++l.begin())->c_str());
 
     l = c->get_string_value_list("apps.client", "my_list", ',', "my list");
     ASSERT_EQ(0u, l.size());

@@ -62,4 +62,5 @@ namespace dsn
 
     extern void* tls_trans_malloc(size_t sz);
     extern void tls_trans_free(void* ptr);
+    extern void* tls_trans_realloc(void* ptr, size_t size);
 }

@@ -38,7 +38,8 @@
 # include <dsn/service_api_c.h>
 # include <atomic>
 
-namespace dsn { namespace service {
+namespace dsn 
+{ 
 
 /*!
 @addtogroup sync-exlock
@@ -130,18 +131,13 @@ private:
 class zevent
 {
 public:
-    zevent(bool manualReset, bool initState = false);
-    ~zevent();
+    zevent(bool initial_state = false) : _sema(initial_state ? 1:0) {}
 
-public:
-    void set();
-    void reset();
-    bool wait(int timeout_milliseconds = TIME_MS_MAX);
+    void set() { _sema.signal(); }
+    bool wait(int timeout_milliseconds = TIME_MS_MAX) { return _sema.wait(timeout_milliseconds); }
 
 private:
     zsemaphore        _sema;
-    std::atomic<bool> _signaled;
-    bool              _manualReset;
 
 private:
     // no assignment operator
@@ -180,4 +176,4 @@ private:
     zrwlock_nr * _lock; 
 };
 
-}} // end namespace dsn::service
+} // end namespace dsn::service

@@ -1,40 +1,79 @@
-if (DEFINED DSN_CMAKE_INCLUDED)
-else()
-    
-    set(DSN_ROOT "$ENV{DSN_ROOT}")
-    if(NOT EXISTS "${DSN_ROOT}/")
-        message(FATAL_ERROR "Please make sure that ${DSN_ROOT} exists.")
-    endif()
+set(PROJ_NAME dsn)
+project(${PROJ_NAME} C CXX)
+add_definitions(-DDSN_IN_CORE)
 
-    include("${DSN_ROOT}/bin/dsn.cmake")
+include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/ext)
+
+set(PROJ_SRC "")
+file(GLOB
+        PROJ_SRC
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+        )
+
+file(GLOB
+        PROJ_SRC_TEST
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.test.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.test.cpp"
+        )
+
+if (DSN_STATIC)
+    list(REMOVE_ITEM PROJ_SRC ${PROJ_SRC_TEST})
+    add_library(${PROJ_NAME} "STATIC" ${PROJ_SRC}
+        "${CMAKE_CURRENT_SOURCE_DIR}/all/plugins.cpp"
+        $<TARGET_OBJECTS:dsn.dev.utility>     
+        $<TARGET_OBJECTS:dsn.tools.common>
+        $<TARGET_OBJECTS:dsn.tools.emulator>
+        $<TARGET_OBJECTS:dsn.tools.http>
+        )
+    add_executable(${PROJ_NAME}.test ${PROJ_SRC_TEST}
+        "${CMAKE_CURRENT_SOURCE_DIR}/all/test_main.cpp"
+        $<TARGET_OBJECTS:dsn.tools.common.test>
+        $<TARGET_OBJECTS:dsn.tools.emulator.test>
+        $<TARGET_OBJECTS:dsn.tools.http.test>
+        )
+    target_link_libraries(${PROJ_NAME}.test dsn dsn.utility gtest)
+else()
+    add_library(${PROJ_NAME} "SHARED" ${PROJ_SRC})
+    target_link_libraries(${PROJ_NAME} dsn.utility gtest)
+
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    add_executable(dsn.test "${CMAKE_CURRENT_SOURCE_DIR}/all/test_main.cpp")
+    target_link_libraries(dsn.test ${PROJ_NAME} gtest gtest_main)
+endif ()
+
+if (UNIX)
+    if((NOT APPLE))
+        target_link_libraries(${PROJ_NAME} rt)
+    endif ()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        target_link_libraries(${PROJ_NAME} aio dl)
+    endif()
+    if((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD"))
+        target_link_libraries(${PROJ_NAME} util)
+    endif()
+    find_package (Threads)
+    target_link_libraries(${PROJ_NAME} ${CMAKE_THREAD_LIBS_INIT})
+endif ()
+
+file(COPY test/ DESTINATION "${CMAKE_BINARY_DIR}/test/${PROJ_NAME}")
+
+if (MSVC)
+    add_test(
+            NAME ${PROJ_NAME}.test
+            COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/dsn.test test.config.all.ini
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test/${PROJ_NAME}
+            )
+else()
+    add_test(
+            NAME ${PROJ_NAME}.test
+            #COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dsn.test test.config.all.ini
+            COMMAND ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/dsn.test test.config.all.ini
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test/${PROJ_NAME}
+            )
 endif()
 
-add_definitions(-DDSN_IN_CORE)
-set(DSN_IN_CORE "TRUE")
-
-set(MY_PROJ_NAME dsn.core)
-
-# Source files under CURRENT project directory will be automatically included.
-# You can manually set MY_PROJ_SRC to include source files under other directories.
-set(MY_PROJ_SRC "")
-
-# Search mode for source files under CURRENT project directory?
-# "GLOB_RECURSE" for recursive search
-# "GLOB" for non-recursive search
-set(MY_SRC_SEARCH_MODE "GLOB")
-
-set(MY_PROJ_INC_PATH ${GTEST_INCLUDE_DIR})
-
-set(MY_PROJ_LIBS gtest
-                 dsn.dev.cpp.core.use
-                 dsn.dev.utility
-   )
-
-set(MY_PROJ_LIB_PATH "${GTEST_LIB_DIR}")
-
-# Extra files that will be installed
-set(MY_BINPLACES "")
-
-dsn_add_shared_library()
-
-file(COPY test/ DESTINATION "${CMAKE_BINARY_DIR}/test/${MY_PROJ_NAME}")

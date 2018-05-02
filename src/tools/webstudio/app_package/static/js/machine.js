@@ -1,5 +1,13 @@
 Vue.config.debug = true;
 
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 var vm = new Vue({
     el: '#app',
     data:{
@@ -147,7 +155,11 @@ var vm = new Vue({
     {
         var self = this;
         self.nodeDummy.partitions = [];
-        self.update(); 
+        self.update();
+ 
+        if (getParameterByName("meta_server") != null && getParameterByName("meta_server") != "")
+            localStorage.setItem('target_meta_server', getParameterByName("meta_server"));
+ 
         //query each machine their service state
         self.updateTimer = setInterval(function () {
             self.update(); 

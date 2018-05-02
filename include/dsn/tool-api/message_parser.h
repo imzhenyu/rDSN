@@ -39,19 +39,24 @@
 # include <dsn/utility/ports.h>
 # include <dsn/utility/singleton.h>
 # include <dsn/tool-api/task_spec.h>
+# include <dsn/tool-api/rpc_message.h>
 # include <dsn/utility/autoref_ptr.h>
 # include <dsn/cpp/blob.h>
 # include <dsn/utility/dlib.h>
 # include <vector>
 
 namespace dsn 
-{
+{    
     class message_reader
     {
     public:
         explicit message_reader(int buffer_block_size)
             : _buffer_occupied(0), _buffer_block_size(buffer_block_size) {}
         ~message_reader() {}
+
+        //
+        // the following are used by producers that read data from network into this buffer
+        //
 
         // called before read to extend read buffer
         DSN_API char* read_buffer_ptr(unsigned int read_next);
@@ -65,34 +70,45 @@ namespace dsn
         // discard read data
         void truncate_read() { _buffer_occupied = 0; }
 
-    public:
-        dsn::blob       _buffer;
+        unsigned int block_size() const { return _buffer_block_size; }
+
+        //
+        // the following are used by consumers that use the data in this buffer already
+        //
+        const char* data() const { return _buffer.data(); }
+        
+        unsigned int length() const { return _buffer_occupied; }
+
+        dsn::blob range(unsigned int len) { return _buffer.range(0, len); }
+
+        dsn::blob range(int offset, unsigned int len) { return _buffer.range(offset, len); }
+
+        void consume(unsigned len);
+
+    private:
+        dsn::blob      _buffer;
         unsigned int    _buffer_occupied;
         unsigned int    _buffer_block_size;
     };
 
-    class message_parser;
-    typedef ref_ptr<message_parser> message_parser_ptr;
-
-    class message_ex;
-
-    class message_parser : public ref_counter
+    class message_parser
     {
     public:
-        template <typename T> static message_parser* create()
+        template <typename T> static message_parser* create(bool is_client)
         {
-            return new T();
+            return new T(is_client);
         }
 
-        template <typename T> static message_parser* create2(void* place)
+        template <typename T> static message_parser* create2(void* place, bool is_client)
         {
-            return new(place) T();
+            return new(place) T(is_client);
         }
 
-        typedef message_parser*  (*factory)();
-        typedef message_parser*  (*factory2)(void*);
+        typedef message_parser*  (*factory)(bool);
+        typedef message_parser*  (*factory2)(void*, bool);
         
     public:
+        message_parser(bool is_client) : _header_format(NET_HDR_INVALID) {}
         virtual ~message_parser() {}
 
         // reset the parser
@@ -108,21 +124,6 @@ namespace dsn
         // may be invoked for mutiple times if the message is reused for resending.
         virtual void prepare_on_send(message_ex* msg) {}
 
-        // be compatible with WSABUF on windows and iovec on linux
-# ifdef _WIN32
-        struct send_buf
-        {
-            uint32_t sz;
-            void*    buf;
-        };
-# else
-        struct send_buf
-        {
-            void*    buf;
-            size_t   sz;
-        };
-# endif
-
         // get max buffer count needed by get_buffers_on_send().
         // may be invoked for mutiple times if the message is reused for resending.
         virtual int get_buffer_count_on_send(message_ex* msg) = 0;
@@ -133,7 +134,19 @@ namespace dsn
         virtual int get_buffers_on_send(message_ex* msg, /*out*/ send_buf* buffers) = 0;
 
     public:
-        DSN_API static network_header_format get_header_type(const char* bytes); // buffer size >= sizeof(uint32_t)
-        DSN_API static safe_string get_debug_string(const char* bytes);
+        net_header_format format() const { return _header_format; }
+        DSN_API static net_header_format get_header_type(const char* bytes, int len);
+        DSN_API static safe_string get_debug_string(const char* bytes, int len);
+        DSN_API static message_parser* new_message_parser(net_header_format hdr_format, bool is_client);
+
+    private:
+        net_header_format _header_format;
     };
+
+    // -------------- inline implementation ---------------
+    inline void message_reader::consume(unsigned len)
+    {
+        _buffer = _buffer.range((int)len);
+        _buffer_occupied -= len;
+    }
 }
